@@ -1,0 +1,19 @@
+{
+  "name": "ts-command-line-args",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Roaders/ts-command-line-args.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Roaders/ts-command-line-args/issues"
+  },
+  "homepage": "https://github.com/Roaders/ts-command-line-args#readme"
+}
