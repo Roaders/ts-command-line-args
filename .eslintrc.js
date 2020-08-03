@@ -4,7 +4,9 @@ module.exports = {
         jest: true
     },
     extends: [
-        'standard'
+        'eslint:recommended',
+        'plugin:@typescript-eslint/eslint-recommended',
+        'plugin:@typescript-eslint/recommended'
     ],
     parser: '@typescript-eslint/parser',
     parserOptions: {
@@ -15,6 +17,7 @@ module.exports = {
         '@typescript-eslint'
     ],
     rules: {
-        indent: ['error', 4]
+        indent: ['error', 4],
+        semi: ["error", "always"]
     }
 }
