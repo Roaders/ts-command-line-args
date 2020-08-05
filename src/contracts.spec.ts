@@ -9,7 +9,7 @@ import { ArgumentConfig } from './contracts';
 describe('contracts', () => {
     describe('ArgumentConfig', () => {
         describe('simple properties', () => {
-            interface AllRequired{
+            interface AllRequired {
                 name: string;
                 age: number;
                 member: boolean;
@@ -19,7 +19,7 @@ describe('contracts', () => {
                 const sampleConfig: ArgumentConfig<AllRequired> = {
                     name: String,
                     age: Number,
-                    member: Boolean
+                    member: Boolean,
                 };
             });
 
@@ -27,7 +27,7 @@ describe('contracts', () => {
                 const config: ArgumentConfig<AllRequired> = {
                     name: { type: String },
                     age: { type: Number },
-                    member: { type: Boolean }
+                    member: { type: Boolean },
                 };
             });
 
@@ -35,12 +35,12 @@ describe('contracts', () => {
                 // @ts-expect-error
                 const config: ArgumentConfig<AllRequired> = {
                     name: String,
-                    age: Number
+                    age: Number,
                 };
             });
 
-            it("sample values alone should not allow nullable properties", () => {
-                interface NullableProperties{
+            it('sample values alone should not allow nullable properties', () => {
+                interface NullableProperties {
                     name: string | null;
                     age: number | null;
                     member: boolean | null;
@@ -52,12 +52,12 @@ describe('contracts', () => {
                     // @ts-expect-error
                     age: Number,
                     // @ts-expect-error
-                    member: Boolean
+                    member: Boolean,
                 };
             });
 
-            it("sample values alone should not allow optional properties", () => {
-                interface NullableProperties{
+            it('sample values alone should not allow optional properties', () => {
+                interface NullableProperties {
                     name?: string;
                     age?: number;
                     member?: boolean;
@@ -69,12 +69,12 @@ describe('contracts', () => {
                     // @ts-expect-error
                     age: Number,
                     // @ts-expect-error
-                    member: Boolean
+                    member: Boolean,
                 };
             });
 
-            it("should not allow arrays", () => {
-                interface ArrayProperties{
+            it('should not allow arrays', () => {
+                interface ArrayProperties {
                     name: string[];
                     age: number[];
                     member: boolean[];
@@ -86,9 +86,8 @@ describe('contracts', () => {
                     // @ts-expect-error
                     age: Number,
                     // @ts-expect-error
-                    member: Boolean
+                    member: Boolean,
                 };
-
             });
 
             it('should not allow wrong type constructor', () => {
@@ -96,25 +95,25 @@ describe('contracts', () => {
                     // @ts-expect-error
                     name: Number,
                     age: Number,
-                    member: Boolean
+                    member: Boolean,
                 };
 
                 const configTypeOption: ArgumentConfig<AllRequired> = {
                     // @ts-expect-error
                     name: { type: Number },
                     age: { type: Number },
-                    member: { type: Boolean }
+                    member: { type: Boolean },
                 };
             });
         });
 
         describe('complex properties', () => {
-            interface ComplexProperties{
+            interface ComplexProperties {
                 requiredStringOne: string;
                 requiredStringTwo: string;
                 optionalString?: string;
                 nullableString: string | null;
-                optionalNullableString?: string | null
+                optionalNullableString?: string | null;
                 requiredArray: string[];
                 optionalArray?: string[];
             }
@@ -130,19 +129,19 @@ describe('contracts', () => {
                     // @ts-expect-error
                     requiredArray: String,
                     // @ts-expect-error
-                    optionalArray: String
+                    optionalArray: String,
                 };
             });
 
             it('should allow an object with type option definitions', () => {
                 const config: ArgumentConfig<ComplexProperties> = {
                     requiredStringOne: String,
-                    requiredStringTwo: {type: String},
-                    optionalString: {type: String, optional: true},
-                    nullableString: {type: String, nullable: true},
-                    optionalNullableString: {type: String, nullable: true, optional: true},
-                    requiredArray: {type: String, multiple: true},
-                    optionalArray: {type: String, lazyMultiple: true, optional: true}
+                    requiredStringTwo: { type: String },
+                    optionalString: { type: String, optional: true },
+                    nullableString: { type: String, nullable: true },
+                    optionalNullableString: { type: String, nullable: true, optional: true },
+                    requiredArray: { type: String, multiple: true },
+                    optionalArray: { type: String, lazyMultiple: true, optional: true },
                 };
             });
 
@@ -150,11 +149,11 @@ describe('contracts', () => {
                 // @ts-expect-error
                 const config: ArgumentConfig<ComplexProperties> = {
                     requiredStringOne: String,
-                    requiredStringTwo: {type: String},
-                    nullableString: {type: String, nullable: true},
-                    optionalNullableString: {type: String, nullable: true, optional: true},
-                    requiredArray: {type: String, multiple: true},
-                    optionalArray: {type: String, multiple: true, optional: true}
+                    requiredStringTwo: { type: String },
+                    nullableString: { type: String, nullable: true },
+                    optionalNullableString: { type: String, nullable: true, optional: true },
+                    requiredArray: { type: String, multiple: true },
+                    optionalArray: { type: String, multiple: true, optional: true },
                 };
             });
 
@@ -163,26 +162,26 @@ describe('contracts', () => {
                     // @ts-expect-error
                     requiredStringOne: Number,
                     // @ts-expect-error
-                    requiredStringTwo: {type: Number},
-                    optionalString: {type: String, optional: true},
-                    nullableString: {type: String, nullable: true},
-                    optionalNullableString: {type: String, nullable: true, optional: true},
-                    requiredArray: {type: String, multiple: true},
-                    optionalArray: {type: String, multiple: true, optional: true}
+                    requiredStringTwo: { type: Number },
+                    optionalString: { type: String, optional: true },
+                    nullableString: { type: String, nullable: true },
+                    optionalNullableString: { type: String, nullable: true, optional: true },
+                    requiredArray: { type: String, multiple: true },
+                    optionalArray: { type: String, multiple: true, optional: true },
                 };
             });
 
-            it("should allow a complex type with an associated constructor", () => {
-                interface IMyComplexType{
+            it('should allow a complex type with an associated constructor', () => {
+                interface IMyComplexType {
                     name: string;
                 }
 
-                interface IExpectedArgs{
+                interface IExpectedArgs {
                     complex: IMyComplexType;
                 }
 
                 const configTypeOption: ArgumentConfig<IExpectedArgs> = {
-                    complex: {type: value => ({name: value})},
+                    complex: { type: (value) => ({ name: value }) },
                 };
             });
         });
