@@ -1,25 +1,24 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { ArgumentConfig } from "../contracts";
-import { parse } from "../parse";
+import { ArgumentConfig } from '../contracts';
+import { parse } from '../parse';
 
-interface IMyExampleInterface{
+interface IMyExampleInterface {
     requiredString: string;
     optionalString?: string;
     nullableString: string | null;
-    optionalNullableString?: string | null
+    optionalNullableString?: string | null;
     requiredArray: string[];
     optionalArray?: string[];
 }
 
 const argumentConfig: ArgumentConfig<IMyExampleInterface> = {
     requiredString: String,
-    optionalString: {type: String, optional: true},
-    nullableString: {type: String, nullable: true},
-    optionalNullableString: {type: String, nullable: true, optional: true},
-    requiredArray: {type: String, multiple: true},
-    optionalArray: {type: String, multiple: true, optional: true}
-
+    optionalString: { type: String, optional: true },
+    nullableString: { type: String, nullable: true },
+    optionalNullableString: { type: String, nullable: true, optional: true },
+    requiredArray: { type: String, multiple: true },
+    optionalArray: { type: String, multiple: true, optional: true },
 };
 
 /**
@@ -39,12 +38,12 @@ const passOptionsExampleArgumentsOrUndefined = parse(argumentConfig, {}, false);
  * adds unknown arguments to _unknown property and does not throw for unknowns
  * result typed as IMyExampleInterface & { _unknown: string[] }
  */
-const exampleArgumentsWithUnknownExitProcess = parse(argumentConfig, {partial: true}, false);
-const exampleArgumentsWithUnknown = parse(argumentConfig, {partial: true});
+const exampleArgumentsWithUnknownExitProcess = parse(argumentConfig, { partial: true }, false);
+const exampleArgumentsWithUnknown = parse(argumentConfig, { partial: true });
 
 /**
  * adds unknown arguments to _unknown property and stop processing properties when first unknown reached
  * result typed as IMyExampleInterface & { _unknown: string[] }
  */
-const exampleArgumentsWithStopExitProcess = parse(argumentConfig, {partial: true}, false);
-const exampleArgumentsWithStop = parse(argumentConfig, {partial: true});
+const exampleArgumentsWithStopExitProcess = parse(argumentConfig, { partial: true }, false);
+const exampleArgumentsWithStop = parse(argumentConfig, { partial: true });

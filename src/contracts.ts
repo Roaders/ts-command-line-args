@@ -2,11 +2,15 @@
 
 export type ArgumentConfig<T extends { [name: string]: any }> = {
     [P in keyof T]-?: PropertyConfig<T[P]>;
-}
+};
 
 export type PropertyConfig<T> = undefined extends T ? PropertyOptions<T> : RequiredPropertyOptions<T>;
-export type RequiredPropertyOptions<T> = null extends T ? PropertyOptions<T> : NonNullablePropertyOptions<T> | PropertyOptions<T>;
-export type NonNullablePropertyOptions<T> = Array<any> extends T ? PropertyOptions<T> : TypeConstructor<T> | PropertyOptions<T>
+export type RequiredPropertyOptions<T> = null extends T
+    ? PropertyOptions<T>
+    : NonNullablePropertyOptions<T> | PropertyOptions<T>;
+export type NonNullablePropertyOptions<T> = Array<any> extends T
+    ? PropertyOptions<T>
+    : TypeConstructor<T> | PropertyOptions<T>;
 
 export type TypeConstructor<T> = (value: string) => T extends Array<infer R> ? R : T;
 
@@ -15,7 +19,7 @@ export type PropertyOptions<T> = {
      * A setter function (you receive the output from this) enabling you to be specific about the type and value received. Typical values
      * are `String`, `Number` and `Boolean` but you can use a custom function.
      */
-    type: TypeConstructor<T>
+    type: TypeConstructor<T>;
 
     /**
      * A getopt-style short option name. Can be any single character except a digit or hyphen.
@@ -47,13 +51,15 @@ export type PropertyOptions<T> = {
      * One or more group names the option belongs to.
      */
     group?: string | string[];
-}  & OptionalPropertyOptions<T> & NullablePropertyOptions<T> & MultiplePropertyOptions<T>
+} & OptionalPropertyOptions<T> &
+    NullablePropertyOptions<T> &
+    MultiplePropertyOptions<T>;
 
-export type OptionalPropertyOptions<T> = undefined extends T ? { optional: true } : unknown
+export type OptionalPropertyOptions<T> = undefined extends T ? { optional: true } : unknown;
 
-export type NullablePropertyOptions<T> = null extends T ? { nullable: true } : unknown
+export type NullablePropertyOptions<T> = null extends T ? { nullable: true } : unknown;
 
-export type MultiplePropertyOptions<T> = Array<any> extends T ? { multiple: true } | { lazyMultiple: true } : unknown
+export type MultiplePropertyOptions<T> = Array<any> extends T ? { multiple: true } | { lazyMultiple: true } : unknown;
 
 export interface ArgsParseOptions {
     /**
@@ -62,17 +68,14 @@ export interface ArgsParseOptions {
     argv?: string[];
 }
 
-export interface PartialParseOptions extends ArgsParseOptions{
-
+export interface PartialParseOptions extends ArgsParseOptions {
     /**
      * If `true`, `commandLineArgs` will not throw on unknown options or values, instead returning them in the `_unknown` property of the output.
      */
     partial: true;
-
 }
 
-export interface StopParseOptions extends ArgsParseOptions{
-
+export interface StopParseOptions extends ArgsParseOptions {
     /**
      * If `true`, `commandLineArgs` will not throw on unknown options or values. Instead, parsing will stop at the first unknown argument
      * and the remaining arguments returned in the `_unknown` property of the output. If set, `partial: true` is implied.
@@ -82,6 +85,10 @@ export interface StopParseOptions extends ArgsParseOptions{
 
 type UnknownProps = { _unknown: string[] };
 
-export type UnkownProperties<T> = T extends PartialParseOptions ?  UnknownProps :  T extends StopParseOptions ? UnknownProps : unknown;
+export type UnkownProperties<T> = T extends PartialParseOptions
+    ? UnknownProps
+    : T extends StopParseOptions
+    ? UnknownProps
+    : unknown;
 
 export type ParseOptions = ArgsParseOptions | PartialParseOptions | StopParseOptions;
