@@ -5,10 +5,7 @@ export type ArgumentConfig<T extends { [name: string]: any }> = {
 };
 
 export type PropertyConfig<T> = undefined extends T ? PropertyOptions<T> : RequiredPropertyOptions<T>;
-export type RequiredPropertyOptions<T> = null extends T
-    ? PropertyOptions<T>
-    : NonNullablePropertyOptions<T> | PropertyOptions<T>;
-export type NonNullablePropertyOptions<T> = Array<any> extends T
+export type RequiredPropertyOptions<T> = Array<any> extends T
     ? PropertyOptions<T>
     : TypeConstructor<T> | PropertyOptions<T>;
 
@@ -52,12 +49,9 @@ export type PropertyOptions<T> = {
      */
     group?: string | string[];
 } & OptionalPropertyOptions<T> &
-    NullablePropertyOptions<T> &
     MultiplePropertyOptions<T>;
 
 export type OptionalPropertyOptions<T> = undefined extends T ? { optional: true } : unknown;
-
-export type NullablePropertyOptions<T> = null extends T ? { nullable: true } : unknown;
 
 export type MultiplePropertyOptions<T> = Array<any> extends T ? { multiple: true } | { lazyMultiple: true } : unknown;
 
@@ -66,6 +60,12 @@ export interface ArgsParseOptions {
      * An array of strings which if present will be parsed instead of `process.argv`.
      */
     argv?: string[];
+
+    /**
+     * A logger for printing errors for missing properties.
+     * Defaults to console
+     */
+    logger?: typeof console;
 }
 
 export interface PartialParseOptions extends ArgsParseOptions {

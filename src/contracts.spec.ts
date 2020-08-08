@@ -39,31 +39,14 @@ describe('contracts', () => {
                 };
             });
 
-            it('sample values alone should not allow nullable properties', () => {
-                interface NullableProperties {
-                    name: string | null;
-                    age: number | null;
-                    member: boolean | null;
-                }
-
-                const config: ArgumentConfig<NullableProperties> = {
-                    // @ts-expect-error
-                    name: String,
-                    // @ts-expect-error
-                    age: Number,
-                    // @ts-expect-error
-                    member: Boolean,
-                };
-            });
-
             it('sample values alone should not allow optional properties', () => {
-                interface NullableProperties {
+                interface OptionalProperties {
                     name?: string;
                     age?: number;
                     member?: boolean;
                 }
 
-                const config: ArgumentConfig<NullableProperties> = {
+                const config: ArgumentConfig<OptionalProperties> = {
                     // @ts-expect-error
                     name: String,
                     // @ts-expect-error
@@ -112,8 +95,6 @@ describe('contracts', () => {
                 requiredStringOne: string;
                 requiredStringTwo: string;
                 optionalString?: string;
-                nullableString: string | null;
-                optionalNullableString?: string | null;
                 requiredArray: string[];
                 optionalArray?: string[];
             }
@@ -122,10 +103,6 @@ describe('contracts', () => {
                 const config: ArgumentConfig<ComplexProperties> = {
                     // @ts-expect-error
                     optionalString: String,
-                    // @ts-expect-error
-                    nullableString: String,
-                    // @ts-expect-error
-                    optionalNullableString: String,
                     // @ts-expect-error
                     requiredArray: String,
                     // @ts-expect-error
@@ -138,8 +115,6 @@ describe('contracts', () => {
                     requiredStringOne: String,
                     requiredStringTwo: { type: String },
                     optionalString: { type: String, optional: true },
-                    nullableString: { type: String, nullable: true },
-                    optionalNullableString: { type: String, nullable: true, optional: true },
                     requiredArray: { type: String, multiple: true },
                     optionalArray: { type: String, lazyMultiple: true, optional: true },
                 };
@@ -150,8 +125,6 @@ describe('contracts', () => {
                 const config: ArgumentConfig<ComplexProperties> = {
                     requiredStringOne: String,
                     requiredStringTwo: { type: String },
-                    nullableString: { type: String, nullable: true },
-                    optionalNullableString: { type: String, nullable: true, optional: true },
                     requiredArray: { type: String, multiple: true },
                     optionalArray: { type: String, multiple: true, optional: true },
                 };
@@ -164,8 +137,6 @@ describe('contracts', () => {
                     // @ts-expect-error
                     requiredStringTwo: { type: Number },
                     optionalString: { type: String, optional: true },
-                    nullableString: { type: String, nullable: true },
-                    optionalNullableString: { type: String, nullable: true, optional: true },
                     requiredArray: { type: String, multiple: true },
                     optionalArray: { type: String, multiple: true, optional: true },
                 };
