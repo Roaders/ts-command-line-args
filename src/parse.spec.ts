@@ -20,6 +20,12 @@ describe('parse', () => {
         optionalArray?: string[];
     }
 
+    interface PropertiesWithHelp extends ComplexProperties{
+        requiredBoolean: boolean;
+        optionalBoolean?: boolean;
+        multipleBoolean: boolean[];
+    }
+
     function getConfig(): ArgumentConfig<ComplexProperties> {
         return {
             requiredString: String,
@@ -28,6 +34,15 @@ describe('parse', () => {
             requiredArray: { type: String, alias: 'o', multiple: true },
             optionalArray: { type: String, lazyMultiple: true, optional: true },
         };
+    }
+
+    function getHelpConfig(): ArgumentConfig<PropertiesWithHelp>{
+        return {
+            ...getConfig(),
+            requiredBoolean: Boolean,
+            optionalBoolean: {type: Boolean, optional: true},
+            multipleBoolean: {type: Boolean, multiple: true}
+        }
     }
 
     const requiredStringValue = 'requiredStringValue';
@@ -117,7 +132,18 @@ describe('parse', () => {
         });
     });
 
-    it(`should print help messages and exit when help arg is passed`, () => {});
+    it(`should print help messages and exit when help arg is passed`, () => {
+        
+        const result = parse(
+            getHelpConfig(),
+            {
+                logger: mockConsole.mock,
+                argv: [...defaultedString],
+                helpArg: "optionalBoolean"
+            },
+            false,
+        );
+    });
 
     it(`it should print help messags and return arguments when help arg passed and exitProcess is false`, () => {});
 });
