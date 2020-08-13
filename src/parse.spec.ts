@@ -20,6 +20,10 @@ describe('parse', () => {
         optionalArray?: string[];
     }
 
+    interface PropertiesWithHelp extends ComplexProperties {
+        optionalHelpArg?: boolean;
+    }
+
     function getConfig(): ArgumentConfig<ComplexProperties> {
         return {
             requiredString: String,
@@ -27,6 +31,13 @@ describe('parse', () => {
             optionalString: { type: String, optional: true },
             requiredArray: { type: String, alias: 'o', multiple: true },
             optionalArray: { type: String, lazyMultiple: true, optional: true },
+        };
+    }
+
+    function getHelpConfig(): ArgumentConfig<PropertiesWithHelp> {
+        return {
+            ...getConfig(),
+            optionalHelpArg: { type: Boolean, optional: true, alias: 'h' },
         };
     }
 
@@ -41,6 +52,7 @@ describe('parse', () => {
     const requiredArray = ['--requiredArray', ...requiredArrayValue];
     const optionalArrayValue = ['optionalArrayValueOne', 'optionalArrayValueTwo'];
     const optionalArray = ['--optionalArray', optionalArrayValue[0], '--optionalArray', optionalArrayValue[1]];
+    const optionalHelpArg = ['--optionalHelpArg'];
 
     replacePropertiesBeforeEach(() => {
         addMatchers();
@@ -81,7 +93,7 @@ describe('parse', () => {
     });
 
     const expectedRequiredStringMessage = `Required parameter 'requiredString' was not passed. Please provide a value by passing '--requiredString=passedValue' in command line arguments`;
-    const expectedRequiredArrayMessage = `Required parameter 'requiredArray' was not passed. Please provide a value by passing '--requiredString=passedValue' or '-o passedValue' in command line arguments`;
+    const expectedRequiredArrayMessage = `Required parameter 'requiredArray' was not passed. Please provide a value by passing '--requiredArray=passedValue' or '-o passedValue' in command line arguments`;
 
     it(`should print errors and exit process when required arguments are missing`, () => {
         const result = parse(getConfig(), {
@@ -117,7 +129,31 @@ describe('parse', () => {
         });
     });
 
-    it(`should print help messages and exit when help arg is passed`, () => {});
+    it(`should print help messages and exit when help arg is passed`, () => {
+        const result = parse(getHelpConfig(), {
+            logger: mockConsole.mock,
+            argv: [...defaultedString, ...optionalHelpArg],
+            helpArg: 'optionalHelpArg',
+        });
 
-    it(`it should print help messags and return arguments when help arg passed and exitProcess is false`, () => {});
+        expect(result).toBeUndefined();
+        expect(mockProcess.withFunction('exit')).wasCalledOnce();
+    });
+
+    it(`it should print help messags and return arguments when help arg passed and exitProcess is false`, () => {
+        const result = parse(
+            getHelpConfig(),
+            {
+                logger: mockConsole.mock,
+                argv: [...defaultedString, ...optionalHelpArg],
+                helpArg: 'optionalHelpArg',
+            },
+            false,
+        );
+        expect(result).toEqual({
+            defaultedString: defaultedStringValue,
+            optionalHelpArg: true,
+        });
+        expect(mockProcess.withFunction('exit')).wasNotCalled();
+    });
 });

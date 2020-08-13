@@ -3,19 +3,19 @@ import commandLineArgs from 'command-line-args';
 import { normaliseConfig, createCommandLineConfig } from './helpers';
 
 export function parse<T>(config: ArgumentConfig<T>, exitProcess: false): T | undefined;
-export function parse<T, P extends ParseOptions>(
+export function parse<T, P extends ParseOptions<T>>(
     config: ArgumentConfig<T>,
     options: P,
     exitProcess: false,
 ): (T & UnkownProperties<P>) | undefined;
-export function parse<T, P extends ParseOptions>(
+export function parse<T, P extends ParseOptions<T>>(
     config: ArgumentConfig<T>,
     options?: P,
     exitProcess?: true,
 ): T & UnkownProperties<P>;
 export function parse<T>(
     config: ArgumentConfig<T>,
-    optionsOrExit?: ParseOptions | boolean,
+    optionsOrExit?: ParseOptions<T> | boolean,
     exitProcess = true,
 ): T | undefined {
     const options = typeof optionsOrExit === 'object' ? optionsOrExit : {};
@@ -31,7 +31,7 @@ export function parse<T>(
     missingArgs.forEach((config) => {
         const aliasMessage = config.alias != null ? ` or '-${config.alias} passedValue'` : ``;
         logger.error(
-            `Required parameter '${config.name}' was not passed. Please provide a value by passing '--requiredString=passedValue'${aliasMessage} in command line arguments`,
+            `Required parameter '${config.name}' was not passed. Please provide a value by passing '--${config.name}=passedValue'${aliasMessage} in command line arguments`,
         );
     });
 

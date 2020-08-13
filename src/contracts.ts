@@ -4,6 +4,10 @@ export type ArgumentConfig<T extends { [name: string]: any }> = {
     [P in keyof T]-?: PropertyConfig<T[P]>;
 };
 
+export type ArgumentOptions<T extends { [name: string]: any }> = {
+    [P in keyof T]-?: PropertyOptions<T[P]>;
+};
+
 export type PropertyConfig<T> = undefined extends T ? PropertyOptions<T> : RequiredPropertyOptions<T>;
 export type RequiredPropertyOptions<T> = Array<any> extends T
     ? PropertyOptions<T>
@@ -55,7 +59,7 @@ export type OptionalPropertyOptions<T> = undefined extends T ? { optional: true 
 
 export type MultiplePropertyOptions<T> = Array<any> extends T ? { multiple: true } | { lazyMultiple: true } : unknown;
 
-export interface ArgsParseOptions {
+export interface ArgsParseOptions<T extends { [name: string]: any }> {
     /**
      * An array of strings which if present will be parsed instead of `process.argv`.
      */
@@ -66,16 +70,22 @@ export interface ArgsParseOptions {
      * Defaults to console
      */
     logger?: typeof console;
+
+    /**
+     * The command line argument used to show help
+     * By default when this property is true help will be printed and the process will exit
+     */
+    helpArg?: keyof T;
 }
 
-export interface PartialParseOptions extends ArgsParseOptions {
+export interface PartialParseOptions extends ArgsParseOptions<any> {
     /**
      * If `true`, `commandLineArgs` will not throw on unknown options or values, instead returning them in the `_unknown` property of the output.
      */
     partial: true;
 }
 
-export interface StopParseOptions extends ArgsParseOptions {
+export interface StopParseOptions extends ArgsParseOptions<any> {
     /**
      * If `true`, `commandLineArgs` will not throw on unknown options or values. Instead, parsing will stop at the first unknown argument
      * and the remaining arguments returned in the `_unknown` property of the output. If set, `partial: true` is implied.
@@ -91,4 +101,4 @@ export type UnkownProperties<T> = T extends PartialParseOptions
     ? UnknownProps
     : unknown;
 
-export type ParseOptions = ArgsParseOptions | PartialParseOptions | StopParseOptions;
+export type ParseOptions<T> = ArgsParseOptions<T> | PartialParseOptions | StopParseOptions;
