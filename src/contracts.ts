@@ -4,7 +4,6 @@ export type ArgumentConfig<T extends { [name: string]: any }> = {
     [P in keyof T]-?: PropertyConfig<T[P]>;
 };
 
-
 export type ArgumentOptions<T extends { [name: string]: any }> = {
     [P in keyof T]-?: PropertyOptions<T[P]>;
 };
@@ -72,8 +71,11 @@ export interface ArgsParseOptions<T extends { [name: string]: any }> {
      */
     logger?: typeof console;
 
-    // helpArg?: BooleanProperties<ArgumentOptions<ArgumentConfig<T>>>
-    helpArg?: keyof ArgumentOptions<ArgumentConfig<T>> ;
+    /**
+     * The command line argument used to show help
+     * By default when this property is true help will be printed and the process will exit
+     */
+    helpArg?: keyof T;
 }
 
 export interface PartialParseOptions extends ArgsParseOptions<any> {
@@ -100,8 +102,3 @@ export type UnkownProperties<T> = T extends PartialParseOptions
     : unknown;
 
 export type ParseOptions<T> = ArgsParseOptions<T> | PartialParseOptions | StopParseOptions;
-
-type SingleValueProperty<T> = T extends { multiple: boolean } ? never : T extends { lazyMultiple: boolean } ? never : T;
-type SingleBooleanProperty<T> = T extends { type: () => boolean } ? SingleValueProperty<T> : never;
-
-export type BooleanProperties<T> = keyof Pick<T, { [K in keyof T]: SingleBooleanProperty<T[K]> extends never ? never : K }[keyof T]>;

@@ -31,7 +31,7 @@ export function parse<T>(
     missingArgs.forEach((config) => {
         const aliasMessage = config.alias != null ? ` or '-${config.alias} passedValue'` : ``;
         logger.error(
-            `Required parameter '${config.name}' was not passed. Please provide a value by passing '--requiredString=passedValue'${aliasMessage} in command line arguments`,
+            `Required parameter '${config.name}' was not passed. Please provide a value by passing '--${config.name}=passedValue'${aliasMessage} in command line arguments`,
         );
     });
 

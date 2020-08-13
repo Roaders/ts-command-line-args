@@ -20,10 +20,8 @@ describe('parse', () => {
         optionalArray?: string[];
     }
 
-    interface PropertiesWithHelp extends ComplexProperties{
-        requiredBoolean: boolean;
-        optionalBoolean?: boolean;
-        multipleBoolean: boolean[];
+    interface PropertiesWithHelp extends ComplexProperties {
+        optionalHelpArg?: boolean;
     }
 
     function getConfig(): ArgumentConfig<ComplexProperties> {
@@ -36,13 +34,11 @@ describe('parse', () => {
         };
     }
 
-    function getHelpConfig(): ArgumentConfig<PropertiesWithHelp>{
+    function getHelpConfig(): ArgumentConfig<PropertiesWithHelp> {
         return {
             ...getConfig(),
-            requiredBoolean: Boolean,
-            optionalBoolean: {type: Boolean, optional: true},
-            multipleBoolean: {type: Boolean, multiple: true}
-        }
+            optionalHelpArg: { type: Boolean, optional: true, alias: 'h' },
+        };
     }
 
     const requiredStringValue = 'requiredStringValue';
@@ -56,6 +52,7 @@ describe('parse', () => {
     const requiredArray = ['--requiredArray', ...requiredArrayValue];
     const optionalArrayValue = ['optionalArrayValueOne', 'optionalArrayValueTwo'];
     const optionalArray = ['--optionalArray', optionalArrayValue[0], '--optionalArray', optionalArrayValue[1]];
+    const optionalHelpArg = ['--optionalHelpArg'];
 
     replacePropertiesBeforeEach(() => {
         addMatchers();
@@ -96,7 +93,7 @@ describe('parse', () => {
     });
 
     const expectedRequiredStringMessage = `Required parameter 'requiredString' was not passed. Please provide a value by passing '--requiredString=passedValue' in command line arguments`;
-    const expectedRequiredArrayMessage = `Required parameter 'requiredArray' was not passed. Please provide a value by passing '--requiredString=passedValue' or '-o passedValue' in command line arguments`;
+    const expectedRequiredArrayMessage = `Required parameter 'requiredArray' was not passed. Please provide a value by passing '--requiredArray=passedValue' or '-o passedValue' in command line arguments`;
 
     it(`should print errors and exit process when required arguments are missing`, () => {
         const result = parse(getConfig(), {
@@ -133,17 +130,30 @@ describe('parse', () => {
     });
 
     it(`should print help messages and exit when help arg is passed`, () => {
-        
+        const result = parse(getHelpConfig(), {
+            logger: mockConsole.mock,
+            argv: [...defaultedString, ...optionalHelpArg],
+            helpArg: 'optionalHelpArg',
+        });
+
+        expect(result).toBeUndefined();
+        expect(mockProcess.withFunction('exit')).wasCalledOnce();
+    });
+
+    it(`it should print help messags and return arguments when help arg passed and exitProcess is false`, () => {
         const result = parse(
             getHelpConfig(),
             {
                 logger: mockConsole.mock,
-                argv: [...defaultedString],
-                helpArg: "optionalBoolean"
+                argv: [...defaultedString, ...optionalHelpArg],
+                helpArg: 'optionalHelpArg',
             },
             false,
         );
+        expect(result).toEqual({
+            defaultedString: defaultedStringValue,
+            optionalHelpArg: true,
+        });
+        expect(mockProcess.withFunction('exit')).wasNotCalled();
     });
-
-    it(`it should print help messags and return arguments when help arg passed and exitProcess is false`, () => {});
 });
