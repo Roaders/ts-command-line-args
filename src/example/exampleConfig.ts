@@ -19,13 +19,6 @@ export const argumentConfig: ArgumentConfig<ICopyFilesArguments> = {
     excludePaths: { type: String, multiple: true, optional: true },
 };
 
-export const args = parse<ICopyFilesArguments>({
-    sourcePath: String,
-    targetPath: String,
-    copyFiles: { type: Boolean, alias: 'c' },
-    resetPermissions: Boolean,
-    filter: { type: String, optional: true },
-    excludePaths: { type: String, multiple: true, optional: true },
-});
+export const args = parse(argumentConfig);
 
 console.log(`args: ${JSON.stringify(args)}`);
