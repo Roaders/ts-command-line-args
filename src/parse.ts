@@ -13,6 +13,7 @@ export function parse<T, P extends ParseOptions<T>>(
     options?: P,
     exitProcess?: true,
 ): T & UnkownProperties<P>;
+export function parse<T>(config: ArgumentConfig<T>, exitProcess?: true): T;
 export function parse<T>(config: ArgumentConfig<T>, optionsOrExit?: ParseOptions<T> | boolean, exitProcess = true): T {
     const options = typeof optionsOrExit === 'object' ? optionsOrExit : {};
     exitProcess = typeof optionsOrExit === 'boolean' ? optionsOrExit : exitProcess;
@@ -20,9 +21,18 @@ export function parse<T>(config: ArgumentConfig<T>, optionsOrExit?: ParseOptions
     const parsedArgs = commandLineArgs(commandLineConfig, options);
     const logger = options.logger || console;
 
-    const missingArgs = commandLineConfig.filter(
-        (config) => config.optional == null && parsedArgs[config.name] == null,
-    );
+    const missingArgs = commandLineConfig
+        .filter((config) => config.optional == null && parsedArgs[config.name] == null)
+        .filter((config) => {
+            const defaultedValue = config.type();
+
+            if (typeof defaultedValue === 'boolean') {
+                parsedArgs[config.name] = defaultedValue;
+                return false;
+            }
+
+            return true;
+        });
 
     missingArgs.forEach((config) => {
         const aliasMessage = config.alias != null ? ` or '-${config.alias} passedValue'` : ``;

@@ -16,6 +16,8 @@ describe('parse', () => {
         requiredString: string;
         defaultedString: string;
         optionalString?: string;
+        requiredBoolean: boolean;
+        optionalBoolean?: boolean;
         requiredArray: string[];
         optionalArray?: string[];
     }
@@ -29,6 +31,8 @@ describe('parse', () => {
             requiredString: String,
             defaultedString: { type: String, defaultValue: defaultFromOption },
             optionalString: { type: String, optional: true },
+            requiredBoolean: Boolean,
+            optionalBoolean: { type: Boolean, optional: true },
             requiredArray: { type: String, alias: 'o', multiple: true },
             optionalArray: { type: String, lazyMultiple: true, optional: true },
         };
@@ -48,6 +52,8 @@ describe('parse', () => {
     const defaultedString = ['--defaultedString', defaultedStringValue];
     const optionalStringValue = 'optionalStringValue';
     const optionalString = ['--optionalString', optionalStringValue];
+    const requiredBoolean = ['--requiredBoolean'];
+    const optionalBoolean = ['--optionalBoolean'];
     const requiredArrayValue = ['requiredArray'];
     const requiredArray = ['--requiredArray', ...requiredArrayValue];
     const optionalArrayValue = ['optionalArrayValueOne', 'optionalArrayValueTwo'];
@@ -66,7 +72,15 @@ describe('parse', () => {
         it('when all options are populated', () => {
             const result = parse(getConfig(), {
                 logger: mockConsole.mock,
-                argv: [...requiredString, ...defaultedString, ...optionalString, ...requiredArray, ...optionalArray],
+                argv: [
+                    ...requiredString,
+                    ...defaultedString,
+                    ...optionalString,
+                    ...requiredBoolean,
+                    ...optionalBoolean,
+                    ...requiredArray,
+                    ...optionalArray,
+                ],
             });
 
             expect(result).toEqual({
@@ -75,6 +89,8 @@ describe('parse', () => {
                 optionalString: optionalStringValue,
                 requiredArray: requiredArrayValue,
                 optionalArray: optionalArrayValue,
+                requiredBoolean: true,
+                optionalBoolean: true,
             });
         });
 
@@ -88,6 +104,7 @@ describe('parse', () => {
                 requiredString: requiredStringValue,
                 defaultedString: defaultFromOption,
                 requiredArray: requiredArrayValue,
+                requiredBoolean: false,
             });
         });
     });
@@ -109,7 +126,7 @@ describe('parse', () => {
         expect(result).toBeUndefined();
     });
 
-    it(`should print warnings, return an incomplete when arguments are missing and exitProcess is false`, () => {
+    it(`should print warnings, return an incomplete result when arguments are missing and exitProcess is false`, () => {
         const result = parse(
             getConfig(),
             {
@@ -126,6 +143,7 @@ describe('parse', () => {
 
         expect(result).toEqual({
             defaultedString: defaultedStringValue,
+            requiredBoolean: false,
         });
     });
 
@@ -153,6 +171,7 @@ describe('parse', () => {
         expect(result).toEqual({
             defaultedString: defaultedStringValue,
             optionalHelpArg: true,
+            requiredBoolean: false,
         });
         expect(mockProcess.withFunction('exit')).wasNotCalled();
     });

@@ -1,15 +1,31 @@
 import { ArgumentConfig } from '../contracts';
+import { parse } from '../parse';
 
-interface IMyExampleInterface {
-    requiredString: string;
-    optionalString?: string;
-    requiredArray: string[];
-    optionalArray?: string[];
+interface ICopyFilesArguments {
+    sourcePath: string;
+    targetPath: string;
+    copyFiles: boolean;
+    resetPermissions: boolean;
+    filter?: string;
+    excludePaths?: string[];
 }
 
-export const argumentConfig: ArgumentConfig<IMyExampleInterface> = {
-    requiredString: String,
-    optionalString: { type: String, optional: true },
-    requiredArray: { type: String, multiple: true },
-    optionalArray: { type: String, multiple: true, optional: true },
+export const argumentConfig: ArgumentConfig<ICopyFilesArguments> = {
+    sourcePath: String,
+    targetPath: String,
+    copyFiles: { type: Boolean, alias: 'c' },
+    resetPermissions: Boolean,
+    filter: { type: String, optional: true },
+    excludePaths: { type: String, multiple: true, optional: true },
 };
+
+export const args = parse<ICopyFilesArguments>({
+    sourcePath: String,
+    targetPath: String,
+    copyFiles: { type: Boolean, alias: 'c' },
+    resetPermissions: Boolean,
+    filter: { type: String, optional: true },
+    excludePaths: { type: String, multiple: true, optional: true },
+});
+
+console.log(`args: ${JSON.stringify(args)}`);
