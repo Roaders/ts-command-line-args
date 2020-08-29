@@ -2,22 +2,18 @@ import { ArgumentConfig, ParseOptions, UnkownProperties } from './contracts';
 import commandLineArgs from 'command-line-args';
 import { normaliseConfig, createCommandLineConfig } from './helpers';
 
-export function parse<T>(config: ArgumentConfig<T>, exitProcess: false): T | undefined;
+export function parse<T>(config: ArgumentConfig<T>, exitProcess: false): Partial<T>;
 export function parse<T, P extends ParseOptions<T>>(
     config: ArgumentConfig<T>,
     options: P,
     exitProcess: false,
-): (T & UnkownProperties<P>) | undefined;
+): Partial<T & UnkownProperties<P>>;
 export function parse<T, P extends ParseOptions<T>>(
     config: ArgumentConfig<T>,
     options?: P,
     exitProcess?: true,
 ): T & UnkownProperties<P>;
-export function parse<T>(
-    config: ArgumentConfig<T>,
-    optionsOrExit?: ParseOptions<T> | boolean,
-    exitProcess = true,
-): T | undefined {
+export function parse<T>(config: ArgumentConfig<T>, optionsOrExit?: ParseOptions<T> | boolean, exitProcess = true): T {
     const options = typeof optionsOrExit === 'object' ? optionsOrExit : {};
     exitProcess = typeof optionsOrExit === 'boolean' ? optionsOrExit : exitProcess;
     const commandLineConfig = createCommandLineConfig(normaliseConfig(config));
