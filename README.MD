@@ -7,7 +7,7 @@
 ![NPM](https://img.shields.io/npm/l/ts-command-line-args)
 ![NPM](https://img.shields.io/badge/types-TypeScript-blue)
 
- ## Usage
+## Usage
 
  Take a typescript interface (or type or class):
 

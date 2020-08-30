@@ -2,6 +2,20 @@
     "name": "ts-command-line-args",
     "version": "1.0.3",
     "description": "A thin Typescript wrapper around command-line-args",
+    "keywords": [
+        "argv",
+        "parse",
+        "argument",
+        "args",
+        "option",
+        "options",
+        "parser",
+        "parsing",
+        "cli",
+        "command",
+        "line",
+        "typescript"
+    ],
     "main": "index.js",
     "scripts": {
         "clean": "rimraf dist",
