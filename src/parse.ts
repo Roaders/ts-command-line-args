@@ -3,12 +3,12 @@ import commandLineArgs from 'command-line-args';
 import { normaliseConfig, createCommandLineConfig } from './helpers';
 
 export function parse<T>(config: ArgumentConfig<T>, exitProcess: false): Partial<T>;
-export function parse<T, P extends ParseOptions<T>>(
+export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
     config: ArgumentConfig<T>,
     options: P,
     exitProcess: false,
 ): Partial<T & UnkownProperties<P>>;
-export function parse<T, P extends ParseOptions<T>>(
+export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
     config: ArgumentConfig<T>,
     options?: P,
     exitProcess?: true,
