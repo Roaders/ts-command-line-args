@@ -107,12 +107,12 @@ Footer
 ```
 ## Documentation
 
-This library is a thin wrapper to [`command-line-args`](https://www.npmjs.com/package/command-line-args) so any docs or options for that library should apply to this library as well.
+This library is a thin wrapper around [`command-line-args`](https://www.npmjs.com/package/command-line-args) so any docs or options for that library should apply to this library as well.
 
 ### Parse
 
 ```typescript
-function parse<T>(config: ArgumentConfig<T>, options: ParseOptions, exitProcess = true): T
+function parse<T>(config: ArgumentConfig<T>, options: ParseOptions = {}, exitProcess = true): T
 ```
 
 `parse` will return an object containing all of your command line options. For example with this config:
@@ -191,7 +191,7 @@ rather than an array of options:
 For a simple, single, required argument you only need to define the `type`:
 
 ```typescript
-parse({
+parse<IMyInterface>({
     stringArg: String, 
     numberArg: Number,
     });
@@ -204,7 +204,7 @@ function parseDate(value?: string) {
     return value ? new Date(Date.parse(value)) : undefined;
 }
 
-parse<IMyInterface>({myDate: parseDate})
+parse<IMyInterface>({ myDate: parseDate });
 ```
 
 A similar function could be written for any complex type.
@@ -214,7 +214,7 @@ A similar function could be written for any complex type.
 For anything other than a single, required, simple argument a configuration object must be defined for each argument. This call:
 
 ```typescript
-parse({
+parse<IMyInterface>({
     stringArg: String, 
     numberArg: Number
     });
@@ -223,7 +223,7 @@ parse({
 and this:
 
 ```typescript
-parse({
+parse<IMyInterface>({
     stringArg: { type: String }, 
     numberArg: { type: Number },
     });
@@ -246,7 +246,7 @@ This interface:
 defines `optionalArg` as optional. This must be reflected in the config passed to `parse`:
 
 ```typescript
-parse({
+parse<IMyInterface>({
     requiredArg: String, 
     requiredArg: { type: String, optional: true },
     });
@@ -267,7 +267,7 @@ If multiple values can be passed then the argument should be defined as an array
 and it must defined as `multiple` in the config:
 
 ```typescript
-parse({
+parse<IMyInterface>({
     users: {requiredArg: Number, multiple: true},
     });
 ```
@@ -291,7 +291,7 @@ Most of the available options are the same as the options defined by [`command-l
 
 A few additional options have been added:
 
-**logger** - used for logging errors or help guide to the coneole. Defaults to `console.log` and `console.error`.
+**logger** - used for logging errors or help guide to the console. Defaults to `console.log` and `console.error`.
 
 **helpArg** - used to defined the argument used to generate the usage guide. This is expected to be boolean but the comparison is not strict so any argument type / value that is resolved as truthy will work.
 

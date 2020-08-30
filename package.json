@@ -1,7 +1,7 @@
 {
     "name": "ts-command-line-args",
     "version": "1.0.0",
-    "description": "",
+    "description": "A thin Typescript wrapper around command-line-args",
     "main": "index.js",
     "scripts": {
         "clean": "rimraf dist",
