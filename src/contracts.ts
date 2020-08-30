@@ -13,7 +13,7 @@ export type RequiredPropertyOptions<T> = Array<any> extends T
     ? PropertyOptions<T>
     : TypeConstructor<T> | PropertyOptions<T>;
 
-export type TypeConstructor<T> = (value?: string) => T extends Array<infer R> ? R : T;
+export type TypeConstructor<T> = (value?: string) => T extends Array<infer R> ? R | undefined : T | undefined;
 
 export type PropertyOptions<T> = {
     /**
@@ -49,9 +49,15 @@ export type PropertyOptions<T> = {
     defaultValue?: T;
 
     /**
-     * One or more group names the option belongs to.
+     * When your app has a large amount of options it makes sense to organise them in groups.
+     *
+     * There are two automatic groups: _all (contains all options) and _none (contains options without a group specified in their definition).
      */
     group?: string | string[];
+    /** A string describing the option. */
+    description?: string;
+    /** A string to replace the default type string (e.g. <string>). It's often more useful to set a more descriptive type label, like <ms>, <files>, <command>, etc.. */
+    typeLabel?: string;
 } & OptionalPropertyOptions<T> &
     MultiplePropertyOptions<T>;
 
@@ -76,6 +82,16 @@ export interface ArgsParseOptions<T extends { [name: string]: any }> {
      * By default when this property is true help will be printed and the process will exit
      */
     helpArg?: keyof T;
+
+    /**
+     * help sections to be listed before the options section
+     */
+    headerContentSections?: Content[];
+
+    /**
+     * help sections to be listed after the options section
+     */
+    footerContentSections?: Content[];
 }
 
 export interface PartialParseOptions extends ArgsParseOptions<any> {
@@ -102,3 +118,20 @@ export type UnkownProperties<T> = T extends PartialParseOptions
     : unknown;
 
 export type ParseOptions<T> = ArgsParseOptions<T> | PartialParseOptions | StopParseOptions;
+
+/** A Content section comprises a header and one or more lines of content. */
+export interface Content {
+    /** The section header, always bold and underlined. */
+    header?: string;
+    /**
+     * Overloaded property, accepting data in one of four formats.
+     *  1. A single string (one line of text).
+     *  2. An array of strings (multiple lines of text).
+     *  3. An array of objects (recordset-style data). In this case, the data will be rendered in table format. The property names of each object are not important, so long as they are
+     *     consistent throughout the array.
+     *  4. An object with two properties - data and options. In this case, the data and options will be passed directly to the underlying table layout module for rendering.
+     */
+    content?: string | string[] | any[] | { data: any; options: any };
+    /** Set to true to avoid indentation and wrapping. Useful for banners. */
+    raw?: boolean;
+}

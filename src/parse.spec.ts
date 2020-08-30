@@ -41,7 +41,7 @@ describe('parse', () => {
     function getHelpConfig(): ArgumentConfig<PropertiesWithHelp> {
         return {
             ...getConfig(),
-            optionalHelpArg: { type: Boolean, optional: true, alias: 'h' },
+            optionalHelpArg: { type: Boolean, optional: true, alias: 'h', description: 'This help guide' },
         };
     }
 
@@ -62,7 +62,7 @@ describe('parse', () => {
 
     replacePropertiesBeforeEach(() => {
         addMatchers();
-        mockConsole = Mock.create<typeof console>().setup(setupFunction('error'));
+        mockConsole = Mock.create<typeof console>().setup(setupFunction('error'), setupFunction('log'));
         mockProcess = Mock.create<typeof process>().setup(setupFunction('exit'));
 
         return [{ package: process, mocks: mockProcess.mock }];
@@ -150,29 +150,72 @@ describe('parse', () => {
     it(`should print help messages and exit when help arg is passed`, () => {
         const result = parse(getHelpConfig(), {
             logger: mockConsole.mock,
-            argv: [...defaultedString, ...optionalHelpArg],
+            argv: [...optionalHelpArg],
             helpArg: 'optionalHelpArg',
+            headerContentSections: [{ header: 'Header', content: 'Header Content' }],
+            footerContentSections: [{ header: 'Footer', content: 'Footer Content' }],
         });
+
+        function verifyHelpContent(content: string): string | boolean {
+            let currentIndex = 0;
+
+            function verifyNextContent(segment: string) {
+                const segmentIndex = content.indexOf(segment);
+                if (segmentIndex < 0) {
+                    return `Expected help content '${segment}' not found`;
+                }
+                if (segmentIndex < currentIndex) {
+                    return `Help content '${segment}' not in expected place`;
+                }
+
+                currentIndex = segmentIndex;
+                return true;
+            }
+
+            const helpContentSegments = [
+                'Header',
+                'Header Content',
+                '-h',
+                '--optionalHelpArg',
+                'This help guide',
+                'Footer',
+                'Footer Content',
+            ];
+
+            const failures = helpContentSegments.map(verifyNextContent).filter((result) => result !== true);
+
+            if (failures.length > 0) {
+                return failures[0];
+            }
+
+            return true;
+        }
 
         expect(result).toBeUndefined();
         expect(mockProcess.withFunction('exit')).wasCalledOnce();
+        expect(mockConsole.withFunction('error')).wasNotCalled();
+        expect(mockConsole.withFunction('log').withParameters(verifyHelpContent)).wasCalledOnce();
     });
 
-    it(`it should print help messags and return arguments when help arg passed and exitProcess is false`, () => {
+    it(`it should print help messages and return partial arguments when help arg passed and exitProcess is false`, () => {
         const result = parse(
             getHelpConfig(),
             {
                 logger: mockConsole.mock,
                 argv: [...defaultedString, ...optionalHelpArg],
                 helpArg: 'optionalHelpArg',
+                headerContentSections: [{ header: 'Header', content: 'Header Content' }],
+                footerContentSections: [{ header: 'Footer', content: 'Footer Content' }],
             },
             false,
         );
+
         expect(result).toEqual({
             defaultedString: defaultedStringValue,
             optionalHelpArg: true,
             requiredBoolean: false,
         });
         expect(mockProcess.withFunction('exit')).wasNotCalled();
+        expect(mockConsole.withFunction('log')).wasCalledOnce();
     });
 });
