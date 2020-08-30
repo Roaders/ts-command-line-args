@@ -25,7 +25,7 @@ interface ICopyFilesArguments{
 and use this to enforce the correct generation of options for `command-line-args`:
 
 ```typescript
-import {parse} from 'ts-command-line-args';
+import { parse } from 'ts-command-line-args';
 
 // args typed as ICopyFilesArguments
 export const args = parse<ICopyFilesArguments>({
