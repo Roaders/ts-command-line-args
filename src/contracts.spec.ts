@@ -152,7 +152,7 @@ describe('contracts', () => {
                 }
 
                 const configTypeOption: ArgumentConfig<IExpectedArgs> = {
-                    complex: { type: (value) => ({ name: value }) },
+                    complex: { type: (value) => (value ? { name: value } : undefined) },
                 };
             });
         });

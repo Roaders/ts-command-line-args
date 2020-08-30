@@ -2,6 +2,11 @@
 
  > A thin Typescript wrapper around [`command-line-args`](https://www.npmjs.com/package/command-line-args)
 
+![npm](https://img.shields.io/npm/v/ts-command-line-args)
+[![Build Status](https://travis-ci.com/Roaders/ts-command-line-args.svg?branch=master)](https://travis-ci.com/Roaders/ts-command-line-args)
+![NPM](https://img.shields.io/npm/l/ts-command-line-args)
+![NPM](https://img.shields.io/badge/types-TypeScript-blue)
+
  ## Usage
 
  Take a typescript interface (or type or class):
