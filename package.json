@@ -1,6 +1,6 @@
 {
     "name": "ts-command-line-args",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "A thin Typescript wrapper around command-line-args",
     "main": "index.js",
     "scripts": {
