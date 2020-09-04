@@ -22,6 +22,7 @@ export const args = parse<ICopyFilesArguments>(
     },
     {
         helpArg: 'help',
+        baseCommand: 'node exampleConfigWithHelp',
         headerContentSections: [{ header: 'My Example Config', content: 'Thanks for using Our Awesome Library' }],
         footerContentSections: [{ header: 'Footer', content: `Copyright: Big Faceless Corp. inc.` }],
     },

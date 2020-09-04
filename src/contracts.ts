@@ -92,6 +92,14 @@ export interface ArgsParseOptions<T extends { [name: string]: any }> {
      * help sections to be listed after the options section
      */
     footerContentSections?: Content[];
+
+    /**
+     * Used when generating error messages.
+     * For example if a param is missing and there is a help option the error message will contain:
+     *
+     * 'To view help guide run myBaseCommand -h'
+     */
+    baseCommand?: string;
 }
 
 export interface PartialParseOptions extends ArgsParseOptions<any> {

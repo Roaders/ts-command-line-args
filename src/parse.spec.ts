@@ -109,17 +109,114 @@ describe('parse', () => {
         });
     });
 
-    const expectedRequiredStringMessage = `Required parameter 'requiredString' was not passed. Please provide a value by passing '--requiredString=passedValue' in command line arguments`;
-    const expectedRequiredArrayMessage = `Required parameter 'requiredArray' was not passed. Please provide a value by passing '--requiredArray=passedValue' or '-o passedValue' in command line arguments`;
-
-    it(`should print errors and exit process when required arguments are missing`, () => {
+    it(`should print errors and exit process when required arguments are missing and no baseCommand or help arg are passed`, () => {
         const result = parse(getConfig(), {
             logger: mockConsole.mock,
             argv: [...defaultedString],
         });
 
-        expect(mockConsole.withFunction('error').withParameters(expectedRequiredStringMessage)).wasCalledOnce();
-        expect(mockConsole.withFunction('error').withParameters(expectedRequiredArrayMessage)).wasCalledOnce();
+        expect(
+            mockConsole
+                .withFunction('error')
+                .withParameters(
+                    `Required parameter 'requiredString' was not passed. Please provide a value by passing '--requiredString=passedValue' in command line arguments`,
+                ),
+        ).wasCalledOnce();
+        expect(
+            mockConsole
+                .withFunction('error')
+                .withParameters(
+                    `Required parameter 'requiredArray' was not passed. Please provide a value by passing '--requiredArray=passedValue' or '-o passedValue' in command line arguments`,
+                ),
+        ).wasCalledOnce();
+        expect(mockConsole.withFunction('log')).wasNotCalled();
+
+        expect(mockProcess.withFunction('exit')).wasCalledOnce();
+
+        expect(result).toBeUndefined();
+    });
+
+    it(`should print errors and exit process when required arguments are missing and baseCommand is present`, () => {
+        const result = parse(getConfig(), {
+            logger: mockConsole.mock,
+            argv: [...defaultedString],
+            baseCommand: 'runMyScript',
+        });
+
+        expect(
+            mockConsole
+                .withFunction('error')
+                .withParameters(
+                    `Required parameter 'requiredString' was not passed. Please provide a value by running 'runMyScript --requiredString=passedValue'`,
+                ),
+        ).wasCalledOnce();
+        expect(
+            mockConsole
+                .withFunction('error')
+                .withParameters(
+                    `Required parameter 'requiredArray' was not passed. Please provide a value by running 'runMyScript --requiredArray=passedValue' or 'runMyScript -o passedValue'`,
+                ),
+        ).wasCalledOnce();
+        expect(mockConsole.withFunction('log')).wasNotCalled();
+
+        expect(mockProcess.withFunction('exit')).wasCalledOnce();
+
+        expect(result).toBeUndefined();
+    });
+
+    it(`should print errors and exit process when required arguments are missing and help arg is present`, () => {
+        const result = parse(getHelpConfig(), {
+            logger: mockConsole.mock,
+            argv: [...defaultedString],
+            helpArg: 'optionalHelpArg',
+        });
+
+        expect(
+            mockConsole
+                .withFunction('error')
+                .withParameters(
+                    `Required parameter 'requiredString' was not passed. Please provide a value by passing '--requiredString=passedValue' in command line arguments`,
+                ),
+        ).wasCalledOnce();
+        expect(
+            mockConsole
+                .withFunction('error')
+                .withParameters(
+                    `Required parameter 'requiredArray' was not passed. Please provide a value by passing '--requiredArray=passedValue' or '-o passedValue' in command line arguments`,
+                ),
+        ).wasCalledOnce();
+        expect(mockConsole.withFunction('log').withParameters(`To view the help guide pass '-h'`)).wasCalledOnce();
+
+        expect(mockProcess.withFunction('exit')).wasCalledOnce();
+
+        expect(result).toBeUndefined();
+    });
+
+    it(`should print errors and exit process when required arguments are missing and help arg and baseCommand are present`, () => {
+        const result = parse(getHelpConfig(), {
+            logger: mockConsole.mock,
+            argv: [...defaultedString],
+            baseCommand: 'runMyScript',
+            helpArg: 'optionalHelpArg',
+        });
+
+        expect(
+            mockConsole
+                .withFunction('error')
+                .withParameters(
+                    `Required parameter 'requiredString' was not passed. Please provide a value by running 'runMyScript --requiredString=passedValue'`,
+                ),
+        ).wasCalledOnce();
+        expect(
+            mockConsole
+                .withFunction('error')
+                .withParameters(
+                    `Required parameter 'requiredArray' was not passed. Please provide a value by running 'runMyScript --requiredArray=passedValue' or 'runMyScript -o passedValue'`,
+                ),
+        ).wasCalledOnce();
+        expect(
+            mockConsole.withFunction('log').withParameters(`To view the help guide run 'runMyScript -h'`),
+        ).wasCalledOnce();
 
         expect(mockProcess.withFunction('exit')).wasCalledOnce();
 
@@ -135,9 +232,20 @@ describe('parse', () => {
             },
             false,
         );
-
-        expect(mockConsole.withFunction('error').withParameters(expectedRequiredStringMessage)).wasCalledOnce();
-        expect(mockConsole.withFunction('error').withParameters(expectedRequiredArrayMessage)).wasCalledOnce();
+        expect(
+            mockConsole
+                .withFunction('error')
+                .withParameters(
+                    `Required parameter 'requiredString' was not passed. Please provide a value by passing '--requiredString=passedValue' in command line arguments`,
+                ),
+        ).wasCalledOnce();
+        expect(
+            mockConsole
+                .withFunction('error')
+                .withParameters(
+                    `Required parameter 'requiredArray' was not passed. Please provide a value by passing '--requiredArray=passedValue' or '-o passedValue' in command line arguments`,
+                ),
+        ).wasCalledOnce();
 
         expect(mockProcess.withFunction('exit')).wasNotCalled();
 

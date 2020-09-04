@@ -1,4 +1,4 @@
-import { ArgumentConfig, ParseOptions, UnkownProperties } from './contracts';
+import { ArgumentConfig, ParseOptions, UnkownProperties, PropertyOptions } from './contracts';
 import commandLineArgs from 'command-line-args';
 import commandLineUsage from 'command-line-usage';
 import { normaliseConfig, createCommandLineConfig, CommandLineOption } from './helpers';
@@ -10,7 +10,8 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
 ): T & UnkownProperties<P> {
     options = options || {};
     const logger = options.logger || console;
-    const optionList = createCommandLineConfig(normaliseConfig(config));
+    const normalisedConfig = normaliseConfig(config);
+    const optionList = createCommandLineConfig(normalisedConfig);
     const parsedArgs = commandLineArgs(optionList, options);
 
     const missingArgs = listMissingArgs(optionList, parsedArgs);
@@ -24,7 +25,11 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
 
         logger.log(usageGuide);
     } else {
-        printMissingArgErrors(missingArgs, logger);
+        printMissingArgErrors(missingArgs, logger, options.baseCommand);
+        printUsageGuideMessage(
+            { ...options, logger },
+            options.helpArg != null ? optionList.filter((option) => option.name === options.helpArg)[0] : undefined,
+        );
     }
 
     if (missingArgs.length > 0 && exitProcess) {
@@ -34,13 +39,25 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
     }
 }
 
-function printMissingArgErrors(missingArgs: CommandLineOption[], logger: Console) {
+function printMissingArgErrors(missingArgs: CommandLineOption[], logger: Console, baseCommand?: string) {
+    baseCommand = baseCommand ? `${baseCommand} ` : ``;
     missingArgs.forEach((config) => {
-        const aliasMessage = config.alias != null ? ` or '-${config.alias} passedValue'` : ``;
-        logger.error(
-            `Required parameter '${config.name}' was not passed. Please provide a value by passing '--${config.name}=passedValue'${aliasMessage} in command line arguments`,
-        );
+        const aliasMessage = config.alias != null ? ` or '${baseCommand}-${config.alias} passedValue'` : ``;
+        const runCommand =
+            baseCommand !== ''
+                ? `running '${baseCommand}--${config.name}=passedValue'${aliasMessage}`
+                : `passing '--${config.name}=passedValue'${aliasMessage} in command line arguments`;
+        logger.error(`Required parameter '${config.name}' was not passed. Please provide a value by ${runCommand}`);
     });
+}
+
+function printUsageGuideMessage(options: ParseOptions<any> & { logger: Console }, helpParam?: CommandLineOption) {
+    if (helpParam != null) {
+        const helpArg = helpParam.alias != null ? `-${helpParam.alias}` : `--${helpParam.name}`;
+        const command = options.baseCommand != null ? `run '${options.baseCommand} ${helpArg}'` : `pass '${helpArg}'`;
+
+        options.logger.log(`To view the help guide ${command}`);
+    }
 }
 
 function listMissingArgs<T>(commandLineConfig: CommandLineOption[], parsedArgs: commandLineArgs.CommandLineOptions) {
