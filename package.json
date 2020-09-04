@@ -16,7 +16,8 @@
         "line",
         "typescript"
     ],
-    "main": "index.js",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
     "scripts": {
         "clean": "rimraf dist",
         "build": "tsc -p tsconfig.build.json",
