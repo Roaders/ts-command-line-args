@@ -1,4 +1,4 @@
-import { ArgumentConfig, ParseOptions, UnkownProperties, PropertyOptions } from './contracts';
+import { ArgumentConfig, ParseOptions, UnkownProperties } from './contracts';
 import commandLineArgs from 'command-line-args';
 import commandLineUsage from 'command-line-usage';
 import { normaliseConfig, createCommandLineConfig, CommandLineOption } from './helpers';
