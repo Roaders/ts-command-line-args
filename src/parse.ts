@@ -24,7 +24,7 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
         ]);
 
         logger.log(usageGuide);
-    } else {
+    } else if (missingArgs.length > 0) {
         printMissingArgErrors(missingArgs, logger, options.baseCommand);
         printUsageGuideMessage(
             { ...options, logger },

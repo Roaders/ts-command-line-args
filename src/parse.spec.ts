@@ -95,9 +95,10 @@ describe('parse', () => {
         });
 
         it('when optional values are ommitted', () => {
-            const result = parse(getConfig(), {
+            const result = parse(getHelpConfig(), {
                 logger: mockConsole.mock,
                 argv: [...requiredString, ...requiredArray],
+                helpArg: 'optionalHelpArg',
             });
 
             expect(result).toEqual({
@@ -106,6 +107,9 @@ describe('parse', () => {
                 requiredArray: requiredArrayValue,
                 requiredBoolean: false,
             });
+
+            expect(mockConsole.withFunction('log')).wasNotCalled();
+            expect(mockConsole.withFunction('error')).wasNotCalled();
         });
     });
 
