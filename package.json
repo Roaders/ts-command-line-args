@@ -2,6 +2,9 @@
     "name": "ts-command-line-args",
     "version": "1.1.1",
     "description": "A thin Typescript wrapper around command-line-args",
+    "bin": {
+        "write-markdown": "dist/write-markdown.js"
+    },
     "keywords": [
         "argv",
         "parse",
@@ -26,7 +29,8 @@
         "test": "jest --ci && tsc --noemit",
         "watch-test": "jest --watch",
         "prebuild-release": "npm run clean",
-        "build-release": "concurrently --kill-others-on-fail npm:test npm:lint npm:build"
+        "build-release": "concurrently --kill-others-on-fail npm:test npm:lint npm:build",
+        "prepack": "npm run build-release"
     },
     "repository": {
         "type": "git",
