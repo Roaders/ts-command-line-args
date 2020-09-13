@@ -55,6 +55,24 @@ export const parseOptions: ParseOptions<IWriteMarkDown> = {
 function writeMarkdown() {
     const args = parse<IWriteMarkDown>(argumentConfig, parseOptions);
 
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const jsExports = require(args.jsFile);
+
+    if (jsExports == null) {
+        throw new Error(`Could not require js file '${args.jsFile}'`);
+    }
+
+    const argConfig: ArgumentConfig<any> = jsExports[args.configImportName];
+
+    if (argConfig == null) {
+        throw new Error(`Could not import ArgumentConfig named '${args.configImportName}' from jsFile.`);
+    }
+
+    const options: ParseOptions<any> | undefined = jsExports[args.optionsImportName];
+
+    console.log(Object.keys(argConfig));
+    console.log(JSON.stringify(options));
+
     const markdownPath = resolve(args.markdownPath);
 
     console.log(`Loading existing file from '${markdownPath}'`);
