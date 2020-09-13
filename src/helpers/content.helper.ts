@@ -1,8 +1,9 @@
 import { IReplaceOptions } from '../contracts';
+import { splitContent, findEscapeSequence } from './line-ending.helper';
 
 export function addContent(inputString: string, content: string, options: IReplaceOptions): string {
-    const lineBreak = '\n';
-    const lines = inputString.split(lineBreak);
+    const lineBreak = findEscapeSequence(inputString);
+    const lines = splitContent(inputString);
     const replaceBelowIndex = lines.indexOf(options.replaceBelow);
     const replaceAboveIndex = lines.indexOf(options.replaceAbove);
 
@@ -15,5 +16,5 @@ export function addContent(inputString: string, content: string, options: IRepla
     const linesBefore = lines.slice(0, replaceBelowIndex + 1);
     const linesAfter = replaceAboveIndex >= 0 ? lines.slice(replaceAboveIndex) : [];
 
-    return [...linesBefore, ...content.split(lineBreak), ...linesAfter].join(lineBreak);
+    return [...linesBefore, ...splitContent(content), ...linesAfter].join(lineBreak);
 }

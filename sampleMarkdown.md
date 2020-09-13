@@ -2,6 +2,8 @@
 
 Content Before Usage Guide
 
-Written content
+####ts-command-line-args_write-markdown_replaceBelow
+NEW CONTENT
+####ts-command-line-args_write-markdown_replaceAbove
 
 Content after usage guide
