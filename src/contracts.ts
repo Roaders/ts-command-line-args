@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 export type ArgumentConfig<T extends { [name: string]: any }> = {
     [P in keyof T]-?: PropertyConfig<T[P]>;
 };
@@ -7,6 +5,8 @@ export type ArgumentConfig<T extends { [name: string]: any }> = {
 export type ArgumentOptions<T extends { [name: string]: any }> = {
     [P in keyof T]-?: PropertyOptions<T[P]>;
 };
+
+export type CommandLineOption = { optional?: true; type: TypeConstructor<any> } & OptionDefinition;
 
 export type PropertyConfig<T> = undefined extends T ? PropertyOptions<T> : RequiredPropertyOptions<T>;
 export type RequiredPropertyOptions<T> = Array<any> extends T
@@ -142,4 +142,22 @@ export interface Content {
     content?: string | string[] | any[] | { data: any; options: any };
     /** Set to true to avoid indentation and wrapping. Useful for banners. */
     raw?: boolean;
+}
+
+export interface IReplaceOptions {
+    replaceBelow: string;
+    replaceAbove: string;
+}
+
+export interface IWriteMarkDown extends IReplaceOptions {
+    markdownPath: string;
+    jsFile: string;
+    configImportName: string;
+    optionsImportName: string;
+    help: boolean;
+}
+
+interface OptionDefinition {
+    name: string;
+    alias?: string;
 }

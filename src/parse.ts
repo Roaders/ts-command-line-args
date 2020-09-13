@@ -1,7 +1,7 @@
-import { ArgumentConfig, ParseOptions, UnkownProperties } from './contracts';
+import { ArgumentConfig, ParseOptions, UnkownProperties, CommandLineOption } from './contracts';
 import commandLineArgs from 'command-line-args';
 import commandLineUsage from 'command-line-usage';
-import { normaliseConfig, createCommandLineConfig, CommandLineOption } from './helpers';
+import { createCommandLineConfig, normaliseConfig } from './helpers';
 
 export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
     config: ArgumentConfig<T>,
