@@ -29,6 +29,7 @@ export const argumentConfig: ArgumentConfig<IWriteMarkDown> = {
     },
     configImportName: {
         type: String,
+        alias: 'c',
         defaultValue: [configImportNameDefault],
         description: `Export name of the 'ArgumentConfig' object. Defaults to '${configImportNameDefault}'`,
         multiple: true,

@@ -2,6 +2,7 @@ import { ArgumentConfig, ParseOptions, UnkownProperties, CommandLineOption } fro
 import commandLineArgs from 'command-line-args';
 import commandLineUsage from 'command-line-usage';
 import { createCommandLineConfig, normaliseConfig } from './helpers';
+import { getOptionSections } from './helpers/options.helper';
 
 export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
     config: ArgumentConfig<T>,
@@ -12,14 +13,17 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
     const logger = options.logger || console;
     const normalisedConfig = normaliseConfig(config);
     const optionList = createCommandLineConfig(normalisedConfig);
-    const parsedArgs = commandLineArgs(optionList, options);
+    let parsedArgs = commandLineArgs(optionList, options) as any;
+    if (parsedArgs['_all'] != null) {
+        parsedArgs = parsedArgs['_all'];
+    }
 
     const missingArgs = listMissingArgs(optionList, parsedArgs);
 
     if (options.helpArg != null && (parsedArgs as any)[options.helpArg]) {
         const usageGuide = commandLineUsage([
             ...(options.headerContentSections || []),
-            { header: 'Options', optionList },
+            ...getOptionSections(options).map((option) => ({ ...option, optionList })),
             ...(options.footerContentSections || []),
         ]);
 

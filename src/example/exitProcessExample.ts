@@ -1,5 +1,5 @@
 import { parse } from '../parse';
-import { argumentConfig } from './exampleConfig';
+import { argumentConfig } from './configs';
 
 /**
  * will log errors if there are any missing properties then call process.exit()

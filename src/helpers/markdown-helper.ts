@@ -7,9 +7,12 @@ import {
     ParseOptions,
     Content,
     HeaderLevel,
+    OptionContent,
+    SectionHeader,
 } from '../contracts';
 import { join } from 'path';
 import { normaliseConfig, createCommandLineConfig } from './command-line.helper';
+import { getOptionSections } from './options.helper';
 
 export function createUsageGuide<T = any>(config: UsageGuideConfig<T>): string {
     const options = config.parseOptions || {};
@@ -18,14 +21,14 @@ export function createUsageGuide<T = any>(config: UsageGuideConfig<T>): string {
 
     return [
         ...headerSections.map(createSection),
-        createOptionsSection(config.arguments, options),
+        ...createOptionsSections(config.arguments, options),
         ...footerSections.map(createSection),
     ].join('\n');
 }
 
 export function createSection(section: Content): string {
     return `
-${createHeading(section.header, section.headerLevel || 1)}
+${createHeading(section, 1)}
 ${createSectionContent(section)}
 `;
 }
@@ -39,31 +42,46 @@ export function createSectionContent(section: Content): string {
     }
 }
 
-export function createOptionsSection<T>(cliArguments: ArgumentConfig<T>, options: ParseOptions<any>): string {
+export function createOptionsSections<T>(cliArguments: ArgumentConfig<T>, options: ParseOptions<any>): string[] {
+    return getOptionSections(options).map((section) => createOptionsSection(cliArguments, section));
+}
+
+export function createOptionsSection<T>(cliArguments: ArgumentConfig<T>, content: OptionContent): string {
     const normalisedConfig = normaliseConfig(cliArguments);
-    const optionList = createCommandLineConfig(normalisedConfig);
+    const optionList = createCommandLineConfig(normalisedConfig).filter((option) =>
+        filterOptions(option, content.group),
+    );
     const anyAlias = optionList.some((option) => option.alias != null);
     const anyDescription = optionList.some((option) => option.description != null);
-    const heading = options.optionsHeaderText || 'Options';
 
     return `
-${createHeading(heading, options.optionsHeaderLevel || 2)}
+${createHeading(content, 2)}
 | Argument |${anyAlias ? ' Alias |' : ''} Type |${anyDescription ? ' Description |' : ''}
 |-|${anyAlias ? '-|' : ''}-|${anyDescription ? '-|' : ''}
 ${optionList.map((option) => createOptionRow(option, anyAlias, anyDescription)).join('\n')}
 `;
 }
 
-export function createHeading(text: string | undefined, level: HeaderLevel): string {
-    if (text == null) {
+function filterOptions(option: CommandLineOption, groups?: string | string[]): boolean {
+    return (
+        groups == null ||
+        (typeof groups === 'string' && (groups === option.group || (groups === '_none' && option.group == null))) ||
+        (Array.isArray(groups) &&
+            (groups.some((group) => group === option.group) ||
+                (groups.some((group) => group === '_none') && option.group == null)))
+    );
+}
+
+export function createHeading(section: SectionHeader, defaultLevel: HeaderLevel): string {
+    if (section.header == null) {
         return '';
     }
 
-    const headingLevel = Array.from({ length: level })
+    const headingLevel = Array.from({ length: section.headerLevel || defaultLevel })
         .map(() => `#`)
         .join('');
 
-    return `${headingLevel} ${text}
+    return `${headingLevel} ${section.header}
 `;
 }
 

@@ -1,4 +1,8 @@
-import { usageGuideInfo as exampleConfigGuideInfo, ICopyFilesArguments } from '../example/exampleConfig';
+import {
+    usageGuideInfo as exampleConfigGuideInfo,
+    ICopyFilesArguments,
+    typicalAppWithGroupsInfo,
+} from '../example/configs';
 import { usageGuideInfo as writeMarkdownGuideInfo } from '../write-markdown.constants';
 import { createUsageGuide } from './markdown-helper';
 import { UsageGuideConfig } from '../contracts';
@@ -59,7 +63,7 @@ Saves a command line usage guide to markdown.
 | **replaceBelow** | | string | A marker in the file to replace text below. |
 | **replaceAbove** | | string | A marker in the file to replace text above. |
 | **jsFile** | **j** | string[] | jsFile to 'require' that has an export with the 'ArgumentConfig' export. |
-| **configImportName** | | string[] | Export name of the 'ArgumentConfig' object. Defaults to 'usageGuideInfo' |
+| **configImportName** | **c** | string[] | Export name of the 'ArgumentConfig' object. Defaults to 'usageGuideInfo' |
 | **help** | **h** | | |
 
 
@@ -70,6 +74,32 @@ replaceBelow defaults to:
 replaceAbove defaults to:  
 \`'[//]: ####ts-command-line-args_write-markdown_replaceAbove  '\`  
 Note the double spaces at the end to signify to markdown that there should be a new line.
+`);
+    });
+
+    it('should generate a usage guide with option groups', () => {
+        const usageGuide = createUsageGuide(typicalAppWithGroupsInfo);
+
+        expect(usageGuide).toEqual(`
+# A typical app
+
+Generates something *very* important.
+
+
+## Main options
+
+| Argument | Alias | Type | Description |
+|-|-|-|-|
+| **help** | **h** | | Display this usage guide. |
+| **src** | | file ... | The input files to process |
+| **timeout** | **t** | ms | Timeout value in ms |
+
+
+## Misc
+
+| Argument | Type | Description |
+|-|-|-|
+| **plugin** | string | A plugin path |
 `);
     });
 });
