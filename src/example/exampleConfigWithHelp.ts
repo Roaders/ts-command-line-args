@@ -14,7 +14,12 @@ export const args = parse<ICopyFilesArguments>(
     {
         sourcePath: String,
         targetPath: String,
-        copyFiles: { type: Boolean, alias: 'c', description: 'Copies files rather than moves them' },
+        copyFiles: {
+            type: Boolean,
+            alias: 'c',
+            typeLabel: `{underline file[]}`,
+            description: `{bold bold text} {italic italic text} {italic.bold bold italic text}`,
+        },
         resetPermissions: Boolean,
         filter: { type: String, optional: true },
         excludePaths: { type: String, multiple: true, optional: true },

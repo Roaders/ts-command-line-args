@@ -6,7 +6,11 @@ export type ArgumentOptions<T extends { [name: string]: any }> = {
     [P in keyof T]-?: PropertyOptions<T[P]>;
 };
 
-export type CommandLineOption = { optional?: true; type: TypeConstructor<any> } & OptionDefinition;
+interface OptionDefinition {
+    name: string;
+}
+
+export type CommandLineOption<T = any> = PropertyOptions<T> & OptionDefinition;
 
 export type PropertyConfig<T> = undefined extends T ? PropertyOptions<T> : RequiredPropertyOptions<T>;
 export type RequiredPropertyOptions<T> = Array<any> extends T
@@ -65,6 +69,8 @@ export type OptionalPropertyOptions<T> = undefined extends T ? { optional: true 
 
 export type MultiplePropertyOptions<T> = Array<any> extends T ? { multiple: true } | { lazyMultiple: true } : unknown;
 
+export type HeaderLevel = 1 | 2 | 3 | 4 | 5;
+
 export interface ArgsParseOptions<T extends { [name: string]: any }> {
     /**
      * An array of strings which if present will be parsed instead of `process.argv`.
@@ -100,6 +106,19 @@ export interface ArgsParseOptions<T extends { [name: string]: any }> {
      * 'To view help guide run myBaseCommand -h'
      */
     baseCommand?: string;
+
+    /**
+     * Heading level to use for the options header
+     * Only used when generating markdown
+     * Defaults to 2
+     */
+    optionsHeaderLevel?: HeaderLevel;
+
+    /**
+     * Heading level text to use for options section
+     * defaults to "Options";
+     */
+    optionsHeaderText?: string;
 }
 
 export interface PartialParseOptions extends ArgsParseOptions<any> {
@@ -132,6 +151,12 @@ export interface Content {
     /** The section header, always bold and underlined. */
     header?: string;
     /**
+     * Heading level to use for the header
+     * Only used when generating markdown
+     * Defaults to 1
+     */
+    headerLevel?: HeaderLevel;
+    /**
      * Overloaded property, accepting data in one of four formats.
      *  1. A single string (one line of text).
      *  2. An array of strings (multiple lines of text).
@@ -140,7 +165,9 @@ export interface Content {
      *  4. An object with two properties - data and options. In this case, the data and options will be passed directly to the underlying table layout module for rendering.
      */
     content?: string | string[] | any[] | { data: any; options: any };
-    /** Set to true to avoid indentation and wrapping. Useful for banners. */
+    /**
+     * Set to true to avoid indentation and wrapping. Useful for banners.
+     **/
     raw?: boolean;
 }
 
@@ -149,15 +176,16 @@ export interface IReplaceOptions {
     replaceAbove: string;
 }
 
+export type JsImport = { jsFile: string; importName: string };
+
 export interface IWriteMarkDown extends IReplaceOptions {
     markdownPath: string;
-    jsFile: string;
-    configImportName: string;
-    optionsImportName: string;
+    jsFile: string[];
+    configImportName: string[];
     help: boolean;
 }
 
-interface OptionDefinition {
-    name: string;
-    alias?: string;
-}
+export type UsageGuideConfig<T = any> = {
+    arguments: ArgumentConfig<T>;
+    parseOptions?: ParseOptions<T>;
+};

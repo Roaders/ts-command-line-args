@@ -104,6 +104,32 @@ new content line two
 content line 3`);
         });
 
+        it('should replace content between markers when content already exists and an array of content passed in', () => {
+            const initial = `content line 1
+##replaceBelow
+content line 2
+##replaceAbove
+content line 3`;
+            const result = addContent(
+                initial,
+                [
+                    newContent,
+                    `other new content line one
+other new content line two`,
+                ],
+                config,
+            );
+
+            expect(result).toBe(`content line 1
+##replaceBelow
+new content line one
+new content line two
+other new content line one
+other new content line two
+##replaceAbove
+content line 3`);
+        });
+
         it('should throw an error if add below appears above add above', () => {
             const initial = `content line 1
 ##replaceAbove

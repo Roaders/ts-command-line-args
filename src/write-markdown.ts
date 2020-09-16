@@ -1,87 +1,30 @@
 #!/usr/bin/env node
 
 import { parse } from './parse';
-import { ArgumentConfig, ParseOptions, IWriteMarkDown } from './contracts';
+import { IWriteMarkDown } from './contracts';
 import { resolve } from 'path';
 import { readFileSync, writeFileSync } from 'fs';
-import { addContent } from './helpers';
-
-export const replaceBelowDefault = `####ts-command-line-args_write-markdown_replaceBelow`;
-export const replaceAboveDefault = `####ts-command-line-args_write-markdown_replaceAbove`;
-export const configImportNameDefault = `argumentConfig`;
-export const optionsImportNameDefault = `parseOptions`;
-
-export const argumentConfig: ArgumentConfig<IWriteMarkDown> = {
-    markdownPath: {
-        type: String,
-        alias: 'm',
-        description:
-            'The file to write to. Without replacement markers the whole file content will be replaced. Path can be absolute or relative.',
-    },
-    replaceBelow: {
-        type: String,
-        defaultValue: replaceBelowDefault,
-        description: `A marker in the file to replace text below. Defaults to:\n'${replaceBelowDefault}'`,
-    },
-    replaceAbove: {
-        type: String,
-        defaultValue: replaceAboveDefault,
-        description: `A marker in the file to replace text above. Defaults to:\n'${replaceAboveDefault}'`,
-    },
-    jsFile: {
-        type: String,
-        alias: 'j',
-        description: `jsFile to 'require' that has an export with the 'ArgumentConfig' export.`,
-    },
-    configImportName: {
-        type: String,
-        defaultValue: configImportNameDefault,
-        description: `Export name of the 'ArgumentConfig' object. Defaults to '${configImportNameDefault}'`,
-    },
-    optionsImportName: {
-        type: String,
-        defaultValue: optionsImportNameDefault,
-        description: `Export name of the 'ParseOptions' object. Defaults to '${optionsImportNameDefault}'`,
-    },
-    help: { type: Boolean, alias: 'h' },
-};
-
-export const parseOptions: ParseOptions<IWriteMarkDown> = {
-    helpArg: 'help',
-    baseCommand: `write-markdown`,
-    headerContentSections: [{ header: 'write-markdown', content: `Saves a command line usage guide to markdown.` }],
-};
+import { addContent, generateUsageGuides } from './helpers';
+import { argumentConfig, parseOptions } from './write-markdown.constants';
 
 function writeMarkdown() {
     const args = parse<IWriteMarkDown>(argumentConfig, parseOptions);
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const jsExports = require(args.jsFile);
-
-    if (jsExports == null) {
-        throw new Error(`Could not require js file '${args.jsFile}'`);
-    }
-
-    const argConfig: ArgumentConfig<any> = jsExports[args.configImportName];
-
-    if (argConfig == null) {
-        throw new Error(`Could not import ArgumentConfig named '${args.configImportName}' from jsFile.`);
-    }
-
-    const options: ParseOptions<any> | undefined = jsExports[args.optionsImportName];
-
-    console.log(Object.keys(argConfig));
-    console.log(JSON.stringify(options));
-
     const markdownPath = resolve(args.markdownPath);
 
     console.log(`Loading existing file from '${markdownPath}'`);
-    let markdownFileContent = readFileSync(markdownPath).toString();
+    const markdownFileContent = readFileSync(markdownPath).toString();
 
-    markdownFileContent = addContent(markdownFileContent, `NEW CONTENT`, args);
+    const usageGuides = generateUsageGuides(args);
 
-    console.log(`Writing file to '${markdownPath}'`);
-    writeFileSync(markdownPath, markdownFileContent);
+    const modifiedFileContent = addContent(markdownFileContent, usageGuides, args);
+
+    if (markdownFileContent !== modifiedFileContent) {
+        console.log(`Writing file to '${markdownPath}'`);
+        writeFileSync(markdownPath, modifiedFileContent);
+    } else {
+        console.log(`Content not modified, not writing to file.`);
+    }
 }
 
 writeMarkdown();
