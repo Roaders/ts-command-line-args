@@ -47,6 +47,14 @@ modified code
  text`);
         });
 
+        it('should replace code formatting with language', () => {
+            expect(convertChalkStringToMarkdown(`some {code.typescript modified code} text`)).toEqual(`some   
+\`\`\`typescript  
+modified code  
+\`\`\`  
+ text`);
+        });
+
         it('should add 2 blank spaces to new lines', () => {
             expect(
                 convertChalkStringToMarkdown(`some text
@@ -81,6 +89,14 @@ over 2 lines`,
             expect(
                 removeAdditionalFormatting(
                     `some {code function logMessage(message: string) \\{console.log(message);\\}} text`,
+                ),
+            ).toEqual(`some function logMessage(message: string) \\{console.log(message);\\} text`);
+        });
+
+        it('should replace code modifier with language with curly braces and new lines', () => {
+            expect(
+                removeAdditionalFormatting(
+                    `some {code.typescript function logMessage(message: string) \\{console.log(message);\\}} text`,
                 ),
             ).toEqual(`some function logMessage(message: string) \\{console.log(message);\\} text`);
         });

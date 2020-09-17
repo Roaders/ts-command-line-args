@@ -73,10 +73,10 @@ will be converted to:
 surrounds the text in backticks:
 \`someText\`
 and 
-\\{code someText\\}
+\\{code.typescript function(message: string)\\\\\\{console.log(message);\\\\\\}\\}
 Surrounds the text in triple back ticks:
-\`\`\`
-someText
+\`\`\`typescript
+function(message: string)\\{console.log(message);\\}
 \`\`\``,
         },
     ],

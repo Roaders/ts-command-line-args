@@ -95,10 +95,10 @@ Two additional style modifiers have been added that are supported when writing m
 surrounds the text in backticks:  
 \`someText\`  
 and   
-{code someText}  
+{code.typescript function(message: string)\\\\{console.log(message);\\\\}}  
 Surrounds the text in triple back ticks:  
-\`\`\`  
-someText  
+\`\`\`typescript  
+function(message: string)\{console.log(message);\}  
 \`\`\`
 `);
     });

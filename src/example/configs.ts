@@ -149,6 +149,12 @@ export const additionalModifiers: UsageGuideConfig<ITypicalAppWithGroups> = {
                 header: 'Code Modifier',
                 content: [`Block of code: {code function logMessage(message: string) \\{console.log(message);\\}}`],
             },
+            {
+                header: 'Code With Language Modifier',
+                content: [
+                    `Block of code: {code.typescript function logMessage(message: string) \\{console.log(message);\\}}`,
+                ],
+            },
         ],
     },
 };

@@ -25,7 +25,13 @@ function replaceChalkFormatting(_substring: string, ...matches: string[]): strin
     if (matches[0].indexOf(highlightModifier) >= 0) {
         modifier = '`';
     } else if (matches[0].indexOf(codeModifier) >= 0) {
-        modifier = '\n```\n';
+        const codeOptions = matches[0].split('.');
+        modifier = '\n```';
+        if (codeOptions[1] != null) {
+            return `${modifier}${codeOptions[1]}\n${matches[1]}${modifier}\n`;
+        } else {
+            return `${modifier}\n${matches[1]}${modifier}\n`;
+        }
     } else {
         if (matches[0].indexOf('bold') >= 0) {
             modifier += '**';
