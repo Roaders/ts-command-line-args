@@ -47,13 +47,37 @@ export const parseOptions: ParseOptions<IWriteMarkDown> = {
     ],
     footerContentSections: [
         {
-            header: 'Default Markers',
+            header: 'Default Replacement Markers',
             headerLevel: 3,
             content: `replaceBelow defaults to:
-\`'${replaceBelowDefault}'\`
+{highlight '${replaceBelowDefault}'}
 replaceAbove defaults to:
-\`'${replaceAboveDefault}'\`
+{highlight '${replaceAboveDefault}'}
 Note the double spaces at the end to signify to markdown that there should be a new line.`,
+        },
+        {
+            header: 'String Formatting',
+            headerLevel: 3,
+            content: `The only chalk modifiers supported when converting to markdown are {highlight bold} and {highlight italic}.
+For example:
+\\{bold bold text\\} \\{italic italic text\\} \\{italic.bold bold italic text\\}
+will be converted to:
+\\*\\*boldText\\*\\* \\*italic text\\* \\*\\*\\*bold italic text\\*\\*\\*`,
+        },
+        {
+            header: 'Additional Modifiers',
+            headerLevel: 4,
+            content: `Two additional style modifiers have been added that are supported when writing markdown. They are removed when printing to the console.
+
+\\{highlight someText\\}
+surrounds the text in backticks:
+\`someText\`
+and 
+\\{code someText\\}
+Surrounds the text in triple back ticks:
+\`\`\`
+someText
+\`\`\``,
         },
     ],
 };

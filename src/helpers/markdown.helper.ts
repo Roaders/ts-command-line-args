@@ -13,6 +13,7 @@ import {
 import { join } from 'path';
 import { normaliseConfig, createCommandLineConfig } from './command-line.helper';
 import { getOptionSections } from './options.helper';
+import { convertChalkStringToMarkdown } from './string.helper';
 
 export function createUsageGuide<T = any>(config: UsageGuideConfig<T>): string {
     const options = config.parseOptions || {};
@@ -35,12 +36,12 @@ ${createSectionContent(section)}
 
 export function createSectionContent(section: Content): string {
     if (typeof section.content === 'string') {
-        return parseString(section.content);
+        return convertChalkStringToMarkdown(section.content);
     }
 
     if (Array.isArray(section.content)) {
         if (section.content.every((content) => typeof content === 'string')) {
-            return (section.content as string[]).map(parseString).join('\n');
+            return (section.content as string[]).map(convertChalkStringToMarkdown).join('\n');
         } else if (section.content.every((content) => typeof content === 'object')) {
             return createSectionTable(section.content);
         }
@@ -58,7 +59,7 @@ export function createSectionTable(rows: any[]): string {
     return `
 |${cellKeys.map((key) => ` ${key} `).join('|')}|
 |${cellKeys.map(() => '-').join('|')}|
-${rows.map((row) => `| ${cellKeys.map((key) => parseString(row[key])).join(' | ')} |`).join('\n')}`;
+${rows.map((row) => `| ${cellKeys.map((key) => convertChalkStringToMarkdown(row[key])).join(' | ')} |`).join('\n')}`;
 }
 
 export function createOptionsSections<T>(cliArguments: ArgumentConfig<T>, options: ParseOptions<any>): string[] {
@@ -107,43 +108,20 @@ export function createHeading(section: SectionHeader, defaultLevel: HeaderLevel)
 export function createOptionRow(option: CommandLineOption, includeAlias = true, includeDescription = true): string {
     const alias = includeAlias ? ` ${option.alias == null ? '' : '**' + option.alias + '** '}|` : ``;
     const description = includeDescription
-        ? ` ${option.description == null ? '' : parseString(option.description) + ' '}|`
+        ? ` ${option.description == null ? '' : convertChalkStringToMarkdown(option.description) + ' '}|`
         : ``;
     return `| **${option.name}** |${alias} ${getType(option)}|${description}`;
 }
 
 export function getType(option: CommandLineOption): string {
     if (option.typeLabel) {
-        return `${parseString(option.typeLabel)} `;
+        return `${convertChalkStringToMarkdown(option.typeLabel)} `;
     }
 
     const type = option.type ? option.type.name.toLowerCase() : 'string';
     const multiple = option.multiple || option.lazyMultiple ? '[]' : '';
 
     return type === 'boolean' ? '' : `${type}${multiple} `;
-}
-
-const chalkStringStyleRegExp = /(?<!\\){([^}]+?) ([^}]+)}/g;
-const newLineRegExp = /\n/g;
-
-export function parseString(input: string): string {
-    return (
-        input
-            .replace(chalkStringStyleRegExp, replaceParseStringMatch)
-            //replace new line with 2 spaces then new line
-            .replace(newLineRegExp, '  \n')
-    );
-}
-
-function replaceParseStringMatch(_substring: string, ...matches: string[]): string {
-    let modifier = '';
-    if (matches[0].indexOf('bold') >= 0) {
-        modifier += '**';
-    }
-    if (matches[0].indexOf('italic') >= 0) {
-        modifier += '*';
-    }
-    return `${modifier}${matches[1]}${modifier}`;
 }
 
 export function generateUsageGuides(args: IWriteMarkDown): string[] {

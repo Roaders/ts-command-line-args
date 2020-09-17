@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 import { ArgumentConfig, UsageGuideConfig } from '../contracts';
 
 /**
@@ -130,6 +131,23 @@ export const exampleSections: UsageGuideConfig<ITypicalAppWithGroups> = {
             },
             {
                 content: 'Project home: {underline https://github.com/me/example}',
+            },
+        ],
+    },
+};
+
+export const additionalModifiers: UsageGuideConfig<ITypicalAppWithGroups> = {
+    arguments: typicalAppConfig,
+    parseOptions: {
+        helpArg: 'help',
+        headerContentSections: [
+            {
+                header: 'Highlight Modifier',
+                content: 'Some text that {highlight highlights} certain words',
+            },
+            {
+                header: 'Code Modifier',
+                content: [`Block of code: {code function logMessage(message: string) \\{console.log(message);\\}}`],
             },
         ],
     },

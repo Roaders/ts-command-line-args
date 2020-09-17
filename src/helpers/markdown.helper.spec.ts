@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 import {
     usageGuideInfo as exampleConfigGuideInfo,
     ICopyFilesArguments,
@@ -5,7 +6,7 @@ import {
     exampleSections,
 } from '../example/configs';
 import { usageGuideInfo as writeMarkdownGuideInfo } from '../write-markdown.constants';
-import { createUsageGuide } from './markdown-helper';
+import { createUsageGuide } from './markdown.helper';
 import { UsageGuideConfig } from '../contracts';
 
 describe('markdown-helper', () => {
@@ -68,13 +69,37 @@ Saves a command line usage guide to markdown.
 | **help** | **h** | | |
 
 
-### Default Markers
+### Default Replacement Markers
 
 replaceBelow defaults to:  
 \`'[//]: ####ts-command-line-args_write-markdown_replaceBelow  '\`  
 replaceAbove defaults to:  
 \`'[//]: ####ts-command-line-args_write-markdown_replaceAbove  '\`  
 Note the double spaces at the end to signify to markdown that there should be a new line.
+
+
+### String Formatting
+
+The only chalk modifiers supported when converting to markdown are \`bold\` and \`italic\`.  
+For example:  
+{bold bold text} {italic italic text} {italic.bold bold italic text}  
+will be converted to:  
+\\*\\*boldText\\*\\* \\*italic text\\* \\*\\*\\*bold italic text\\*\\*\\*
+
+
+#### Additional Modifiers
+
+Two additional style modifiers have been added that are supported when writing markdown. They are removed when printing to the console.  
+  
+{highlight someText}  
+surrounds the text in backticks:  
+\`someText\`  
+and   
+{code someText}  
+Surrounds the text in triple back ticks:  
+\`\`\`  
+someText  
+\`\`\`
 `);
     });
 
