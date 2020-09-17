@@ -178,7 +178,7 @@ export interface Content extends SectionHeader {
      *     consistent throughout the array.
      *  4. An object with two properties - data and options. In this case, the data and options will be passed directly to the underlying table layout module for rendering.
      */
-    content?: string | string[] | any[] | { data: any; options: any };
+    content?: string | string[] | any[];
 }
 
 export interface IReplaceOptions {

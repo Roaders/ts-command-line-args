@@ -34,12 +34,31 @@ ${createSectionContent(section)}
 }
 
 export function createSectionContent(section: Content): string {
-    switch (typeof section.content) {
-        case 'string':
-            return parseString(section.content);
-        default:
-            return '';
+    if (typeof section.content === 'string') {
+        return parseString(section.content);
     }
+
+    if (Array.isArray(section.content)) {
+        if (section.content.every((content) => typeof content === 'string')) {
+            return (section.content as string[]).map(parseString).join('\n');
+        } else if (section.content.every((content) => typeof content === 'object')) {
+            return createSectionTable(section.content);
+        }
+    }
+
+    return '';
+}
+
+export function createSectionTable(rows: any[]): string {
+    if (rows.length === 0) {
+        return ``;
+    }
+    const cellKeys = Object.keys(rows[0]);
+
+    return `
+|${cellKeys.map((key) => ` ${key} `).join('|')}|
+|${cellKeys.map(() => '-').join('|')}|
+${rows.map((row) => `| ${cellKeys.map((key) => parseString(row[key])).join(' | ')} |`).join('\n')}`;
 }
 
 export function createOptionsSections<T>(cliArguments: ArgumentConfig<T>, options: ParseOptions<any>): string[] {
@@ -110,13 +129,13 @@ const newLineRegExp = /\n/g;
 export function parseString(input: string): string {
     return (
         input
-            .replace(chalkStringStyleRegExp, replaceParseMatch)
+            .replace(chalkStringStyleRegExp, replaceParseStringMatch)
             //replace new line with 2 spaces then new line
             .replace(newLineRegExp, '  \n')
     );
 }
 
-function replaceParseMatch(_substring: string, ...matches: string[]): string {
+function replaceParseStringMatch(_substring: string, ...matches: string[]): string {
     let modifier = '';
     if (matches[0].indexOf('bold') >= 0) {
         modifier += '**';

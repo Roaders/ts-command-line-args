@@ -2,6 +2,7 @@ import {
     usageGuideInfo as exampleConfigGuideInfo,
     ICopyFilesArguments,
     typicalAppWithGroupsInfo,
+    exampleSections,
 } from '../example/configs';
 import { usageGuideInfo as writeMarkdownGuideInfo } from '../write-markdown.constants';
 import { createUsageGuide } from './markdown-helper';
@@ -100,6 +101,72 @@ Generates something *very* important.
 | Argument | Type | Description |
 |-|-|-|
 | **plugin** | string | A plugin path |
+`);
+    });
+
+    it('should generate a usage guide with option groups', () => {
+        const usageGuide = createUsageGuide(typicalAppWithGroupsInfo);
+
+        expect(usageGuide).toEqual(`
+# A typical app
+
+Generates something *very* important.
+
+
+## Main options
+
+| Argument | Alias | Type | Description |
+|-|-|-|-|
+| **help** | **h** | | Display this usage guide. |
+| **src** | | file ... | The input files to process |
+| **timeout** | **t** | ms | Timeout value in ms |
+
+
+## Misc
+
+| Argument | Type | Description |
+|-|-|-|
+| **plugin** | string | A plugin path |
+`);
+    });
+
+    it('should generate a usage guide with table of examples', () => {
+        const usageGuide = createUsageGuide(exampleSections);
+
+        expect(usageGuide).toEqual(`
+# A typical app
+
+Generates something *very* important.
+
+
+# Synopsis
+
+$ example [**--timeout** ms] **--src** file ...
+$ example **--help**
+
+
+## Options
+
+| Argument | Alias | Type | Description |
+|-|-|-|-|
+| **help** | **h** | | Display this usage guide. |
+| **src** | | file ... | The input files to process |
+| **timeout** | **t** | ms | Timeout value in ms |
+| **plugin** | | string | A plugin path |
+
+
+# Examples
+
+
+| Description | Example |
+|-|-|
+| 1. A concise example.  | $ example -t 100 lib/*.js |
+| 2. A long example.  | $ example --timeout 100 --src lib/*.js |
+| 3. This example will scan space for unknown things. Take cure when scanning space, it could take some time.  | $ example --src galaxy1.facts galaxy1.facts galaxy2.facts galaxy3.facts galaxy4.facts galaxy5.facts |
+
+
+
+Project home: https://github.com/me/example
 `);
     });
 });

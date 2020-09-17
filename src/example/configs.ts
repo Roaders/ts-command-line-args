@@ -90,3 +90,47 @@ export const typicalAppWithGroupsInfo: UsageGuideConfig<ITypicalAppWithGroups> =
         ],
     },
 };
+
+export const exampleSections: UsageGuideConfig<ITypicalAppWithGroups> = {
+    arguments: typicalAppConfig,
+    parseOptions: {
+        helpArg: 'help',
+        headerContentSections: [
+            {
+                header: 'A typical app',
+                content: 'Generates something {italic very} important.',
+            },
+            {
+                header: 'Synopsis',
+                content: [
+                    '$ example [{bold --timeout} {underline ms}] {bold --src} {underline file} ...',
+                    '$ example {bold --help}',
+                ],
+            },
+        ],
+        footerContentSections: [
+            {
+                header: 'Examples',
+                content: [
+                    {
+                        Description: '1. A concise example. ',
+                        Example: '$ example -t 100 lib/*.js',
+                    },
+                    {
+                        Description: '2. A long example. ',
+                        Example: '$ example --timeout 100 --src lib/*.js',
+                    },
+                    {
+                        Description:
+                            '3. This example will scan space for unknown things. Take cure when scanning space, it could take some time. ',
+                        Example:
+                            '$ example --src galaxy1.facts galaxy1.facts galaxy2.facts galaxy3.facts galaxy4.facts galaxy5.facts',
+                    },
+                ],
+            },
+            {
+                content: 'Project home: {underline https://github.com/me/example}',
+            },
+        ],
+    },
+};
