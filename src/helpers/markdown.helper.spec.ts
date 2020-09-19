@@ -69,8 +69,8 @@ Markers in the document describe where the content should be inserted, existing 
 | **markdownPath** | **m** | string | The file to write to. Without replacement markers the whole file content will be replaced. Path can be absolute or relative. |
 | **replaceBelow** | | string | A marker in the file to replace text below. |
 | **replaceAbove** | | string | A marker in the file to replace text above. |
-| **jsFile** | **j** | string[] | jsFile to 'require' that has an export with the 'ArgumentConfig' export. |
-| **configImportName** | **c** | string[] | Export name of the 'ArgumentConfig' object. Defaults to 'usageGuideInfo' |
+| **jsFile** | **j** | string[] | jsFile to 'require' that has an export with the 'ArgumentConfig' export. Multiple file can be specified. |
+| **configImportName** | **c** | string[] | Export name of the 'ArgumentConfig' object. Defaults to 'usageGuideInfo'. Multiple exports can be specified. |
 | **help** | **h** | | |
 
 

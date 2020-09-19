@@ -193,9 +193,62 @@ function(message: string){console.log(message);}
 
 [//]: ####ts-command-line-args_write-markdown_replaceAbove  
 
+#### Javascript Exports
+
+To generate markdown we must export the argument definitions and options used by `command-line-usage` so that we can `require` the javascript file and import the definitions when running `write-markdown`. We cannot export these values from a javascript file that has any side effects (such as copying files in the case of a `copy-files` node executable) as the same side effects would be executed when we are just trying to generate markdown.
+
+For example, if we had a `copy-files` application you would organise you code like this:
+
+`copy-file.constants.ts:`
+```typescript
+export interface ICopyFilesArguments {
+    sourcePath: string;
+    targetPath: string;
+    help?: boolean;
+}
+
+const argumentConfig: ArgumentConfig<ICopyFilesArguments> = {
+    sourcePath: String,
+    targetPath: String,
+    help: { type: Boolean, optional: true, alias: 'h', description: 'Prints this usage guide' },
+};
+
+const parseOptions: = ParseOptions<ICopyFilesArguments>{
+        helpArg: 'help',
+        headerContentSections: [{ header: 'copy-files', content: 'Copies files from sourcePath to targetPath' }],
+    }
+
+export const usageGuideInfo: UsageGuideConfig<ICopyFilesArguments> = {
+    arguments: argumentConfig,
+    parseOptions,
+};
+```
+
+`copy-file.ts:`
+```typescript
+// The file that actually does the work and is executed by node to copy files
+import { usageGuideInfo } from "./copy-file-constants"
+
+const args: ICopyFilesArguments = parse(usageGuideInfo.arguments, usageGuideInfo.parseOptions);
+
+//  Perform file copy operations
+```
+
+The usage guide would be displayed on the command line with the following command:
+
+```bash
+$ copy-files -h
+```
+
+and markdown would be generated (after typescript had been transpiled into javascript) with:
+
+```bash
+$ write-markdown -m markdownFile.md -j copy-file.constants.js
+```
+
 ## Documentation
 
-This library is a thin wrapper around [`command-line-args`](https://www.npmjs.com/package/command-line-args) so any docs or options for that library should apply to this library as well.
+This library is a wrapper around [`command-line-args`](https://www.npmjs.com/package/command-line-args) so any docs or options for that library should apply to this library as well.
 
 ### Parse
 

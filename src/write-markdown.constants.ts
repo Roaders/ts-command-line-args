@@ -24,14 +24,14 @@ export const argumentConfig: ArgumentConfig<IWriteMarkDown> = {
     jsFile: {
         type: String,
         alias: 'j',
-        description: `jsFile to 'require' that has an export with the 'ArgumentConfig' export.`,
+        description: `jsFile to 'require' that has an export with the 'ArgumentConfig' export. Multiple file can be specified.`,
         multiple: true,
     },
     configImportName: {
         type: String,
         alias: 'c',
         defaultValue: [configImportNameDefault],
-        description: `Export name of the 'ArgumentConfig' object. Defaults to '${configImportNameDefault}'`,
+        description: `Export name of the 'ArgumentConfig' object. Defaults to '${configImportNameDefault}'. Multiple exports can be specified.`,
         multiple: true,
     },
     help: { type: Boolean, alias: 'h' },
