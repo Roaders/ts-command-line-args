@@ -40,15 +40,23 @@ export const argumentConfig: ArgumentConfig<IWriteMarkDown> = {
 export const parseOptions: ParseOptions<IWriteMarkDown> = {
     helpArg: 'help',
     baseCommand: `write-markdown`,
-    optionsHeaderLevel: 3,
-    optionsHeaderText: `Write Markdown Command Line Options`,
+    optionsHeaderLevel: 4,
+    optionsHeaderText: `write-markdown cli options`,
     headerContentSections: [
-        { header: 'write-markdown', headerLevel: 2, content: `Saves a command line usage guide to markdown.` },
+        {
+            header: 'Markdown Generation',
+            headerLevel: 3,
+            content: `A markdown version of the usage guide can be generated and inserted into an existing marakdown document.
+Markers in the document describe where the content should be inserted, existing content betweeen the markers is overwritten.`,
+        },
+        {
+            content: `{highlight write-markdown -m README.MD -j usageGuideConstants.js}`,
+        },
     ],
     footerContentSections: [
         {
             header: 'Default Replacement Markers',
-            headerLevel: 3,
+            headerLevel: 4,
             content: `replaceBelow defaults to:
 {highlight '${replaceBelowDefault}'}
 replaceAbove defaults to:
@@ -57,7 +65,7 @@ Note the double spaces at the end to signify to markdown that there should be a 
         },
         {
             header: 'String Formatting',
-            headerLevel: 3,
+            headerLevel: 4,
             content: `The only chalk modifiers supported when converting to markdown are {highlight bold} and {highlight italic}.
 For example:
 \\{bold bold text\\} \\{italic italic text\\} \\{italic.bold bold italic text\\}

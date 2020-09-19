@@ -52,12 +52,17 @@ describe('markdown-helper', () => {
         const usageGuide = createUsageGuide(writeMarkdownGuideInfo);
 
         expect(usageGuide).toEqual(`
-## write-markdown
+### Markdown Generation
 
-Saves a command line usage guide to markdown.
+A markdown version of the usage guide can be generated and inserted into an existing marakdown document.  
+Markers in the document describe where the content should be inserted, existing content betweeen the markers is overwritten.
 
 
-### Write Markdown Command Line Options
+
+\`write-markdown -m README.MD -j usageGuideConstants.js\`
+
+
+#### write-markdown cli options
 
 | Argument | Alias | Type | Description |
 |-|-|-|-|
@@ -69,7 +74,7 @@ Saves a command line usage guide to markdown.
 | **help** | **h** | | |
 
 
-### Default Replacement Markers
+#### Default Replacement Markers
 
 replaceBelow defaults to:  
 \`'[//]: ####ts-command-line-args_write-markdown_replaceBelow  '\`  
@@ -78,7 +83,7 @@ replaceAbove defaults to:
 Note the double spaces at the end to signify to markdown that there should be a new line.
 
 
-### String Formatting
+#### String Formatting
 
 The only chalk modifiers supported when converting to markdown are \`bold\` and \`italic\`.  
 For example:  
