@@ -58,9 +58,9 @@ Markers in the document describe where the content should be inserted, existing 
             header: 'Default Replacement Markers',
             headerLevel: 4,
             content: `replaceBelow defaults to:
-{highlight '${replaceBelowDefault}'}
+{code '${replaceBelowDefault}'}
 replaceAbove defaults to:
-{highlight '${replaceAboveDefault}'}
+{code '${replaceAboveDefault}'}
 Note the double spaces at the end to signify to markdown that there should be a new line.`,
         },
         {
@@ -68,21 +68,20 @@ Note the double spaces at the end to signify to markdown that there should be a 
             headerLevel: 4,
             content: `The only chalk modifiers supported when converting to markdown are {highlight bold} and {highlight italic}.
 For example:
-\\{bold bold text\\} \\{italic italic text\\} \\{italic.bold bold italic text\\}
+{code \\{bold bold text\\} \\{italic italic text\\} \\{italic.bold bold italic text\\}}
 will be converted to:
-\\*\\*boldText\\*\\* \\*italic text\\* \\*\\*\\*bold italic text\\*\\*\\*`,
+{code **boldText** *italic text* ***bold italic text***}`,
         },
         {
             header: 'Additional Modifiers',
             headerLevel: 4,
             content: `Two additional style modifiers have been added that are supported when writing markdown. They are removed when printing to the console.
-
-\\{highlight someText\\}
+{code \\{highlight someText\\}}
 surrounds the text in backticks:
 \`someText\`
 and 
-\\{code.typescript function(message: string)\\\\\\{console.log(message);\\\\\\}\\}
-Surrounds the text in triple back ticks:
+{code \\{code.typescript function(message: string)\\\\\\{console.log(message);\\\\\\}\\}}
+Surrounds the text in triple back ticks (with an optional language specifer, in this case typescript):
 \`\`\`typescript
 function(message: string)\\{console.log(message);\\}
 \`\`\``,

@@ -30,7 +30,9 @@
         "watch-test": "jest --watch",
         "prebuild-release": "npm run clean",
         "build-release": "concurrently --kill-others-on-fail npm:test npm:lint npm:build",
-        "prepack": "npm run build-release"
+        "prepack": "npm run build-release",
+        "prewrite-markdown": "npm run build",
+        "write-markdown": "node .\\dist\\write-markdown -m README.MD -j .\\dist\\write-markdown.constants.js"
     },
     "repository": {
         "type": "git",

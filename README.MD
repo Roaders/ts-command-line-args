@@ -138,9 +138,17 @@ Markers in the document describe where the content should be inserted, existing 
 #### Default Replacement Markers
 
 replaceBelow defaults to:  
-`'[//]: ####ts-command-line-args_write-markdown_replaceBelow  '`  
+  
+```  
+'[//]: ####ts-command-line-args_write-markdown_replaceBelow  '  
+```  
+  
 replaceAbove defaults to:  
-`'[//]: ####ts-command-line-args_write-markdown_replaceAbove  '`  
+  
+```  
+'[//]: ####ts-command-line-args_write-markdown_replaceAbove  '  
+```  
+  
 Note the double spaces at the end to signify to markdown that there should be a new line.
 
 
@@ -148,21 +156,37 @@ Note the double spaces at the end to signify to markdown that there should be a 
 
 The only chalk modifiers supported when converting to markdown are `bold` and `italic`.  
 For example:  
+  
+```  
 {bold bold text} {italic italic text} {italic.bold bold italic text}  
+```  
+  
 will be converted to:  
-\*\*boldText\*\* \*italic text\* \*\*\*bold italic text\*\*\*
+  
+```  
+**boldText** *italic text* ***bold italic text***  
+```  
+
 
 
 #### Additional Modifiers
 
 Two additional style modifiers have been added that are supported when writing markdown. They are removed when printing to the console.  
   
+  
+```  
 {highlight someText}  
+```  
+  
 surrounds the text in backticks:  
 `someText`  
 and   
+  
+```  
 {code.typescript function(message: string)\\{console.log(message);\\}}  
-Surrounds the text in triple back ticks:  
+```  
+  
+Surrounds the text in triple back ticks (with an optional language specifer, in this case typescript):  
 ```typescript  
 function(message: string){console.log(message);}  
 ```
