@@ -193,6 +193,7 @@ export interface IWriteMarkDown extends IReplaceOptions {
     jsFile: string[];
     configImportName: string[];
     help: boolean;
+    verify: boolean;
 }
 
 export type UsageGuideConfig<T = any> = {

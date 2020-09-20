@@ -34,7 +34,12 @@ export const argumentConfig: ArgumentConfig<IWriteMarkDown> = {
         description: `Export name of the 'ArgumentConfig' object. Defaults to '${configImportNameDefault}'. Multiple exports can be specified.`,
         multiple: true,
     },
-    help: { type: Boolean, alias: 'h' },
+    verify: {
+        type: Boolean,
+        alias: 'v',
+        description: `Verify the markdown file. Does not update the file but returns a non zero exit code if the markdown file is not correct. Useful for a pre-publish script.`,
+    },
+    help: { type: Boolean, alias: 'h', description: `Show this usage guide.` },
 };
 
 export const parseOptions: ParseOptions<IWriteMarkDown> = {

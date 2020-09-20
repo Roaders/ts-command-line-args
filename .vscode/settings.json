@@ -1,3 +1,3 @@
 {
-    "typescript.tsdk": "node_modules\\typescript\\lib"
+    "typescript.tsdk": "d:\\dev\\node\\ts-command-line-args\\node_modules\\typescript\\lib"
 }

@@ -16,14 +16,24 @@ function writeMarkdown() {
     const markdownFileContent = readFileSync(markdownPath).toString();
 
     const usageGuides = generateUsageGuides(args);
-
     const modifiedFileContent = addContent(markdownFileContent, usageGuides, args);
 
-    if (markdownFileContent !== modifiedFileContent) {
-        console.log(`Writing file to '${markdownPath}'`);
-        writeFileSync(markdownPath, modifiedFileContent);
-    } else {
-        console.log(`Content not modified, not writing to file.`);
+    const action = args.verify === true ? `verify` : `write`;
+    const contentMatch = markdownFileContent === modifiedFileContent ? `match` : `nonMatch`;
+
+    switch (`${action}_${contentMatch}`) {
+        case 'verify_match':
+            console.log(`Markdown file as expected. No update required.`);
+            break;
+        case 'verify_nonMatch':
+            throw new Error(`Markdown file out of date, update required.`);
+        case 'write_match':
+            console.log(`Content not modified, not writing to file.`);
+            break;
+        case 'write_nonMatch':
+            console.log(`Writing file to '${markdownPath}'`);
+            writeFileSync(markdownPath, modifiedFileContent);
+            break;
     }
 }
 

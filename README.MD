@@ -130,9 +130,10 @@ Markers in the document describe where the content should be inserted, existing 
 | **markdownPath** | **m** | string | The file to write to. Without replacement markers the whole file content will be replaced. Path can be absolute or relative. |
 | **replaceBelow** | | string | A marker in the file to replace text below. |
 | **replaceAbove** | | string | A marker in the file to replace text above. |
-| **jsFile** | **j** | string[] | jsFile to 'require' that has an export with the 'ArgumentConfig' export. |
-| **configImportName** | **c** | string[] | Export name of the 'ArgumentConfig' object. Defaults to 'usageGuideInfo' |
-| **help** | **h** | | |
+| **jsFile** | **j** | string[] | jsFile to 'require' that has an export with the 'ArgumentConfig' export. Multiple file can be specified. |
+| **configImportName** | **c** | string[] | Export name of the 'ArgumentConfig' object. Defaults to 'usageGuideInfo'. Multiple exports can be specified. |
+| **verify** | **v** | | Verify the markdown file. Does not update the file but returns a non zero exit code if the markdown file is not correct. Useful for a pre-publish script. |
+| **help** | **h** | | Show this usage guide. |
 
 
 #### Default Replacement Markers
@@ -172,7 +173,6 @@ will be converted to:
 #### Additional Modifiers
 
 Two additional style modifiers have been added that are supported when writing markdown. They are removed when printing to the console.  
-  
   
 ```  
 {highlight someText}  
