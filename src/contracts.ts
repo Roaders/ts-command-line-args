@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 export type ArgumentConfig<T extends { [name: string]: any }> = {
     [P in keyof T]-?: PropertyConfig<T[P]>;
 };
@@ -7,6 +5,12 @@ export type ArgumentConfig<T extends { [name: string]: any }> = {
 export type ArgumentOptions<T extends { [name: string]: any }> = {
     [P in keyof T]-?: PropertyOptions<T[P]>;
 };
+
+interface OptionDefinition {
+    name: string;
+}
+
+export type CommandLineOption<T = any> = PropertyOptions<T> & OptionDefinition;
 
 export type PropertyConfig<T> = undefined extends T ? PropertyOptions<T> : RequiredPropertyOptions<T>;
 export type RequiredPropertyOptions<T> = Array<any> extends T
@@ -65,6 +69,8 @@ export type OptionalPropertyOptions<T> = undefined extends T ? { optional: true 
 
 export type MultiplePropertyOptions<T> = Array<any> extends T ? { multiple: true } | { lazyMultiple: true } : unknown;
 
+export type HeaderLevel = 1 | 2 | 3 | 4 | 5;
+
 export interface ArgsParseOptions<T extends { [name: string]: any }> {
     /**
      * An array of strings which if present will be parsed instead of `process.argv`.
@@ -100,6 +106,24 @@ export interface ArgsParseOptions<T extends { [name: string]: any }> {
      * 'To view help guide run myBaseCommand -h'
      */
     baseCommand?: string;
+
+    /**
+     * Heading level to use for the options header
+     * Only used when generating markdown
+     * Defaults to 2
+     */
+    optionsHeaderLevel?: HeaderLevel;
+
+    /**
+     * Heading level text to use for options section
+     * defaults to "Options";
+     */
+    optionsHeaderText?: string;
+
+    /**
+     * Used to define multiple options sections. If this is used `optionsHeaderLevel` and `optionsHeaderText` are ignored.
+     */
+    optionSections?: OptionContent[];
 }
 
 export interface PartialParseOptions extends ArgsParseOptions<any> {
@@ -127,10 +151,25 @@ export type UnkownProperties<T> = T extends PartialParseOptions
 
 export type ParseOptions<T> = ArgsParseOptions<T> | PartialParseOptions | StopParseOptions;
 
-/** A Content section comprises a header and one or more lines of content. */
-export interface Content {
+export interface SectionHeader {
     /** The section header, always bold and underlined. */
     header?: string;
+
+    /**
+     * Heading level to use for the header
+     * Only used when generating markdown
+     * Defaults to 1
+     */
+    headerLevel?: HeaderLevel;
+}
+
+export interface OptionContent extends SectionHeader {
+    /** The group name or names. use '_none' for options without a group */
+    group?: string | string[];
+}
+
+/** A Content section comprises a header and one or more lines of content. */
+export interface Content extends SectionHeader {
     /**
      * Overloaded property, accepting data in one of four formats.
      *  1. A single string (one line of text).
@@ -139,7 +178,25 @@ export interface Content {
      *     consistent throughout the array.
      *  4. An object with two properties - data and options. In this case, the data and options will be passed directly to the underlying table layout module for rendering.
      */
-    content?: string | string[] | any[] | { data: any; options: any };
-    /** Set to true to avoid indentation and wrapping. Useful for banners. */
-    raw?: boolean;
+    content?: string | string[] | any[];
 }
+
+export interface IReplaceOptions {
+    replaceBelow: string;
+    replaceAbove: string;
+}
+
+export type JsImport = { jsFile: string; importName: string };
+
+export interface IWriteMarkDown extends IReplaceOptions {
+    markdownPath: string;
+    jsFile: string[];
+    configImportName: string[];
+    help: boolean;
+    verify: boolean;
+}
+
+export type UsageGuideConfig<T = any> = {
+    arguments: ArgumentConfig<T>;
+    parseOptions?: ParseOptions<T>;
+};

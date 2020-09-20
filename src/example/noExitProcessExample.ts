@@ -1,4 +1,4 @@
-import { argumentConfig } from './exampleConfig';
+import { argumentConfig } from './configs';
 import { parse } from '../parse';
 
 /**

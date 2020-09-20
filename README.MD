@@ -1,6 +1,6 @@
 # ts-command-line-args
 
- > A thin Typescript wrapper around [`command-line-args`](https://www.npmjs.com/package/command-line-args)
+ > A Typescript wrapper around [`command-line-args`](https://www.npmjs.com/package/command-line-args) with additional support for markdown usage guide generation
 
 ![npm](https://img.shields.io/npm/v/ts-command-line-args)
 [![Build Status](https://travis-ci.com/Roaders/ts-command-line-args.svg?branch=master)](https://travis-ci.com/Roaders/ts-command-line-args)
@@ -48,7 +48,7 @@ $ node exampleConfig.js --sourcePath source --targetPath target --filter src --e
 $ node exampleConfig.js --sourcePath source --targetPath target --filter src --excludePaths one two
 ```
 
-### Usage Guide Generation
+## Usage Guide
 
 [`command-line-usage`](https://github.com/75lb/command-line-usage) support is included:
 
@@ -110,9 +110,145 @@ Footer
 
   Copyright: Big Faceless Corp. inc.
 ```
+
+[//]: ####ts-command-line-args_write-markdown_replaceBelow  
+
+### Markdown Generation
+
+A markdown version of the usage guide can be generated and inserted into an existing marakdown document.  
+Markers in the document describe where the content should be inserted, existing content betweeen the markers is overwritten.
+
+
+
+`write-markdown -m README.MD -j usageGuideConstants.js`
+
+
+#### write-markdown cli options
+
+| Argument | Alias | Type | Description |
+|-|-|-|-|
+| **markdownPath** | **m** | string | The file to write to. Without replacement markers the whole file content will be replaced. Path can be absolute or relative. |
+| **replaceBelow** | | string | A marker in the file to replace text below. |
+| **replaceAbove** | | string | A marker in the file to replace text above. |
+| **jsFile** | **j** | string[] | jsFile to 'require' that has an export with the 'ArgumentConfig' export. Multiple file can be specified. |
+| **configImportName** | **c** | string[] | Export name of the 'ArgumentConfig' object. Defaults to 'usageGuideInfo'. Multiple exports can be specified. |
+| **verify** | **v** | | Verify the markdown file. Does not update the file but returns a non zero exit code if the markdown file is not correct. Useful for a pre-publish script. |
+| **help** | **h** | | Show this usage guide. |
+
+
+#### Default Replacement Markers
+
+replaceBelow defaults to:  
+  
+```  
+'[//]: ####ts-command-line-args_write-markdown_replaceBelow  '  
+```  
+  
+replaceAbove defaults to:  
+  
+```  
+'[//]: ####ts-command-line-args_write-markdown_replaceAbove  '  
+```  
+  
+Note the double spaces at the end to signify to markdown that there should be a new line.
+
+
+#### String Formatting
+
+The only chalk modifiers supported when converting to markdown are `bold` and `italic`.  
+For example:  
+  
+```  
+{bold bold text} {italic italic text} {italic.bold bold italic text}  
+```  
+  
+will be converted to:  
+  
+```  
+**boldText** *italic text* ***bold italic text***  
+```  
+
+
+
+#### Additional Modifiers
+
+Two additional style modifiers have been added that are supported when writing markdown. They are removed when printing to the console.  
+  
+```  
+{highlight someText}  
+```  
+  
+surrounds the text in backticks:  
+`someText`  
+and   
+  
+```  
+{code.typescript function(message: string)\\{console.log(message);\\}}  
+```  
+  
+Surrounds the text in triple back ticks (with an optional language specifer, in this case typescript):  
+```typescript  
+function(message: string){console.log(message);}  
+```
+
+[//]: ####ts-command-line-args_write-markdown_replaceAbove  
+
+#### Javascript Exports
+
+To generate markdown we must export the argument definitions and options used by `command-line-usage` so that we can `require` the javascript file and import the definitions when running `write-markdown`. We cannot export these values from a javascript file that has any side effects (such as copying files in the case of a `copy-files` node executable) as the same side effects would be executed when we are just trying to generate markdown.
+
+For example, if we had a `copy-files` application you would organise you code like this:
+
+`copy-file.constants.ts:`
+```typescript
+export interface ICopyFilesArguments {
+    sourcePath: string;
+    targetPath: string;
+    help?: boolean;
+}
+
+const argumentConfig: ArgumentConfig<ICopyFilesArguments> = {
+    sourcePath: String,
+    targetPath: String,
+    help: { type: Boolean, optional: true, alias: 'h', description: 'Prints this usage guide' },
+};
+
+const parseOptions: = ParseOptions<ICopyFilesArguments>{
+        helpArg: 'help',
+        headerContentSections: [{ header: 'copy-files', content: 'Copies files from sourcePath to targetPath' }],
+    }
+
+export const usageGuideInfo: UsageGuideConfig<ICopyFilesArguments> = {
+    arguments: argumentConfig,
+    parseOptions,
+};
+```
+
+`copy-file.ts:`
+```typescript
+// The file that actually does the work and is executed by node to copy files
+import { usageGuideInfo } from "./copy-file-constants"
+
+const args: ICopyFilesArguments = parse(usageGuideInfo.arguments, usageGuideInfo.parseOptions);
+
+//  Perform file copy operations
+```
+
+The usage guide would be displayed on the command line with the following command:
+
+```bash
+$ copy-files -h
+```
+
+and markdown would be generated (after typescript had been transpiled into javascript) with:
+
+```bash
+$ write-markdown -m markdownFile.md -j copy-file.constants.js
+```
+
 ## Documentation
 
-This library is a thin wrapper around [`command-line-args`](https://www.npmjs.com/package/command-line-args) so any docs or options for that library should apply to this library as well.
+This library is a wrapper around [`command-line-args`](https://www.npmjs.com/package/command-line-args) so any docs or options for that library should apply to this library as well.
 
 ### Parse
 

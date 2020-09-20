@@ -1,7 +1,10 @@
 {
     "name": "ts-command-line-args",
     "version": "1.1.1",
-    "description": "A thin Typescript wrapper around command-line-args",
+    "description": "A Typescript wrapper around command-line-args with additional support for markdown usage guide generation",
+    "bin": {
+        "write-markdown": "dist/write-markdown.js"
+    },
     "keywords": [
         "argv",
         "parse",
@@ -26,7 +29,12 @@
         "test": "jest --ci && tsc --noemit",
         "watch-test": "jest --watch",
         "prebuild-release": "npm run clean",
-        "build-release": "concurrently --kill-others-on-fail npm:test npm:lint npm:build"
+        "build-release": "concurrently --kill-others-on-fail npm:test npm:lint npm:build npm:verify-markdown",
+        "prepack": "npm run build-release",
+        "prewrite-markdown": "npm run build",
+        "preverify-markdown": "npm run build",
+        "write-markdown": "node dist/write-markdown -m README.MD -j dist/write-markdown.constants.js",
+        "verify-markdown": "node dist/write-markdown -m README.MD -j dist/write-markdown.constants.js -v"
     },
     "repository": {
         "type": "git",
@@ -39,11 +47,11 @@
     },
     "homepage": "https://github.com/Roaders/ts-command-line-args#readme",
     "dependencies": {
+        "@morgan-stanley/ts-mocking-bird": "^0.2.2",
         "command-line-args": "^5.1.1",
         "command-line-usage": "^6.1.0"
     },
     "devDependencies": {
-        "@morgan-stanley/ts-mocking-bird": "^0.2.0",
         "@types/command-line-args": "^5.0.0",
         "@types/command-line-usage": "^5.0.1",
         "@types/jest": "^26.0.10",
@@ -62,6 +70,6 @@
         "prettier": "^2.1.1",
         "rimraf": "^3.0.2",
         "ts-jest": "^26.3.0",
-        "typescript": "^3.9.7"
+        "typescript": "^4.0.3"
     }
 }

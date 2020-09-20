@@ -1,7 +1,4 @@
-import { PropertyOptions, ArgumentConfig, ArgumentOptions, TypeConstructor } from './contracts';
-import { OptionDefinition } from 'command-line-args';
-
-export type CommandLineOption = { optional?: true; type: TypeConstructor<any> } & OptionDefinition;
+import { PropertyOptions, ArgumentConfig, ArgumentOptions, CommandLineOption } from '../contracts';
 
 export function createCommandLineConfig<T>(config: ArgumentOptions<T>): CommandLineOption[] {
     return Object.keys(config).map((key) => {

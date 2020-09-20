@@ -1,5 +1,5 @@
 import { parse } from '../parse';
-import { argumentConfig } from './exampleConfig';
+import { argumentConfig } from './configs';
 
 /**
  * adds unknown arguments to _unknown property and does not throw for unknowns

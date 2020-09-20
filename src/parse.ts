@@ -1,7 +1,9 @@
-import { ArgumentConfig, ParseOptions, UnkownProperties } from './contracts';
+import { ArgumentConfig, ParseOptions, UnkownProperties, CommandLineOption } from './contracts';
 import commandLineArgs from 'command-line-args';
 import commandLineUsage from 'command-line-usage';
-import { normaliseConfig, createCommandLineConfig, CommandLineOption } from './helpers';
+import { createCommandLineConfig, normaliseConfig, visit } from './helpers';
+import { getOptionSections } from './helpers/options.helper';
+import { removeAdditionalFormatting } from './helpers/string.helper';
 
 export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
     config: ArgumentConfig<T>,
@@ -12,16 +14,30 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
     const logger = options.logger || console;
     const normalisedConfig = normaliseConfig(config);
     const optionList = createCommandLineConfig(normalisedConfig);
-    const parsedArgs = commandLineArgs(optionList, options);
+    let parsedArgs = commandLineArgs(optionList, options) as any;
+    if (parsedArgs['_all'] != null) {
+        parsedArgs = parsedArgs['_all'];
+    }
 
     const missingArgs = listMissingArgs(optionList, parsedArgs);
 
     if (options.helpArg != null && (parsedArgs as any)[options.helpArg]) {
-        const usageGuide = commandLineUsage([
+        const sections = [
             ...(options.headerContentSections || []),
-            { header: 'Options', optionList },
+            ...getOptionSections(options).map((option) => ({ ...option, optionList })),
             ...(options.footerContentSections || []),
-        ]);
+        ];
+
+        visit(sections, (value) => {
+            switch (typeof value) {
+                case 'string':
+                    return removeAdditionalFormatting(value);
+                default:
+                    return value;
+            }
+        });
+
+        const usageGuide = commandLineUsage(sections);
 
         logger.log(usageGuide);
     } else if (missingArgs.length > 0) {

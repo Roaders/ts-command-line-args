@@ -1,7 +1,7 @@
-import { createCommandLineConfig, normaliseConfig } from './helpers';
-import { ArgumentConfig } from './contracts';
+import { createCommandLineConfig, normaliseConfig } from './command-line.helper';
+import { ArgumentConfig } from '../contracts';
 
-describe('helpers', () => {
+describe('command-line.helper', () => {
     interface ComplexProperties {
         requiredStringOne: string;
         requiredStringTwo: string;
