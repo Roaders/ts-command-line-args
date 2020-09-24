@@ -71,24 +71,9 @@ export type MultiplePropertyOptions<T> = Array<any> extends T ? { multiple: true
 
 export type HeaderLevel = 1 | 2 | 3 | 4 | 5;
 
-export interface ArgsParseOptions<T extends { [name: string]: any }> {
-    /**
-     * An array of strings which if present will be parsed instead of `process.argv`.
-     */
-    argv?: string[];
+export type PickType<T, TType> = Pick<T, { [K in keyof T]: Required<T>[K] extends TType ? K : never }[keyof T]>;
 
-    /**
-     * A logger for printing errors for missing properties.
-     * Defaults to console
-     */
-    logger?: typeof console;
-
-    /**
-     * The command line argument used to show help
-     * By default when this property is true help will be printed and the process will exit
-     */
-    helpArg?: keyof T;
-
+export interface UsageGuideOptions {
     /**
      * help sections to be listed before the options section
      */
@@ -124,6 +109,25 @@ export interface ArgsParseOptions<T extends { [name: string]: any }> {
      * Used to define multiple options sections. If this is used `optionsHeaderLevel` and `optionsHeaderText` are ignored.
      */
     optionSections?: OptionContent[];
+}
+
+export interface ArgsParseOptions<T extends { [name: string]: any }> extends UsageGuideOptions {
+    /**
+     * An array of strings which if present will be parsed instead of `process.argv`.
+     */
+    argv?: string[];
+
+    /**
+     * A logger for printing errors for missing properties.
+     * Defaults to console
+     */
+    logger?: typeof console;
+
+    /**
+     * The command line argument used to show help
+     * By default when this property is true help will be printed and the process will exit
+     */
+    helpArg?: keyof PickType<T, boolean>;
 }
 
 export interface PartialParseOptions extends ArgsParseOptions<any> {

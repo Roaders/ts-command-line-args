@@ -1,4 +1,4 @@
-import { ArgumentConfig, ParseOptions, UnkownProperties, CommandLineOption } from './contracts';
+import { ArgumentConfig, ParseOptions, UnkownProperties, CommandLineOption, UsageGuideOptions } from './contracts';
 import commandLineArgs from 'command-line-args';
 import commandLineUsage from 'command-line-usage';
 import { createCommandLineConfig, normaliseConfig, visit } from './helpers';
@@ -67,7 +67,7 @@ function printMissingArgErrors(missingArgs: CommandLineOption[], logger: Console
     });
 }
 
-function printUsageGuideMessage(options: ParseOptions<any> & { logger: Console }, helpParam?: CommandLineOption) {
+function printUsageGuideMessage(options: UsageGuideOptions & { logger: Console }, helpParam?: CommandLineOption) {
     if (helpParam != null) {
         const helpArg = helpParam.alias != null ? `-${helpParam.alias}` : `--${helpParam.name}`;
         const command = options.baseCommand != null ? `run '${options.baseCommand} ${helpArg}'` : `pass '${helpArg}'`;
