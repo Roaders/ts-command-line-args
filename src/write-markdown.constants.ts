@@ -39,11 +39,23 @@ export const argumentConfig: ArgumentConfig<IWriteMarkDown> = {
         alias: 'v',
         description: `Verify the markdown file. Does not update the file but returns a non zero exit code if the markdown file is not correct. Useful for a pre-publish script.`,
     },
+    configFile: {
+        type: String,
+        optional: true,
+        description: `Optional config file to load config from. package.json can be used if jsonPath specified as well`,
+    },
+    jsonPath: {
+        type: String,
+        optional: true,
+        description: `Used in conjunction with 'configFile'. The path within the config file to load the config from. For example: 'configs.writeMarkdown'`,
+    },
     help: { type: Boolean, alias: 'h', description: `Show this usage guide.` },
 };
 
 export const parseOptions: ParseOptions<IWriteMarkDown> = {
     helpArg: 'help',
+    loadFromFileArg: 'configFile',
+    loadFromFileJsonPathArg: 'jsonPath',
     baseCommand: `write-markdown`,
     optionsHeaderLevel: 4,
     optionsHeaderText: `write-markdown cli options`,

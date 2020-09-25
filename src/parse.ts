@@ -15,6 +15,7 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
     const normalisedConfig = normaliseConfig(config);
     const optionList = createCommandLineConfig(normalisedConfig);
     let parsedArgs = commandLineArgs(optionList, options) as any;
+
     if (parsedArgs['_all'] != null) {
         parsedArgs = parsedArgs['_all'];
     }

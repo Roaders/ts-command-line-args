@@ -128,6 +128,39 @@ export interface ArgsParseOptions<T extends { [name: string]: any }> extends Usa
      * By default when this property is true help will be printed and the process will exit
      */
     helpArg?: keyof PickType<T, boolean>;
+
+    /**
+     * The command line argument with path of file to load arguments from
+     * If this property is set the file will be loaded and used to create the returned arguments object.
+     * The file can contain a partial object, missing required arguments must be specified on the command line
+     * Any arguments specified on the command line will override those specified in the file.
+     * The config object must be all strings (or arrays of strings) that will then be passed to the type function specified for that argument
+     * For boolean use:
+     * {
+     *  myBooleanArg: "true"
+     * }
+     */
+    loadFromFileArg?: keyof PickType<T, string>;
+
+    /**
+     * The command line argument specifying the json path of the config object within the file
+     * If loadFromFileArg is specified the json path is used to locate the config object in the loaded json file
+     * If not specified the whole file will be used
+     * This allows the specification to be defined within the package.json file for example:
+     * loadFromFileJsonPath: "config.writeMarkdown"
+     * package.json:
+     * {
+     *  name: "myApp",
+     *  version: "1.1.1",
+     *  dependencies: {},
+     *  config: {
+     *      writeMarkdown: {
+     *          markdownPath: [ "myMarkdownFile.md" ]
+     *      }
+     *  }
+     * }
+     */
+    loadFromFileJsonPathArg?: keyof PickType<T, string>;
 }
 
 export interface PartialParseOptions extends ArgsParseOptions<any> {
@@ -198,6 +231,8 @@ export interface IWriteMarkDown extends IReplaceOptions {
     configImportName: string[];
     help: boolean;
     verify: boolean;
+    configFile?: string;
+    jsonPath?: string;
 }
 
 export type UsageGuideConfig<T = any> = {
