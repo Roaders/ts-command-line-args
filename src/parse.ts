@@ -1,9 +1,11 @@
 import { ArgumentConfig, ParseOptions, UnkownProperties, CommandLineOption, UsageGuideOptions } from './contracts';
 import commandLineArgs from 'command-line-args';
 import commandLineUsage from 'command-line-usage';
-import { createCommandLineConfig, normaliseConfig, visit } from './helpers';
+import { createCommandLineConfig, mergeConfig, normaliseConfig, visit } from './helpers';
 import { getOptionSections } from './helpers/options.helper';
 import { removeAdditionalFormatting } from './helpers/string.helper';
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
 
 export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
     config: ArgumentConfig<T>,
@@ -18,6 +20,19 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
 
     if (parsedArgs['_all'] != null) {
         parsedArgs = parsedArgs['_all'];
+    }
+
+    if (options.loadFromFileArg != null && parsedArgs[options.loadFromFileArg] != null) {
+        const configFromFile: Partial<Record<keyof T, any>> = JSON.parse(
+            readFileSync(resolve(parsedArgs[options.loadFromFileArg])).toString(),
+        );
+
+        parsedArgs = mergeConfig<T>(
+            parsedArgs,
+            configFromFile,
+            normalisedConfig,
+            options.loadFromFileJsonPathArg as keyof T | undefined,
+        );
     }
 
     const missingArgs = listMissingArgs(optionList, parsedArgs);

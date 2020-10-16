@@ -72,6 +72,8 @@ Markers in the document describe where the content should be inserted, existing 
 | **jsFile** | **j** | string[] | jsFile to 'require' that has an export with the 'ArgumentConfig' export. Multiple file can be specified. |
 | **configImportName** | **c** | string[] | Export name of the 'ArgumentConfig' object. Defaults to 'usageGuideInfo'. Multiple exports can be specified. |
 | **verify** | **v** | | Verify the markdown file. Does not update the file but returns a non zero exit code if the markdown file is not correct. Useful for a pre-publish script. |
+| **configFile** | | string | Optional config file to load config from. package.json can be used if jsonPath specified as well |
+| **jsonPath** | | string | Used in conjunction with 'configFile'. The path within the config file to load the config from. For example: 'configs.writeMarkdown' |
 | **help** | **h** | | Show this usage guide. |
 
 

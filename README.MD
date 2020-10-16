@@ -5,7 +5,7 @@
 ![npm](https://img.shields.io/npm/v/ts-command-line-args)
 [![Build Status](https://travis-ci.com/Roaders/ts-command-line-args.svg?branch=master)](https://travis-ci.com/Roaders/ts-command-line-args)
 ![NPM](https://img.shields.io/npm/l/ts-command-line-args)
-![NPM](https://img.shields.io/badge/types-TypeScript-blue)
+![Typescript](https://img.shields.io/badge/types-TypeScript-blue)
 
 ## Usage
 

@@ -1,0 +1,11 @@
+{
+    "configs": {
+        "exampleConfig": {
+            "sourcePath": "sourceFromExampleConfigFile",
+            "targetPath": "targetFromExampleConfigFile",
+            "copyFiles": true,
+            "resetPermissions": false,
+            "excludePaths": ["one", "two"]
+        }
+    }
+}
