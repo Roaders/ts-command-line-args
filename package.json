@@ -74,6 +74,7 @@
     },
     "markdownConfig": {
         "markdownPath": "README.MD",
-        "jsFile": "dist/write-markdown.constants.js"
+        "jsFile": "dist/write-markdown.constants.js",
+        "verifyMessage": "README.MD is out of date. Please regenerate by running 'npm write-markdown'"
     }
 }

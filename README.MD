@@ -135,6 +135,7 @@ Markers in the document describe where the content should be inserted, existing 
 | **verify** | **v** | | Verify the markdown file. Does not update the file but returns a non zero exit code if the markdown file is not correct. Useful for a pre-publish script. |
 | **configFile** | **f** | string | Optional config file to load config from. package.json can be used if jsonPath specified as well |
 | **jsonPath** | **p** | string | Used in conjunction with 'configFile'. The path within the config file to load the config from. For example: 'configs.writeMarkdown' |
+| **verifyMessage** | | string | Optional message that is printed when markdown verification fails. |
 | **help** | **h** | | Show this usage guide. |
 
 

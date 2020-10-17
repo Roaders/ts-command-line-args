@@ -51,6 +51,11 @@ export const argumentConfig: ArgumentConfig<IWriteMarkDown> = {
         optional: true,
         description: `Used in conjunction with 'configFile'. The path within the config file to load the config from. For example: 'configs.writeMarkdown'`,
     },
+    verifyMessage: {
+        type: String,
+        optional: true,
+        description: `Optional message that is printed when markdown verification fails.`,
+    },
     help: { type: Boolean, alias: 'h', description: `Show this usage guide.` },
 };
 
