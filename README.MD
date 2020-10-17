@@ -244,11 +244,11 @@ Markers in the document describe where the content should be inserted, existing 
 | **replaceAbove** | | string | A marker in the file to replace text above. |
 | **jsFile** | **j** | string[] | jsFile to 'require' that has an export with the 'ArgumentConfig' export. Multiple file can be specified. |
 | **configImportName** | **c** | string[] | Export name of the 'ArgumentConfig' object. Defaults to 'usageGuideInfo'. Multiple exports can be specified. |
-| **verify** | **v** | | Verify the markdown file. Does not update the file but returns a non zero exit code if the markdown file is not correct. Useful for a pre-publish script. |
+| **verify** | **v** | boolean | Verify the markdown file. Does not update the file but returns a non zero exit code if the markdown file is not correct. Useful for a pre-publish script. |
 | **configFile** | **f** | string | Optional config file to load config from. package.json can be used if jsonPath specified as well |
 | **jsonPath** | **p** | string | Used in conjunction with 'configFile'. The path within the config file to load the config from. For example: 'configs.writeMarkdown' |
 | **verifyMessage** | | string | Optional message that is printed when markdown verification fails. |
-| **help** | **h** | | Show this usage guide. |
+| **help** | **h** | boolean | Show this usage guide. |
 
 
 ### Default Replacement Markers

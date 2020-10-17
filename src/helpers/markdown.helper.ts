@@ -121,7 +121,7 @@ export function getType(option: CommandLineOption): string {
     const type = option.type ? option.type.name.toLowerCase() : 'string';
     const multiple = option.multiple || option.lazyMultiple ? '[]' : '';
 
-    return type === 'boolean' ? '' : `${type}${multiple} `;
+    return `${type}${multiple} `;
 }
 
 export function generateUsageGuides(args: IWriteMarkDown): string[] {
