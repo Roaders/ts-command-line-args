@@ -33,8 +33,8 @@
         "prepack": "npm run build-release",
         "prewrite-markdown": "npm run build",
         "preverify-markdown": "npm run build",
-        "write-markdown": "node dist/write-markdown -m README.MD -j dist/write-markdown.constants.js",
-        "verify-markdown": "node dist/write-markdown -m README.MD -j dist/write-markdown.constants.js -v"
+        "write-markdown": "node dist/write-markdown -f package.json -p markdownConfig",
+        "verify-markdown": "node dist/write-markdown -f package.json -p markdownConfig -v"
     },
     "repository": {
         "type": "git",
@@ -71,5 +71,9 @@
         "rimraf": "^3.0.2",
         "ts-jest": "^26.3.0",
         "typescript": "^4.0.3"
+    },
+    "markdownConfig": {
+        "markdownPath": "README.MD",
+        "jsFile": "dist/write-markdown.constants.js"
     }
 }

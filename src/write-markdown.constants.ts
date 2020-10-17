@@ -41,11 +41,13 @@ export const argumentConfig: ArgumentConfig<IWriteMarkDown> = {
     },
     configFile: {
         type: String,
+        alias: 'f',
         optional: true,
         description: `Optional config file to load config from. package.json can be used if jsonPath specified as well`,
     },
     jsonPath: {
         type: String,
+        alias: 'p',
         optional: true,
         description: `Used in conjunction with 'configFile'. The path within the config file to load the config from. For example: 'configs.writeMarkdown'`,
     },
