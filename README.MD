@@ -6,6 +6,7 @@
 [![Build Status](https://travis-ci.com/Roaders/ts-command-line-args.svg?branch=master)](https://travis-ci.com/Roaders/ts-command-line-args)
 ![NPM](https://img.shields.io/npm/l/ts-command-line-args)
 ![Typescript](https://img.shields.io/badge/types-TypeScript-blue)
+[![codecov](https://codecov.io/gh/Roaders/ts-command-line-args/branch/master/graph/badge.svg?token=06AMYJTIUK)](https://codecov.io/gh/Roaders/ts-command-line-args/)
 
 ## Usage
 
