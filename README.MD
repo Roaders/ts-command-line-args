@@ -179,6 +179,12 @@ Any params passed on the command line will ovverride those defined in the file:
 
 ```bash
 $ node exampleConfig.js --configFile package.json --jsonPath copyFileConfig.copyFileOne --resetPermissions
+``` 
+
+Boolean values in a file can be overridden by just specfying the argName for true specifying the value:
+
+```bash
+$ myCommand --booleanOne --booleanTwo=false --booleanThree false -b=false -o=true --booleanFour=1
 ```
 
 When defining settings in a json file the values are still passed through the `type` function defined in your config so for this setup:
@@ -221,11 +227,7 @@ This settings file would be correctly parsed:
 }
 ```
 
-String values for booleans such as `"true"` or `"false"` would not be parsed correctly because of the way `Boolean` works. Boolean values in a file can be overridden by specifying the value:
-
-```bash
-$ myCommand --booleanOne=false --booleanTwo false -b=false -o=true --booleanThree=1
-```
+String values for booleans such as `"true"` or `"false"` would not be parsed correctly because of the way `Boolean` works.
 
 [//]: ####ts-command-line-args_write-markdown_replaceBelow  
 
