@@ -312,6 +312,8 @@ function(message: string){console.log(message);}
 
 [//]: ####ts-command-line-args_write-markdown_replaceAbove  
 
+(the **Markdown Generation** section above was generated using `write-markdown` )
+
 ### Javascript Exports
 
 To generate markdown we must export the argument definitions and options used by `command-line-usage` so that we can `require` the javascript file and import the definitions when running `write-markdown`. We cannot export these values from a javascript file that has any side effects (such as copying files in the case of a `copy-files` node executable) as the same side effects would be executed when we are just trying to generate markdown.
