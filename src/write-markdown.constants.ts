@@ -39,18 +39,37 @@ export const argumentConfig: ArgumentConfig<IWriteMarkDown> = {
         alias: 'v',
         description: `Verify the markdown file. Does not update the file but returns a non zero exit code if the markdown file is not correct. Useful for a pre-publish script.`,
     },
+    configFile: {
+        type: String,
+        alias: 'f',
+        optional: true,
+        description: `Optional config file to load config from. package.json can be used if jsonPath specified as well`,
+    },
+    jsonPath: {
+        type: String,
+        alias: 'p',
+        optional: true,
+        description: `Used in conjunction with 'configFile'. The path within the config file to load the config from. For example: 'configs.writeMarkdown'`,
+    },
+    verifyMessage: {
+        type: String,
+        optional: true,
+        description: `Optional message that is printed when markdown verification fails.`,
+    },
     help: { type: Boolean, alias: 'h', description: `Show this usage guide.` },
 };
 
 export const parseOptions: ParseOptions<IWriteMarkDown> = {
     helpArg: 'help',
+    loadFromFileArg: 'configFile',
+    loadFromFileJsonPathArg: 'jsonPath',
     baseCommand: `write-markdown`,
-    optionsHeaderLevel: 4,
+    optionsHeaderLevel: 3,
     optionsHeaderText: `write-markdown cli options`,
     headerContentSections: [
         {
             header: 'Markdown Generation',
-            headerLevel: 3,
+            headerLevel: 2,
             content: `A markdown version of the usage guide can be generated and inserted into an existing marakdown document.
 Markers in the document describe where the content should be inserted, existing content betweeen the markers is overwritten.`,
         },
@@ -61,7 +80,7 @@ Markers in the document describe where the content should be inserted, existing 
     footerContentSections: [
         {
             header: 'Default Replacement Markers',
-            headerLevel: 4,
+            headerLevel: 3,
             content: `replaceBelow defaults to:
 {code '${replaceBelowDefault}'}
 replaceAbove defaults to:
@@ -70,7 +89,7 @@ Note the double spaces at the end to signify to markdown that there should be a 
         },
         {
             header: 'String Formatting',
-            headerLevel: 4,
+            headerLevel: 3,
             content: `The only chalk modifiers supported when converting to markdown are {highlight bold} and {highlight italic}.
 For example:
 {code \\{bold bold text\\} \\{italic italic text\\} \\{italic.bold bold italic text\\}}
@@ -79,7 +98,7 @@ will be converted to:
         },
         {
             header: 'Additional Modifiers',
-            headerLevel: 4,
+            headerLevel: 3,
             content: `Two additional style modifiers have been added that are supported when writing markdown. They are removed when printing to the console.
 {code \\{highlight someText\\}}
 surrounds the text in backticks:

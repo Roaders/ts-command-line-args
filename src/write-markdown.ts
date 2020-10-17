@@ -23,12 +23,14 @@ function writeMarkdown() {
 
     switch (`${action}_${contentMatch}`) {
         case 'verify_match':
-            console.log(`Markdown file as expected. No update required.`);
+            console.log(`'${args.markdownPath}' content as expected. No update required.`);
             break;
         case 'verify_nonMatch':
-            throw new Error(`Markdown file out of date, update required.`);
+            throw new Error(
+                args.verifyMessage || `'${args.markdownPath}' file out of date. Rerun write-markdown to update.`,
+            );
         case 'write_match':
-            console.log(`Content not modified, not writing to file.`);
+            console.log(`'${args.markdownPath}' content not modified, not writing to file.`);
             break;
         case 'write_nonMatch':
             console.log(`Writing file to '${markdownPath}'`);

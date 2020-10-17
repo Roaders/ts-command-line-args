@@ -1,9 +1,18 @@
-import { ArgumentConfig, ParseOptions, UnkownProperties, CommandLineOption } from './contracts';
+import { ArgumentConfig, ParseOptions, UnkownProperties, CommandLineOption, UsageGuideOptions } from './contracts';
 import commandLineArgs from 'command-line-args';
 import commandLineUsage from 'command-line-usage';
-import { createCommandLineConfig, normaliseConfig, visit } from './helpers';
+import {
+    createCommandLineConfig,
+    getBooleanValues,
+    mergeConfig,
+    normaliseConfig,
+    removeBooleanValues,
+    visit,
+} from './helpers';
 import { getOptionSections } from './helpers/options.helper';
 import { removeAdditionalFormatting } from './helpers/string.helper';
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
 
 export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
     config: ArgumentConfig<T>,
@@ -11,12 +20,30 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
     exitProcess = true,
 ): T & UnkownProperties<P> {
     options = options || {};
+    const argsWithBooleanValues = options.argv || process.argv.slice(2);
     const logger = options.logger || console;
     const normalisedConfig = normaliseConfig(config);
+    options.argv = removeBooleanValues(argsWithBooleanValues, normalisedConfig);
     const optionList = createCommandLineConfig(normalisedConfig);
     let parsedArgs = commandLineArgs(optionList, options) as any;
+
     if (parsedArgs['_all'] != null) {
         parsedArgs = parsedArgs['_all'];
+    }
+
+    parsedArgs = { ...parsedArgs, ...getBooleanValues(argsWithBooleanValues, normalisedConfig) };
+
+    if (options.loadFromFileArg != null && parsedArgs[options.loadFromFileArg] != null) {
+        const configFromFile: Partial<Record<keyof T, any>> = JSON.parse(
+            readFileSync(resolve(parsedArgs[options.loadFromFileArg])).toString(),
+        );
+
+        parsedArgs = mergeConfig<T>(
+            parsedArgs,
+            configFromFile,
+            normalisedConfig,
+            options.loadFromFileJsonPathArg as keyof T | undefined,
+        );
     }
 
     const missingArgs = listMissingArgs(optionList, parsedArgs);
@@ -67,7 +94,7 @@ function printMissingArgErrors(missingArgs: CommandLineOption[], logger: Console
     });
 }
 
-function printUsageGuideMessage(options: ParseOptions<any> & { logger: Console }, helpParam?: CommandLineOption) {
+function printUsageGuideMessage(options: UsageGuideOptions & { logger: Console }, helpParam?: CommandLineOption) {
     if (helpParam != null) {
         const helpArg = helpParam.alias != null ? `-${helpParam.alias}` : `--${helpParam.name}`;
         const command = options.baseCommand != null ? `run '${options.baseCommand} ${helpArg}'` : `pass '${helpArg}'`;

@@ -5,7 +5,7 @@
 ![npm](https://img.shields.io/npm/v/ts-command-line-args)
 [![Build Status](https://travis-ci.com/Roaders/ts-command-line-args.svg?branch=master)](https://travis-ci.com/Roaders/ts-command-line-args)
 ![NPM](https://img.shields.io/npm/l/ts-command-line-args)
-![NPM](https://img.shields.io/badge/types-TypeScript-blue)
+![Typescript](https://img.shields.io/badge/types-TypeScript-blue)
 
 ## Usage
 
@@ -111,9 +111,125 @@ Footer
   Copyright: Big Faceless Corp. inc.
 ```
 
+### Loading Config from File
+
+The arguments for an application can also be defined in a config file. The following config allows this:
+
+```typescript
+interface ICopyFilesArguments {
+    sourcePath: string;
+    targetPath: string;
+    copyFiles: boolean;
+    resetPermissions: boolean;
+    filter?: string;
+    excludePaths?: string[];
+    configFile?: string;
+    jsonPath?: string;
+}
+
+export const args = parse<ICopyFilesArguments>(
+    {
+        sourcePath: String,
+        targetPath: String,
+        copyFiles: { type: Boolean },
+        resetPermissions: Boolean,
+        filter: { type: String, optional: true },
+        excludePaths: { type: String, multiple: true, optional: true },
+        configFile: { type: String, optional: true },
+        jsonPath: { type: String, optional: true },
+    },
+    {
+        loadFromFileArg: 'configFile',
+        loadFromFileJsonPathArg: 'jsonPath',
+    },
+);
+```
+
+With this configuration the same command line arguments can be passed:
+
+```bash
+$ node exampleConfig.js --sourcePath source --targetPath target
+```
+
+but the user of the script can use a config file instead:
+
+**package.json** (for example)
+```json
+{
+    "name": "myPackage",
+    "version": "0.1.1",
+    "copyFileConfig": {
+        "copyFileOne": {
+            "sourcePath": "source",
+            "targetPath": "target",
+            "copyFiles": true,
+            "resetPermissions": false,
+            "excludePaths": ["one", "two", "three"]
+        }
+    }
+}
+```
+
+```bash
+$ node exampleConfig.js --configFile package.json --jsonPath copyFileConfig.copyFileOne
+```
+
+Any params passed on the command line will ovverride those defined in the file:
+
+
+```bash
+$ node exampleConfig.js --configFile package.json --jsonPath copyFileConfig.copyFileOne --resetPermissions
+```
+
+When defining settings in a json file the values are still passed through the `type` function defined in your config so for this setup:
+
+```typescript
+interface ISampleConfig {
+    startDate: Date;
+    endDate: Date;
+    inclusive: boolean;
+    includeStart: boolean;
+    includeEnd: boolean;
+}
+
+function parseDate(value?: string) {
+    return value ? new Date(Date.parse(value)) : undefined;
+}
+
+export const args = parse<ISampleConfig>({
+    startDate: { type: parseDate },
+    endDate: { type: parseDate },
+    initialCount: Number,
+    endCount: Number,
+    inclusive: Boolean,
+    includeStart: Boolean,
+    includeEnd: Boolean,
+});
+```
+
+This settings file would be correctly parsed: 
+
+```json
+{
+    "startDate": "01/01/2020",
+    "endDate": "00010201T000000Z",
+    "initialCount": 1,
+    "endCount": "2",
+    "inclusive": true,
+    "includeStart": false,
+    "includeEnd": 1,
+}
+```
+
+String values for booleans such as `"true"` or `"false"` would not be parsed correctly because of the way `Boolean` works. Boolean values in a file can be overridden by specifying the value:
+
+```bash
+$ myCommand --booleanOne=false --booleanTwo false -b=false -o=true --booleanThree=1
+```
+
 [//]: ####ts-command-line-args_write-markdown_replaceBelow  
 
-### Markdown Generation
+## Markdown Generation
 
 A markdown version of the usage guide can be generated and inserted into an existing marakdown document.  
 Markers in the document describe where the content should be inserted, existing content betweeen the markers is overwritten.
@@ -123,7 +239,7 @@ Markers in the document describe where the content should be inserted, existing 
 `write-markdown -m README.MD -j usageGuideConstants.js`
 
 
-#### write-markdown cli options
+### write-markdown cli options
 
 | Argument | Alias | Type | Description |
 |-|-|-|-|
@@ -132,11 +248,14 @@ Markers in the document describe where the content should be inserted, existing 
 | **replaceAbove** | | string | A marker in the file to replace text above. |
 | **jsFile** | **j** | string[] | jsFile to 'require' that has an export with the 'ArgumentConfig' export. Multiple file can be specified. |
 | **configImportName** | **c** | string[] | Export name of the 'ArgumentConfig' object. Defaults to 'usageGuideInfo'. Multiple exports can be specified. |
-| **verify** | **v** | | Verify the markdown file. Does not update the file but returns a non zero exit code if the markdown file is not correct. Useful for a pre-publish script. |
-| **help** | **h** | | Show this usage guide. |
+| **verify** | **v** | boolean | Verify the markdown file. Does not update the file but returns a non zero exit code if the markdown file is not correct. Useful for a pre-publish script. |
+| **configFile** | **f** | string | Optional config file to load config from. package.json can be used if jsonPath specified as well |
+| **jsonPath** | **p** | string | Used in conjunction with 'configFile'. The path within the config file to load the config from. For example: 'configs.writeMarkdown' |
+| **verifyMessage** | | string | Optional message that is printed when markdown verification fails. |
+| **help** | **h** | boolean | Show this usage guide. |
 
 
-#### Default Replacement Markers
+### Default Replacement Markers
 
 replaceBelow defaults to:  
   
@@ -153,7 +272,7 @@ replaceAbove defaults to:
 Note the double spaces at the end to signify to markdown that there should be a new line.
 
 
-#### String Formatting
+### String Formatting
 
 The only chalk modifiers supported when converting to markdown are `bold` and `italic`.  
 For example:  
@@ -170,7 +289,7 @@ will be converted to:
 
 
 
-#### Additional Modifiers
+### Additional Modifiers
 
 Two additional style modifiers have been added that are supported when writing markdown. They are removed when printing to the console.  
   
@@ -193,7 +312,9 @@ function(message: string){console.log(message);}
 
 [//]: ####ts-command-line-args_write-markdown_replaceAbove  
 
-#### Javascript Exports
+(the **Markdown Generation** section above was generated using `write-markdown` )
+
+### Javascript Exports
 
 To generate markdown we must export the argument definitions and options used by `command-line-usage` so that we can `require` the javascript file and import the definitions when running `write-markdown`. We cannot export these values from a javascript file that has any side effects (such as copying files in the case of a `copy-files` node executable) as the same side effects would be executed when we are just trying to generate markdown.
 

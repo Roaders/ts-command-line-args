@@ -24,8 +24,8 @@ describe('markdown-helper', () => {
 |-|-|
 | **sourcePath** | string |
 | **targetPath** | string |
-| **copyFiles** | |
-| **resetPermissions** | |
+| **copyFiles** | boolean |
+| **resetPermissions** | boolean |
 | **filter** | string |
 | **excludePaths** | string[] |
 `);
@@ -42,7 +42,7 @@ describe('markdown-helper', () => {
 | **sourcePath** | | string | |
 | **targetPath** | | string | |
 | **copyFiles** | **c** | **file[]** | **bold text** *italic text* ***bold italic text*** |
-| **resetPermissions** | | | |
+| **resetPermissions** | | boolean | |
 | **filter** | | string | |
 | **excludePaths** | | string[] | |
 `);
@@ -52,7 +52,7 @@ describe('markdown-helper', () => {
         const usageGuide = createUsageGuide(writeMarkdownGuideInfo);
 
         expect(usageGuide).toEqual(`
-### Markdown Generation
+## Markdown Generation
 
 A markdown version of the usage guide can be generated and inserted into an existing marakdown document.  
 Markers in the document describe where the content should be inserted, existing content betweeen the markers is overwritten.
@@ -62,7 +62,7 @@ Markers in the document describe where the content should be inserted, existing 
 \`write-markdown -m README.MD -j usageGuideConstants.js\`
 
 
-#### write-markdown cli options
+### write-markdown cli options
 
 | Argument | Alias | Type | Description |
 |-|-|-|-|
@@ -71,11 +71,14 @@ Markers in the document describe where the content should be inserted, existing 
 | **replaceAbove** | | string | A marker in the file to replace text above. |
 | **jsFile** | **j** | string[] | jsFile to 'require' that has an export with the 'ArgumentConfig' export. Multiple file can be specified. |
 | **configImportName** | **c** | string[] | Export name of the 'ArgumentConfig' object. Defaults to 'usageGuideInfo'. Multiple exports can be specified. |
-| **verify** | **v** | | Verify the markdown file. Does not update the file but returns a non zero exit code if the markdown file is not correct. Useful for a pre-publish script. |
-| **help** | **h** | | Show this usage guide. |
+| **verify** | **v** | boolean | Verify the markdown file. Does not update the file but returns a non zero exit code if the markdown file is not correct. Useful for a pre-publish script. |
+| **configFile** | **f** | string | Optional config file to load config from. package.json can be used if jsonPath specified as well |
+| **jsonPath** | **p** | string | Used in conjunction with 'configFile'. The path within the config file to load the config from. For example: 'configs.writeMarkdown' |
+| **verifyMessage** | | string | Optional message that is printed when markdown verification fails. |
+| **help** | **h** | boolean | Show this usage guide. |
 
 
-#### Default Replacement Markers
+### Default Replacement Markers
 
 replaceBelow defaults to:  
   
@@ -92,7 +95,7 @@ replaceAbove defaults to:
 Note the double spaces at the end to signify to markdown that there should be a new line.
 
 
-#### String Formatting
+### String Formatting
 
 The only chalk modifiers supported when converting to markdown are \`bold\` and \`italic\`.  
 For example:  
@@ -109,7 +112,7 @@ will be converted to:
 
 
 
-#### Additional Modifiers
+### Additional Modifiers
 
 Two additional style modifiers have been added that are supported when writing markdown. They are removed when printing to the console.  
   
@@ -145,33 +148,7 @@ Generates something *very* important.
 
 | Argument | Alias | Type | Description |
 |-|-|-|-|
-| **help** | **h** | | Display this usage guide. |
-| **src** | | file ... | The input files to process |
-| **timeout** | **t** | ms | Timeout value in ms |
-
-
-## Misc
-
-| Argument | Type | Description |
-|-|-|-|
-| **plugin** | string | A plugin path |
-`);
-    });
-
-    it('should generate a usage guide with option groups', () => {
-        const usageGuide = createUsageGuide(typicalAppWithGroupsInfo);
-
-        expect(usageGuide).toEqual(`
-# A typical app
-
-Generates something *very* important.
-
-
-## Main options
-
-| Argument | Alias | Type | Description |
-|-|-|-|-|
-| **help** | **h** | | Display this usage guide. |
+| **help** | **h** | boolean | Display this usage guide. |
 | **src** | | file ... | The input files to process |
 | **timeout** | **t** | ms | Timeout value in ms |
 
@@ -203,7 +180,7 @@ $ example **--help**
 
 | Argument | Alias | Type | Description |
 |-|-|-|-|
-| **help** | **h** | | Display this usage guide. |
+| **help** | **h** | boolean | Display this usage guide. |
 | **src** | | file ... | The input files to process |
 | **timeout** | **t** | ms | Timeout value in ms |
 | **plugin** | | string | A plugin path |
