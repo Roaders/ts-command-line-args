@@ -221,7 +221,11 @@ This settings file would be correctly parsed:
 }
 ```
 
-String values for booleans such as `"true"` or `"false"` would not be parsed correctly because of the way `Boolean` works.
+String values for booleans such as `"true"` or `"false"` would not be parsed correctly because of the way `Boolean` works. Boolean values in a file can be overridden by specifying the value:
+
+```bash
+$ myCommand --booleanOne=false --booleanTwo false -b=false -o=true --booleanThree=1
+```
 
 [//]: ####ts-command-line-args_write-markdown_replaceBelow  
 
