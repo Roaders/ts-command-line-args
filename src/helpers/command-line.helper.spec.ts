@@ -68,7 +68,7 @@ describe('command-line.helper', () => {
                 strings: { type: String, multiple: true },
                 number: { type: Number },
                 boolean: { type: Boolean },
-                dates: { type: (value) => (value ? new Date(Date.parse(value)) : undefined), multiple: true },
+                dates: { type: (value) => new Date(Date.parse(value)), multiple: true },
                 configPath: { type: String, optional: true },
             };
         });
@@ -120,7 +120,7 @@ describe('command-line.helper', () => {
             { fromFile: { boolean: 1 }, expected: { boolean: true } },
             { fromFile: { boolean: 0 }, expected: { boolean: false } },
             { fromFile: { boolean: 'true' }, expected: { boolean: true } },
-            { fromFile: { boolean: 'false' }, expected: { boolean: true } }, // demonstrates that we should not use strings for booleans in json files
+            { fromFile: { boolean: 'false' }, expected: { boolean: false } },
             { fromFile: { dates: '2020/03/04' }, expected: { dates: [new Date(2020, 2, 4)] } },
             {
                 fromFile: { dates: ['2020/03/04', '2020/05/06'] },

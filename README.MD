@@ -199,8 +199,8 @@ interface ISampleConfig {
     includeEnd: boolean;
 }
 
-function parseDate(value?: string) {
-    return value ? new Date(Date.parse(value)) : undefined;
+function parseDate(value: any) {
+    return new Date(Date.parse(value));
 }
 
 export const args = parse<ISampleConfig>({
@@ -223,12 +223,10 @@ This settings file would be correctly parsed:
     "initialCount": 1,
     "endCount": "2",
     "inclusive": true,
-    "includeStart": false,
+    "includeStart": "false",
     "includeEnd": 1,
 }
 ```
-
-String values for booleans such as `"true"` or `"false"` would not be parsed correctly because of the way `Boolean` works.
 
 [//]: ####ts-command-line-args_write-markdown_replaceBelow  
 
