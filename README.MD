@@ -8,6 +8,39 @@
 ![Typescript](https://img.shields.io/badge/types-TypeScript-blue)
 [![codecov](https://codecov.io/gh/Roaders/ts-command-line-args/branch/master/graph/badge.svg?token=06AMYJTIUK)](https://codecov.io/gh/Roaders/ts-command-line-args/)
 
+## Features
+
+ * Converts command line arguments: 
+ ```bash
+ $ myCli --argOne=value --argTwo=otherValue
+ ``` 
+into strongly typed objects: 
+ ```typescript
+ { argOne: "value", argTwo: "otherValue"}
+ ```
+ * Support for optional values, multiple values, aliases
+ * Prints a useful error message and exits the process if required arguments are missing:
+ ```
+ $ node myExampleCli
+Required parameter 'sourcePath' was not passed. Please provide a value by running 'node exampleConfigWithHelp --sourcePath=passedValue'
+Required parameter 'targetPath' was not passed. Please provide a value by running 'node exampleConfigWithHelp --targetPath=passedValue'
+To view the help guide run 'node myExampleCli -h'
+ ```
+  * Supports printing usage guides to the console with a help argument:
+
+```
+$ node myExampleCli -h
+My Example CLI
+
+  Thanks for using Our Awesome Library
+
+Options
+  --sourcePath string
+  --targetPath string
+  -h, --help                Prints this usage guide
+```
+ * Supports writing the same usage guide to markdown (see [Markdown Generation][/#markdown-generation] section below)
+
 ## Usage
 
  Take a typescript interface (or type or class):
