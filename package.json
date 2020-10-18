@@ -47,11 +47,11 @@
     },
     "homepage": "https://github.com/Roaders/ts-command-line-args#readme",
     "dependencies": {
-        "@morgan-stanley/ts-mocking-bird": "^0.2.2",
         "command-line-args": "^5.1.1",
         "command-line-usage": "^6.1.0"
     },
     "devDependencies": {
+        "@morgan-stanley/ts-mocking-bird": "^0.2.2",
         "@types/command-line-args": "^5.0.0",
         "@types/command-line-usage": "^5.0.1",
         "@types/jest": "^26.0.10",
