@@ -107,10 +107,8 @@ function listMissingArgs<T>(commandLineConfig: CommandLineOption[], parsedArgs: 
     return commandLineConfig
         .filter((config) => config.optional == null && parsedArgs[config.name] == null)
         .filter((config) => {
-            const defaultedValue = config.type();
-
-            if (typeof defaultedValue === 'boolean') {
-                parsedArgs[config.name] = defaultedValue;
+            if (config.type.name === 'Boolean') {
+                parsedArgs[config.name] = false;
                 return false;
             }
 

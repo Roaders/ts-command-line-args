@@ -17,7 +17,7 @@ export type RequiredPropertyOptions<T> = Array<any> extends T
     ? PropertyOptions<T>
     : TypeConstructor<T> | PropertyOptions<T>;
 
-export type TypeConstructor<T> = (value?: string) => T extends Array<infer R> ? R | undefined : T | undefined;
+export type TypeConstructor<T> = (value: any) => T extends Array<infer R> ? R | undefined : T | undefined;
 
 export type PropertyOptions<T> = {
     /**

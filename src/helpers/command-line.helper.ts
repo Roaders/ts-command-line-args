@@ -63,13 +63,28 @@ function applyTypeConversion<T>(
         if (argumentOptions.multiple || argumentOptions.lazyMultiple) {
             const fileArrayValue = Array.isArray(fileValue) ? fileValue : [fileValue];
 
-            transformedParams[key] = fileArrayValue.map(argumentOptions.type) as any;
+            transformedParams[key] = fileArrayValue.map((arrayValue) =>
+                convertType(arrayValue, argumentOptions),
+            ) as any;
         } else {
-            transformedParams[key] = argumentOptions.type(fileValue) as any;
+            transformedParams[key] = convertType(fileValue, argumentOptions) as any;
         }
     });
 
     return transformedParams;
+}
+
+function convertType<T>(value: any, propOptions: PropertyOptions<T>): any {
+    if (propOptions.type.name === 'Boolean') {
+        switch (value) {
+            case 'true':
+                return propOptions.type(true);
+            case 'false':
+                return propOptions.type(false);
+        }
+    }
+
+    return propOptions.type(value);
 }
 
 type ArgsAndLastOption = { args: string[]; lastOption?: PropertyOptions<any> };
@@ -117,13 +132,13 @@ export function getBooleanValues<T>(args: string[], config: ArgumentOptions<T>):
         const { argOptions, argName, argValue } = getParamConfig(arg, config);
 
         if (isBoolean(argOptions) && argValue != null && argName != null) {
-            argsAndLastOption.partial[argName] = resolveBoolean(argValue, argOptions) as any;
+            argsAndLastOption.partial[argName] = convertType(argValue, argOptions) as any;
         } else if (
             argsAndLastOption.lastName != null &&
             isBoolean(argsAndLastOption.lastOption) &&
             booleanValue.some((boolValue) => boolValue === arg)
         ) {
-            argsAndLastOption.partial[argsAndLastOption.lastName] = resolveBoolean(
+            argsAndLastOption.partial[argsAndLastOption.lastName] = convertType(
                 arg,
                 argsAndLastOption.lastOption,
             ) as any;
@@ -132,17 +147,6 @@ export function getBooleanValues<T>(args: string[], config: ArgumentOptions<T>):
     }
 
     return args.reduce<PartialAndLastOption<T>>(getBooleanValues, { partial: {} }).partial;
-}
-
-function resolveBoolean(value: any, config: PropertyOptions<any>): boolean {
-    switch (value) {
-        case 'true':
-            return true;
-        case 'false':
-            return false;
-        default:
-            return config.type(value);
-    }
 }
 
 function isBoolean(option?: PropertyOptions<any>): option is PropertyOptions<any> {
