@@ -12,24 +12,24 @@
 
  * Converts command line arguments: 
  ```bash
- $ myCli --argOne=value --argTwo=otherValue
+ $ myExampleCli --sourcePath=pathOne --targetPath=pathTwo
  ``` 
 into strongly typed objects: 
  ```typescript
- { argOne: "value", argTwo: "otherValue"}
+ { sourcePath: "pathOne", targetPath: "pathTwo"}
  ```
  * Support for optional values, multiple values, aliases
  * Prints a useful error message and exits the process if required arguments are missing:
  ```
- $ node myExampleCli
-Required parameter 'sourcePath' was not passed. Please provide a value by running 'node exampleConfigWithHelp --sourcePath=passedValue'
-Required parameter 'targetPath' was not passed. Please provide a value by running 'node exampleConfigWithHelp --targetPath=passedValue'
-To view the help guide run 'node myExampleCli -h'
+ $ myExampleCli
+Required parameter 'sourcePath' was not passed. Please provide a value by running 'myExampleCli --sourcePath=passedValue'
+Required parameter 'targetPath' was not passed. Please provide a value by running 'myExampleCli --targetPath=passedValue'
+To view the help guide run 'myExampleCli -h'
  ```
   * Supports printing usage guides to the console with a help argument:
 
 ```
-$ node myExampleCli -h
+$ myExampleCli -h
 My Example CLI
 
   Thanks for using Our Awesome Library
