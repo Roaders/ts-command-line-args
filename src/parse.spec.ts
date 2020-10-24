@@ -190,9 +190,11 @@ describe('parse', () => {
             };
             mockHelper.setupFunction('mergeConfig', () => mergedConfig as any);
 
+            const argv = [...requiredString, ...requiredArray, ...optionalFileArg, ...optionalPathArg];
+
             const result = parse(getFileConfig(), {
                 logger: mockConsole.mock,
-                argv: [...requiredString, ...requiredArray, ...optionalFileArg, ...optionalPathArg],
+                argv,
                 loadFromFileArg: 'optionalFileArg',
                 loadFromFileJsonPathArg: 'optionalPathArg',
             });
@@ -207,12 +209,25 @@ describe('parse', () => {
                 optionalPathArg: 'configPath',
             };
 
+            const expectedParsedArgsWithoutDefaults = {
+                requiredString: 'requiredStringValue',
+                requiredArray: ['requiredArray'],
+                optionalFileArg: 'configFilePath',
+                optionalPathArg: 'configPath',
+            };
+
             expect(mockPath.withFunction('resolve').withParameters('configFilePath')).wasCalledOnce();
             expect(mockFs.withFunction('readFileSync').withParameters('configFilePath_resolved')).wasCalledOnce();
             expect(
                 mockHelper
                     .withFunction('mergeConfig')
-                    .withParametersEqualTo(expectedParsedArgs, jsonFromFile, any(), 'optionalPathArg' as any),
+                    .withParametersEqualTo(
+                        expectedParsedArgs,
+                        expectedParsedArgsWithoutDefaults,
+                        jsonFromFile,
+                        any(),
+                        'optionalPathArg' as any,
+                    ),
             ).wasCalledOnce();
         });
 
@@ -272,9 +287,11 @@ describe('parse', () => {
                 };
                 mockHelper.setupFunction('mergeConfig', () => mergedConfig as any);
 
+                const argv = [...optionalFileArg, ...test.args];
+
                 parse(getFileConfig(), {
                     logger: mockConsole.mock,
-                    argv: [...optionalFileArg, ...test.args],
+                    argv,
                     loadFromFileArg: 'optionalFileArg',
                     loadFromFileJsonPathArg: 'optionalPathArg',
                 });
@@ -285,10 +302,21 @@ describe('parse', () => {
                     ...test.expected,
                 };
 
+                const expectedParsedArgsWithoutDefaults = {
+                    optionalFileArg: 'configFilePath',
+                    ...test.expected,
+                };
+
                 expect(
                     mockHelper
                         .withFunction('mergeConfig')
-                        .withParametersEqualTo(expectedParsedArgs, jsonFromFile, any(), 'optionalPathArg' as any),
+                        .withParametersEqualTo(
+                            expectedParsedArgs,
+                            expectedParsedArgsWithoutDefaults,
+                            jsonFromFile,
+                            any(),
+                            'optionalPathArg' as any,
+                        ),
                 ).wasCalledOnce();
             });
         });

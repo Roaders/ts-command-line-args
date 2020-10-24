@@ -31,15 +31,22 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
         parsedArgs = parsedArgs['_all'];
     }
 
-    parsedArgs = { ...parsedArgs, ...getBooleanValues(argsWithBooleanValues, normalisedConfig) };
+    const booleanValues = getBooleanValues(argsWithBooleanValues, normalisedConfig);
+    parsedArgs = { ...parsedArgs, ...booleanValues };
 
     if (options.loadFromFileArg != null && parsedArgs[options.loadFromFileArg] != null) {
         const configFromFile: Partial<Record<keyof T, any>> = JSON.parse(
             readFileSync(resolve(parsedArgs[options.loadFromFileArg])).toString(),
         );
+        const parsedArgsWithoutDefaults = commandLineArgs(
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            optionList.map(({ defaultValue, ...option }) => ({ ...option })),
+            options,
+        ) as any;
 
         parsedArgs = mergeConfig<T>(
             parsedArgs,
+            { ...parsedArgsWithoutDefaults, ...booleanValues },
             configFromFile,
             normalisedConfig,
             options.loadFromFileJsonPathArg as keyof T | undefined,

@@ -368,7 +368,7 @@ const argumentConfig: ArgumentConfig<ICopyFilesArguments> = {
     help: { type: Boolean, optional: true, alias: 'h', description: 'Prints this usage guide' },
 };
 
-const parseOptions: = ParseOptions<ICopyFilesArguments>{
+const parseOptions: ParseOptions<ICopyFilesArguments> = {
         helpArg: 'help',
         headerContentSections: [{ header: 'copy-files', content: 'Copies files from sourcePath to targetPath' }],
     }
