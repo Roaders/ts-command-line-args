@@ -5,6 +5,7 @@ script: npm run build-release
 deploy:
   - provider: npm
     api_key: $NPM_TOKEN
+    email: giles@roadnight.name
     on:
       tags: true
     edge: true
