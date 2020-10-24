@@ -20,16 +20,17 @@ export function normaliseConfig<T>(config: ArgumentConfig<T>): ArgumentOptions<T
 
 export function mergeConfig<T>(
     parsedConfig: Partial<T>,
+    parsedConfigWithoutDefaults: Partial<T>,
     fileContent: Record<string, unknown>,
     options: ArgumentOptions<T>,
-    configParam?: keyof T,
+    jsonPath: keyof T | undefined,
 ): Partial<T> {
-    const configPath: string | undefined = configParam ? (parsedConfig[configParam] as any) : undefined;
+    const configPath: string | undefined = jsonPath ? (parsedConfig[jsonPath] as any) : undefined;
     const configFromFile = resolveConfigFromFile(fileContent, configPath);
     if (configFromFile == null) {
         throw new Error(`Could not resolve config object from specified file and path`);
     }
-    return { ...applyTypeConversion(configFromFile, options), ...parsedConfig };
+    return { ...parsedConfig, ...applyTypeConversion(configFromFile, options), ...parsedConfigWithoutDefaults };
 }
 
 function resolveConfigFromFile<T>(configfromFile: any, configPath?: string): Partial<Record<keyof T, any>> {

@@ -56,6 +56,7 @@ describe('command-line.helper', () => {
             number: number;
             boolean: boolean;
             dates: Date[];
+            optionalObject?: { value: string };
             configPath?: string;
         }
 
@@ -69,38 +70,149 @@ describe('command-line.helper', () => {
                 number: { type: Number },
                 boolean: { type: Boolean },
                 dates: { type: (value) => new Date(Date.parse(value)), multiple: true },
+                optionalObject: { type: (value) => (typeof value === 'string' ? { value } : value), optional: true },
                 configPath: { type: String, optional: true },
             };
         });
 
-        it('should return configFromFile untouched if no parsed args', () => {
-            const configfromFile: Partial<Record<keyof ISampleInterface, any>> = {
-                stringOne: 'stringOneFromFile',
-                stringTwo: 'stringTwoFromFile',
-            };
-            const result = mergeConfig<ISampleInterface>({}, configfromFile, options);
-
-            expect(result).toEqual(configfromFile);
-        });
-
-        it('should return configFromFile when filePathSet', () => {
-            const configfromFile: Partial<Record<keyof ISampleInterface, any>> = {
-                stringOne: 'stringOneFromFile',
-                stringTwo: 'stringTwoFromFile',
-            };
-            const fileContent = {
-                configs: {
-                    cmdLineConfig: {
-                        example: configfromFile,
+        type FileConfigTest = {
+            description: string;
+            parsedArgs: Partial<Record<keyof ISampleInterface, any>>;
+            parsedArgsNoDefaults?: Partial<Record<keyof ISampleInterface, any>>;
+            fileContent: Record<string, unknown>;
+            expected: Partial<ISampleInterface>;
+            jsonPath?: keyof ISampleInterface;
+        };
+        const fileConfigTests: FileConfigTest[] = [
+            {
+                description: 'no arguments passed',
+                parsedArgs: {},
+                fileContent: {
+                    stringOne: 'stringOneFromFile',
+                    stringTwo: 'stringTwoFromFile',
+                },
+                expected: {
+                    stringOne: 'stringOneFromFile',
+                    stringTwo: 'stringTwoFromFile',
+                },
+            },
+            {
+                description: 'file content is empty',
+                parsedArgs: {
+                    stringOne: 'stringOneFromArgs',
+                    stringTwo: 'stringTwoFromArgs',
+                    number: 36,
+                    boolean: false,
+                    dates: [new Date()],
+                },
+                fileContent: {},
+                expected: {
+                    stringOne: 'stringOneFromArgs',
+                    stringTwo: 'stringTwoFromArgs',
+                    number: 36,
+                    boolean: false,
+                    dates: [new Date()],
+                },
+            },
+            {
+                description: 'both file content and parsed args have values',
+                parsedArgs: {
+                    stringOne: 'stringOneFromArgs',
+                    boolean: false,
+                },
+                fileContent: {
+                    stringTwo: 'stringTwoFromFile',
+                    number: 55,
+                },
+                expected: {
+                    stringOne: 'stringOneFromArgs',
+                    boolean: false,
+                    stringTwo: 'stringTwoFromFile',
+                    number: 55,
+                },
+            },
+            {
+                description: 'file content and parsed args have conflicting values',
+                parsedArgs: {
+                    stringOne: 'stringOneFromArgs',
+                    number: 55,
+                    boolean: false,
+                    dates: [new Date(2020, 5, 1)],
+                },
+                fileContent: {
+                    stringOne: 'stringOneFromFile',
+                    stringTwo: 'stringTwoFromFile',
+                    number: 36,
+                    boolean: true,
+                    dates: 'March 1 2020',
+                    randomOtherProp: '',
+                },
+                expected: {
+                    stringOne: 'stringOneFromArgs',
+                    stringTwo: 'stringTwoFromFile',
+                    number: 55,
+                    boolean: false,
+                    dates: [new Date(2020, 5, 1)],
+                },
+            },
+            {
+                description: 'config file overrides default',
+                parsedArgs: { optionalObject: { value: 'parsedValue' } },
+                parsedArgsNoDefaults: {},
+                fileContent: {
+                    optionalObject: { value: 'valueFromFile' },
+                },
+                expected: {
+                    optionalObject: { value: 'valueFromFile' },
+                },
+            },
+            {
+                description: 'parsed args overrides config file and default',
+                parsedArgs: { optionalObject: { value: 'parsedValue' } },
+                parsedArgsNoDefaults: { optionalObject: { value: 'parsedValue' } },
+                fileContent: {
+                    optionalObject: { value: 'valueFromFile' },
+                },
+                expected: {
+                    optionalObject: { value: 'parsedValue' },
+                },
+            },
+            {
+                description: 'jsonPath set',
+                parsedArgs: {
+                    configPath: 'configs.cmdLineConfig.example',
+                },
+                fileContent: {
+                    configs: {
+                        cmdLineConfig: {
+                            example: {
+                                stringOne: 'stringOneFromFile',
+                                stringTwo: 'stringTwoFromFile',
+                            },
+                        },
                     },
                 },
-            };
-            const parsedArgs: Partial<ISampleInterface> = {
-                configPath: 'configs.cmdLineConfig.example',
-            };
-            const result = mergeConfig<ISampleInterface>(parsedArgs, fileContent, options, 'configPath');
+                expected: {
+                    stringOne: 'stringOneFromFile',
+                    stringTwo: 'stringTwoFromFile',
+                    configPath: 'configs.cmdLineConfig.example',
+                },
+                jsonPath: 'configPath',
+            },
+        ];
 
-            expect(result).toEqual({ ...configfromFile, ...parsedArgs });
+        fileConfigTests.forEach((test) => {
+            it(`should return configFromFile when ${test.description}`, () => {
+                const result = mergeConfig<ISampleInterface>(
+                    test.parsedArgs,
+                    test.parsedArgsNoDefaults || test.parsedArgs,
+                    test.fileContent,
+                    options,
+                    test.jsonPath,
+                );
+
+                expect(result).toEqual(test.expected);
+            });
         });
 
         type ConversionTest = {
@@ -132,67 +244,9 @@ describe('command-line.helper', () => {
             it(`should convert all configfromFile properties with type conversion function with input: '${JSON.stringify(
                 test.fromFile,
             )}'`, () => {
-                const result = mergeConfig<ISampleInterface>({}, test.fromFile, options);
+                const result = mergeConfig<ISampleInterface>({}, {}, test.fromFile, options, undefined);
 
                 expect(result).toEqual(test.expected);
-            });
-        });
-
-        it('should return parsed args untouched if configfromFile is empty', () => {
-            const parsedArgs: Partial<ISampleInterface> = {
-                stringOne: 'stringOneFromArgs',
-                stringTwo: 'stringTwoFromArgs',
-                number: 36,
-                boolean: false,
-                dates: [new Date()],
-            };
-            const result = mergeConfig<ISampleInterface>(parsedArgs, {}, options);
-
-            expect(result).toEqual(parsedArgs);
-        });
-
-        it('should return both parsed args and configfromFile properties', () => {
-            const parsedArgs: Partial<ISampleInterface> = {
-                stringOne: 'stringOneFromArgs',
-                boolean: false,
-            };
-            const configfromFile: Partial<Record<keyof ISampleInterface, any>> = {
-                stringTwo: 'stringTwoFromFile',
-                number: 55,
-            };
-            const result = mergeConfig<ISampleInterface>(parsedArgs, configfromFile, options);
-
-            expect(result).toEqual({
-                stringOne: 'stringOneFromArgs',
-                boolean: false,
-                stringTwo: 'stringTwoFromFile',
-                number: 55,
-            });
-        });
-
-        it('should override configfromFile properties with parsed args', () => {
-            const parsedArgs: Partial<ISampleInterface> = {
-                stringOne: 'stringOneFromArgs',
-                number: 55,
-                boolean: false,
-                dates: [new Date(2020, 5, 1)],
-            };
-            const configfromFile = {
-                stringOne: 'stringOneFromFile',
-                stringTwo: 'stringTwoFromFile',
-                number: 36,
-                boolean: true,
-                dates: 'March 1 2020',
-                randomOtherProp: '',
-            };
-            const result = mergeConfig<ISampleInterface>(parsedArgs, configfromFile, options);
-
-            expect(result).toEqual({
-                stringOne: 'stringOneFromArgs',
-                stringTwo: 'stringTwoFromFile',
-                number: 55,
-                boolean: false,
-                dates: [new Date(2020, 5, 1)],
             });
         });
     });
