@@ -54,7 +54,7 @@ export const argumentConfig: ArgumentConfig<IWriteMarkDown> = {
     verifyMessage: {
         type: String,
         optional: true,
-        description: `Optional message that is printed when markdown verification fails.`,
+        description: `Optional message that is printed when markdown verification fails. Use '{fileName}' to refer to the file being processed.`,
     },
     help: { type: Boolean, alias: 'h', description: `Show this usage guide.` },
 };
