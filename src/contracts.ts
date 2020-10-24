@@ -100,6 +100,12 @@ export interface UsageGuideOptions {
     optionsHeaderLevel?: HeaderLevel;
 
     /**
+     * The header level to use for sections. Can be overridden on indicividual section definitions
+     * defaults to 1
+     */
+    defaultSectionHeaderLevel?: HeaderLevel;
+
+    /**
      * Heading level text to use for options section
      * defaults to "Options";
      */

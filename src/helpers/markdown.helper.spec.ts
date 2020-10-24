@@ -48,7 +48,7 @@ describe('markdown-helper', () => {
 `);
     });
 
-    it('should generate a simple usage guide with sections', () => {
+    it('should generate a usage guide with sections', () => {
         const usageGuide = createUsageGuide(writeMarkdownGuideInfo);
 
         expect(usageGuide).toEqual(`

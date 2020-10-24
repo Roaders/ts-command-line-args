@@ -21,15 +21,15 @@ export function createUsageGuide<T = any>(config: UsageGuideConfig<T>): string {
     const footerSections = options.footerContentSections || [];
 
     return [
-        ...headerSections.map(createSection),
+        ...headerSections.map((section) => createSection(section, config)),
         ...createOptionsSections(config.arguments, options),
-        ...footerSections.map(createSection),
+        ...footerSections.map((section) => createSection(section, config)),
     ].join('\n');
 }
 
-export function createSection(section: Content): string {
+export function createSection<T>(section: Content, config: UsageGuideConfig<T>): string {
     return `
-${createHeading(section, 1)}
+${createHeading(section, config.parseOptions?.defaultSectionHeaderLevel || 1)}
 ${createSectionContent(section)}
 `;
 }

@@ -65,6 +65,7 @@ export const parseOptions: ParseOptions<IWriteMarkDown> = {
     loadFromFileJsonPathArg: 'jsonPath',
     baseCommand: `write-markdown`,
     optionsHeaderLevel: 3,
+    defaultSectionHeaderLevel: 3,
     optionsHeaderText: `write-markdown cli options`,
     headerContentSections: [
         {
@@ -80,7 +81,6 @@ Markers in the document describe where the content should be inserted, existing 
     footerContentSections: [
         {
             header: 'Default Replacement Markers',
-            headerLevel: 3,
             content: `replaceBelow defaults to:
 {code '${replaceBelowDefault}'}
 replaceAbove defaults to:
@@ -89,7 +89,6 @@ Note the double spaces at the end to signify to markdown that there should be a 
         },
         {
             header: 'String Formatting',
-            headerLevel: 3,
             content: `The only chalk modifiers supported when converting to markdown are {highlight bold} and {highlight italic}.
 For example:
 {code \\{bold bold text\\} \\{italic italic text\\} \\{italic.bold bold italic text\\}}
@@ -98,7 +97,6 @@ will be converted to:
         },
         {
             header: 'Additional Modifiers',
-            headerLevel: 3,
             content: `Two additional style modifiers have been added that are supported when writing markdown. They are removed when printing to the console.
 {code \\{highlight someText\\}}
 surrounds the text in backticks:
