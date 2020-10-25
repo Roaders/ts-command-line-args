@@ -63,14 +63,18 @@ ${rows.map((row) => `| ${cellKeys.map((key) => convertChalkStringToMarkdown(row[
 }
 
 export function createOptionsSections<T>(cliArguments: ArgumentConfig<T>, options: ParseOptions<any>): string[] {
-    return getOptionSections(options).map((section) => createOptionsSection(cliArguments, section));
+    const normalisedConfig = normaliseConfig(cliArguments);
+    const optionList = createCommandLineConfig(normalisedConfig);
+
+    if (optionList.length === 0) {
+        return [];
+    }
+
+    return getOptionSections(options).map((section) => createOptionsSection(optionList, section));
 }
 
-export function createOptionsSection<T>(cliArguments: ArgumentConfig<T>, content: OptionContent): string {
-    const normalisedConfig = normaliseConfig(cliArguments);
-    const optionList = createCommandLineConfig(normalisedConfig).filter((option) =>
-        filterOptions(option, content.group),
-    );
+export function createOptionsSection<T>(optionList: CommandLineOption<any>[], content: OptionContent): string {
+    optionList = optionList.filter((option) => filterOptions(option, content.group));
     const anyAlias = optionList.some((option) => option.alias != null);
     const anyDescription = optionList.some((option) => option.description != null);
 

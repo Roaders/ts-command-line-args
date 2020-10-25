@@ -1,4 +1,4 @@
-const chalkStringStyleRegExp = /(?<!\\){([^}]+?) (.+?[^\\])}/gm;
+const chalkStringStyleRegExp = /(?<!\\){([^}]+?)\W+(.+?[^\\])}/gms;
 const newLineRegExp = /\n/g;
 
 const highlightModifier = 'highlight';

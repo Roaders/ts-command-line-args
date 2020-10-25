@@ -71,7 +71,7 @@ export const parseOptions: ParseOptions<IWriteMarkDown> = {
         {
             header: 'Markdown Generation',
             headerLevel: 2,
-            content: `A markdown version of the usage guide can be generated and inserted into an existing marakdown document.
+            content: `A markdown version of the usage guide can be generated and inserted into an existing markdown document.
 Markers in the document describe where the content should be inserted, existing content betweeen the markers is overwritten.`,
         },
         {

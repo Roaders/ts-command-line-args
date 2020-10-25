@@ -54,7 +54,7 @@ describe('markdown-helper', () => {
         expect(usageGuide).toEqual(`
 ## Markdown Generation
 
-A markdown version of the usage guide can be generated and inserted into an existing marakdown document.  
+A markdown version of the usage guide can be generated and inserted into an existing markdown document.  
 Markers in the document describe where the content should be inserted, existing content betweeen the markers is overwritten.
 
 
@@ -198,6 +198,55 @@ $ example **--help**
 
 
 Project home: https://github.com/me/example
+`);
+    });
+
+    it('should generate a usage guide with json example', () => {
+        const typicalAppWithJSON: UsageGuideConfig<Record<string, string>> = {
+            arguments: {},
+            parseOptions: {
+                headerContentSections: [
+                    {
+                        header: 'A typical app',
+                        content: `Generates something {italic very} important.
+Some Json:
+
+{code.json
+\\{
+    "dependencies": \\{
+        "someDependency: "0.2.1",
+    \\},
+    "peerDependencies": \\{
+        "someDependency: "0.2.1",
+    \\}
+\\}
+}`,
+                    },
+                ],
+            },
+        };
+        const usageGuide = createUsageGuide(typicalAppWithJSON);
+
+        expect(usageGuide).toEqual(`
+# A typical app
+
+Generates something *very* important.  
+Some Json:  
+  
+  
+\`\`\`  
+json  
+{  
+    "dependencies": {  
+        "someDependency: "0.2.1",  
+    },  
+    "peerDependencies": {  
+        "someDependency: "0.2.1",  
+    }  
+}  
+  
+\`\`\`  
+
 `);
     });
 });
