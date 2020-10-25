@@ -265,7 +265,7 @@ This settings file would be correctly parsed:
 
 ## Markdown Generation
 
-A markdown version of the usage guide can be generated and inserted into an existing marakdown document.  
+A markdown version of the usage guide can be generated and inserted into an existing markdown document.  
 Markers in the document describe where the content should be inserted, existing content betweeen the markers is overwritten.
 
 
