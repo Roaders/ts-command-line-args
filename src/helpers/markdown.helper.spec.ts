@@ -234,8 +234,7 @@ Generates something *very* important.
 Some Json:  
   
   
-\`\`\`  
-json  
+\`\`\`json  
 {  
     "dependencies": {  
         "someDependency: "0.2.1",  
