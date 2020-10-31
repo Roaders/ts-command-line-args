@@ -102,6 +102,18 @@ export const exampleSections: UsageGuideConfig<ITypicalAppWithGroups> = {
                 content: 'Generates something {italic very} important.',
             },
             {
+                header: 'both',
+                includeIn: 'both',
+            },
+            {
+                header: 'cli',
+                includeIn: 'cli',
+            },
+            {
+                header: 'markdown',
+                includeIn: 'markdown',
+            },
+            {
                 header: 'Synopsis',
                 content: [
                     '$ example [{bold --timeout} {underline ms}] {bold --src} {underline file} ...',
@@ -128,6 +140,18 @@ export const exampleSections: UsageGuideConfig<ITypicalAppWithGroups> = {
                             '$ example --src galaxy1.facts galaxy1.facts galaxy2.facts galaxy3.facts galaxy4.facts galaxy5.facts',
                     },
                 ],
+            },
+            {
+                header: 'both',
+                includeIn: 'both',
+            },
+            {
+                header: 'cli',
+                includeIn: 'cli',
+            },
+            {
+                header: 'markdown',
+                includeIn: 'markdown',
             },
             {
                 content: 'Project home: {underline https://github.com/me/example}',

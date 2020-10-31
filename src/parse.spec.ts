@@ -468,54 +468,78 @@ describe('parse', () => {
         });
     });
 
-    it(`should print help messages and exit when help arg is passed`, () => {
-        const result = parse(getHelpConfig(), {
-            logger: mockConsole.mock,
-            argv: [...optionalHelpArg],
-            helpArg: 'optionalHelpArg',
-            headerContentSections: [{ header: 'Header', content: 'Header Content' }],
-            footerContentSections: [{ header: 'Footer', content: 'Footer Content' }],
-        });
+    describe(`should print help messages`, () => {
+        it(`and exit when help arg is passed`, () => {
+            const result = parse(getHelpConfig(), {
+                logger: mockConsole.mock,
+                argv: [...optionalHelpArg],
+                helpArg: 'optionalHelpArg',
+                headerContentSections: [
+                    { header: 'Header', content: 'Header Content' },
+                    { header: 'Header both', content: 'Header Content both', includeIn: 'both' },
+                    { header: 'Header cli', content: 'Header Content cli', includeIn: 'cli' },
+                    { header: 'Header markdown', content: 'Header markdown markdown', includeIn: 'markdown' },
+                ],
+                footerContentSections: [
+                    { header: 'Footer', content: 'Footer Content' },
+                    { header: 'Footer both', content: 'Footer Content both', includeIn: 'both' },
+                    { header: 'Footer cli', content: 'Footer Content cli', includeIn: 'cli' },
+                    { header: 'Footer markdown', content: 'Footer markdown markdown', includeIn: 'markdown' },
+                ],
+            });
 
-        function verifyHelpContent(content: string): string | boolean {
-            let currentIndex = 0;
+            function verifyHelpContent(content: string): string | boolean {
+                let currentIndex = 0;
 
-            function verifyNextContent(segment: string) {
-                const segmentIndex = content.indexOf(segment);
-                if (segmentIndex < 0) {
-                    return `Expected help content '${segment}' not found`;
+                function verifyNextContent(segment: string) {
+                    const segmentIndex = content.indexOf(segment);
+                    if (segmentIndex < 0) {
+                        return `Expected help content '${segment}' not found`;
+                    }
+                    if (segmentIndex < currentIndex) {
+                        return `Help content '${segment}' not in expected place`;
+                    }
+
+                    currentIndex = segmentIndex;
+                    return true;
                 }
-                if (segmentIndex < currentIndex) {
-                    return `Help content '${segment}' not in expected place`;
+
+                const helpContentSegments = [
+                    'Header',
+                    'Header Content',
+                    'Header both',
+                    'Header Content both',
+                    'Header cli',
+                    'Header Content cli',
+                    '-h',
+                    '--optionalHelpArg',
+                    'This help guide',
+                    'Footer',
+                    'Footer Content',
+                    'Footer both',
+                    'Footer Content both',
+                    'Footer cli',
+                    'Footer Content cli',
+                ];
+
+                const failures = helpContentSegments.map(verifyNextContent).filter((result) => result !== true);
+
+                if (content.indexOf('markdown') >= 0) {
+                    failures.push(`'markdown' found in usage guide`);
                 }
 
-                currentIndex = segmentIndex;
+                if (failures.length > 0) {
+                    return failures[0];
+                }
+
                 return true;
             }
 
-            const helpContentSegments = [
-                'Header',
-                'Header Content',
-                '-h',
-                '--optionalHelpArg',
-                'This help guide',
-                'Footer',
-                'Footer Content',
-            ];
-
-            const failures = helpContentSegments.map(verifyNextContent).filter((result) => result !== true);
-
-            if (failures.length > 0) {
-                return failures[0];
-            }
-
-            return true;
-        }
-
-        expect(result).toBeUndefined();
-        expect(mockProcess.withFunction('exit')).wasCalledOnce();
-        expect(mockConsole.withFunction('error')).wasNotCalled();
-        expect(mockConsole.withFunction('log').withParameters(verifyHelpContent)).wasCalledOnce();
+            expect(result).toBeUndefined();
+            expect(mockProcess.withFunction('exit')).wasCalledOnce();
+            expect(mockConsole.withFunction('error')).wasNotCalled();
+            expect(mockConsole.withFunction('log').withParameters(verifyHelpContent)).wasCalledOnce();
+        });
     });
 
     it(`it should print help messages and return partial arguments when help arg passed and exitProcess is false`, () => {

@@ -21,10 +21,14 @@ export function createUsageGuide<T = any>(config: UsageGuideConfig<T>): string {
     const footerSections = options.footerContentSections || [];
 
     return [
-        ...headerSections.map((section) => createSection(section, config)),
+        ...headerSections.filter(filterMarkdownSections).map((section) => createSection(section, config)),
         ...createOptionsSections(config.arguments, options),
-        ...footerSections.map((section) => createSection(section, config)),
+        ...footerSections.filter(filterMarkdownSections).map((section) => createSection(section, config)),
     ].join('\n');
+}
+
+function filterMarkdownSections(section: Content): boolean {
+    return section.includeIn == null || section.includeIn === 'both' || section.includeIn === 'markdown';
 }
 
 export function createSection<T>(section: Content, config: UsageGuideConfig<T>): string {

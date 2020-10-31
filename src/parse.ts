@@ -1,4 +1,11 @@
-import { ArgumentConfig, ParseOptions, UnkownProperties, CommandLineOption, UsageGuideOptions } from './contracts';
+import {
+    ArgumentConfig,
+    ParseOptions,
+    UnkownProperties,
+    CommandLineOption,
+    UsageGuideOptions,
+    Content,
+} from './contracts';
 import commandLineArgs from 'command-line-args';
 import commandLineUsage from 'command-line-usage';
 import {
@@ -57,9 +64,9 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
 
     if (options.helpArg != null && (parsedArgs as any)[options.helpArg]) {
         const sections = [
-            ...(options.headerContentSections || []),
+            ...(options.headerContentSections?.filter(filterCliSections) || []),
             ...getOptionSections(options).map((option) => ({ ...option, optionList })),
-            ...(options.footerContentSections || []),
+            ...(options.footerContentSections?.filter(filterCliSections) || []),
         ];
 
         visit(sections, (value) => {
@@ -87,6 +94,10 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
     } else {
         return parsedArgs as T & UnkownProperties<P>;
     }
+}
+
+function filterCliSections(section: Content): boolean {
+    return section.includeIn == null || section.includeIn === 'both' || section.includeIn === 'cli';
 }
 
 function printMissingArgErrors(missingArgs: CommandLineOption[], logger: Console, baseCommand?: string) {

@@ -170,6 +170,16 @@ Generates something *very* important.
 Generates something *very* important.
 
 
+# both
+
+
+
+
+# markdown
+
+
+
+
 # Synopsis
 
 $ example [**--timeout** ms] **--src** file ...
@@ -194,6 +204,16 @@ $ example **--help**
 | 1. A concise example.  | $ example -t 100 lib/*.js |
 | 2. A long example.  | $ example --timeout 100 --src lib/*.js |
 | 3. This example will scan space for unknown things. Take cure when scanning space, it could take some time.  | $ example --src galaxy1.facts galaxy1.facts galaxy2.facts galaxy3.facts galaxy4.facts galaxy5.facts |
+
+
+# both
+
+
+
+
+# markdown
+
+
 
 
 
