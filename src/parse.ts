@@ -81,6 +81,10 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
         const usageGuide = commandLineUsage(sections);
 
         logger.log(usageGuide);
+
+        if (exitProcess) {
+            return process.exit();
+        }
     } else if (missingArgs.length > 0) {
         printMissingArgErrors(missingArgs, logger, options.baseCommand);
         printUsageGuideMessage(

@@ -64,6 +64,18 @@ describe('parse', () => {
         };
     }
 
+    interface IOptionalArgs {
+        path?: string;
+        optionalHelpArg?: boolean;
+    }
+
+    function getAllOptionalHelpConfig(): ArgumentConfig<IOptionalArgs> {
+        return {
+            path: { type: String, optional: true },
+            optionalHelpArg: { type: Boolean, optional: true, alias: 'h', description: 'This help guide' },
+        };
+    }
+
     function getFileConfig(): ArgumentConfig<PropertiesWithFileConfig> {
         return {
             ...getConfig(),
@@ -470,7 +482,7 @@ describe('parse', () => {
 
     describe(`should print help messages`, () => {
         it(`and exit when help arg is passed`, () => {
-            const result = parse(getHelpConfig(), {
+            const result = parse(getAllOptionalHelpConfig(), {
                 logger: mockConsole.mock,
                 argv: [...optionalHelpArg],
                 helpArg: 'optionalHelpArg',
