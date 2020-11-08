@@ -47,6 +47,8 @@
     },
     "homepage": "https://github.com/Roaders/ts-command-line-args#readme",
     "dependencies": {
+        "@types/chalk": "^2.2.0",
+        "chalk": "^4.1.0",
         "command-line-args": "^5.1.1",
         "command-line-usage": "^6.1.0",
         "string-format": "^2.0.0"

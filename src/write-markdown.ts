@@ -7,6 +7,7 @@ import { readFileSync, writeFileSync } from 'fs';
 import { addContent, generateUsageGuides } from './helpers';
 import { argumentConfig, parseOptions } from './write-markdown.constants';
 import format from 'string-format';
+import chalk from 'chalk';
 
 function writeMarkdown() {
     const args = parse<IWriteMarkDown>(argumentConfig, parseOptions);
@@ -27,11 +28,14 @@ function writeMarkdown() {
             console.log(`'${args.markdownPath}' content as expected. No update required.`);
             break;
         case 'verify_nonMatch':
-            throw new Error(
-                format(args.verifyMessage || `'{fileName}' file out of date. Rerun write-markdown to update.`, {
-                    fileName: args.markdownPath,
-                }),
+            console.warn(
+                chalk.yellow(
+                    format(args.verifyMessage || `'{fileName}' file out of date. Rerun write-markdown to update.`, {
+                        fileName: args.markdownPath,
+                    }),
+                ),
             );
+            return process.exit(1);
         case 'write_match':
             console.log(`'${args.markdownPath}' content not modified, not writing to file.`);
             break;
