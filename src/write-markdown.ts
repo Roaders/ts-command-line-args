@@ -2,7 +2,7 @@
 
 import { parse } from './parse';
 import { IWriteMarkDown } from './contracts';
-import { resolve } from 'path';
+import { resolve, relative } from 'path';
 import { readFileSync, writeFileSync } from 'fs';
 import { addContent, generateUsageGuides } from './helpers';
 import { argumentConfig, parseOptions } from './write-markdown.constants';
@@ -23,25 +23,27 @@ function writeMarkdown() {
     const action = args.verify === true ? `verify` : `write`;
     const contentMatch = markdownFileContent === modifiedFileContent ? `match` : `nonMatch`;
 
+    const relativePath = relative(process.cwd(), markdownPath);
+
     switch (`${action}_${contentMatch}`) {
         case 'verify_match':
-            console.log(`'${args.markdownPath}' content as expected. No update required.`);
+            console.log(chalk.green(`'${relativePath}' content as expected. No update required.`));
             break;
         case 'verify_nonMatch':
             console.warn(
                 chalk.yellow(
-                    format(args.verifyMessage || `'{fileName}' file out of date. Rerun write-markdown to update.`, {
-                        fileName: args.markdownPath,
+                    format(args.verifyMessage || `'{relativePath}' file out of date. Rerun write-markdown to update.`, {
+                        fileName: relativePath,
                     }),
                 ),
             );
             return process.exit(1);
         case 'write_match':
-            console.log(`'${args.markdownPath}' content not modified, not writing to file.`);
+            console.log(chalk.blue(`'${relativePath}' content not modified, not writing to file.`));
             break;
         case 'write_nonMatch':
-            console.log(`Writing file to '${markdownPath}'`);
-            writeFileSync(markdownPath, modifiedFileContent);
+            console.log(chalk.green(`Writing file to '${relativePath}'`));
+            writeFileSync(relativePath, modifiedFileContent);
             break;
     }
 }

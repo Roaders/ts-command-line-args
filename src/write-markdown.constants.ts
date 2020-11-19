@@ -1,7 +1,7 @@
 import { ArgumentConfig, IWriteMarkDown, ParseOptions, UsageGuideConfig } from './contracts';
 
-export const replaceBelowDefault = `[//]: ####ts-command-line-args_write-markdown_replaceBelow  `;
-export const replaceAboveDefault = `[//]: ####ts-command-line-args_write-markdown_replaceAbove  `;
+export const replaceBelowDefault = `[//]: ####ts-command-line-args_write-markdown_replaceBelow`;
+export const replaceAboveDefault = `[//]: ####ts-command-line-args_write-markdown_replaceAbove`;
 export const configImportNameDefault = `usageGuideInfo`;
 
 export const argumentConfig: ArgumentConfig<IWriteMarkDown> = {
@@ -84,8 +84,7 @@ Markers in the document describe where the content should be inserted, existing 
             content: `replaceBelow defaults to:
 {code '${replaceBelowDefault}'}
 replaceAbove defaults to:
-{code '${replaceAboveDefault}'}
-Note the double spaces at the end to signify to markdown that there should be a new line.`,
+{code '${replaceAboveDefault}'}`,
         },
         {
             header: 'String Formatting',

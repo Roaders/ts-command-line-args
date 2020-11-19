@@ -6,8 +6,10 @@ export function addContent(inputString: string, content: string | string[], opti
 
     const lineBreak = findEscapeSequence(inputString);
     const lines = splitContent(inputString);
-    const replaceBelowIndex = lines.indexOf(options.replaceBelow);
-    const replaceAboveIndex = lines.indexOf(options.replaceAbove);
+    const replaceBelowLine: string | undefined = lines.filter((line) => line.indexOf(options.replaceBelow) === 0)[0];
+    const replaceBelowIndex = replaceBelowLine != null ? lines.indexOf(replaceBelowLine) : -1;
+    const replaceAboveLine: string | undefined = lines.filter((line) => line.indexOf(options.replaceAbove) === 0)[0];
+    const replaceAboveIndex = replaceAboveLine != null ? lines.indexOf(replaceAboveLine) : -1;
 
     if (replaceAboveIndex > -1 && replaceBelowIndex > -1 && replaceAboveIndex < replaceBelowIndex) {
         throw new Error(

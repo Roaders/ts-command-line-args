@@ -294,16 +294,15 @@ Markers in the document describe where the content should be inserted, existing 
 replaceBelow defaults to:  
   
 ```  
-'[//]: ####ts-command-line-args_write-markdown_replaceBelow  '  
+'[//]: ####ts-command-line-args_write-markdown_replaceBelow'  
 ```  
   
 replaceAbove defaults to:  
   
 ```  
-'[//]: ####ts-command-line-args_write-markdown_replaceAbove  '  
+'[//]: ####ts-command-line-args_write-markdown_replaceAbove'  
 ```  
-  
-Note the double spaces at the end to signify to markdown that there should be a new line.
+
 
 
 ### String Formatting
