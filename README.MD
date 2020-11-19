@@ -210,7 +210,6 @@ $ node exampleConfig.js --configFile package.json --jsonPath copyFileConfig.copy
 
 Any params passed on the command line will ovverride those defined in the file:
 
-
 ```bash
 $ node exampleConfig.js --configFile package.json --jsonPath copyFileConfig.copyFileOne --resetPermissions
 ``` 
@@ -268,10 +267,7 @@ This settings file would be correctly parsed:
 A markdown version of the usage guide can be generated and inserted into an existing markdown document.  
 Markers in the document describe where the content should be inserted, existing content betweeen the markers is overwritten.
 
-
-
 `write-markdown -m README.MD -j usageGuideConstants.js`
-
 
 ### write-markdown cli options
 
@@ -286,8 +282,8 @@ Markers in the document describe where the content should be inserted, existing 
 | **configFile** | **f** | string | Optional config file to load config from. package.json can be used if jsonPath specified as well |
 | **jsonPath** | **p** | string | Used in conjunction with 'configFile'. The path within the config file to load the config from. For example: 'configs.writeMarkdown' |
 | **verifyMessage** | | string | Optional message that is printed when markdown verification fails. Use '{fileName}' to refer to the file being processed. |
+| **removeDoubleBlankLines** | | boolean | When replacing content removes any more than a single blank line |
 | **help** | **h** | boolean | Show this usage guide. |
-
 
 ### Default Replacement Markers
 
@@ -303,8 +299,6 @@ replaceAbove defaults to:
 '[//]: ####ts-command-line-args_write-markdown_replaceAbove'  
 ```  
 
-
-
 ### String Formatting
 
 The only chalk modifiers supported when converting to markdown are `bold` and `italic`.  
@@ -319,8 +313,6 @@ will be converted to:
 ```  
 **boldText** *italic text* ***bold italic text***  
 ```  
-
-
 
 ### Additional Modifiers
 

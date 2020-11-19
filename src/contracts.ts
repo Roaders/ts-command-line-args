@@ -229,6 +229,7 @@ export interface Content extends SectionHeader {
 export interface IReplaceOptions {
     replaceBelow: string;
     replaceAbove: string;
+    removeDoubleBlankLines: boolean;
 }
 
 export type JsImport = { jsFile: string; importName: string };

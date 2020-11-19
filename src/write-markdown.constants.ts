@@ -56,6 +56,10 @@ export const argumentConfig: ArgumentConfig<IWriteMarkDown> = {
         optional: true,
         description: `Optional message that is printed when markdown verification fails. Use '\\{fileName\\}' to refer to the file being processed.`,
     },
+    removeDoubleBlankLines: {
+        type: Boolean,
+        description: 'When replacing content removes any more than a single blank line',
+    },
     help: { type: Boolean, alias: 'h', description: `Show this usage guide.` },
 };
 

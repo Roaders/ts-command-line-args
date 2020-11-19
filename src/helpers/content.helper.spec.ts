@@ -12,6 +12,7 @@ new content line two`;
             config = {
                 replaceAbove: '##replaceAbove',
                 replaceBelow: '##replaceBelow',
+                removeDoubleBlankLines: false,
             };
         });
 
@@ -138,6 +139,67 @@ content line 3`;
             expect(() => addContent(initial, newContent, config)).toThrowError(
                 `The replaceAbove marker '##replaceAbove' was found before the replaceBelow marker '##replaceBelow'. The replaceBelow marked must be before the replaceAbove.`,
             );
+        });
+
+        it('should not remove empty lines', () => {
+            const initial = `content line 1
+
+
+content line 2
+##replaceBelow
+##replaceAbove
+content line 3`;
+            const result = addContent(
+                initial,
+                `new content line one
+
+
+
+new content line two`,
+                config,
+            );
+
+            expect(result).toBe(`content line 1
+
+
+content line 2
+##replaceBelow
+new content line one
+
+
+
+new content line two
+##replaceAbove
+content line 3`);
+        });
+
+        it('should remove empty lines when passed in config', () => {
+            const initial = `content line 1
+
+
+content line 2
+##replaceBelow
+##replaceAbove
+content line 3`;
+            const result = addContent(
+                initial,
+                `new content line one
+
+
+
+new content line two`,
+                { ...config, removeDoubleBlankLines: true },
+            );
+
+            expect(result).toBe(`content line 1
+
+content line 2
+##replaceBelow
+new content line one
+
+new content line two
+##replaceAbove
+content line 3`);
         });
     });
 });

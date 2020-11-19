@@ -25,5 +25,19 @@ export function addContent(inputString: string, content: string | string[], opti
         new Array<string>(),
     );
 
-    return [...linesBefore, ...constantLines, ...linesAfter].join(lineBreak);
+    let allLines = [...linesBefore, ...constantLines, ...linesAfter];
+
+    if (options.removeDoubleBlankLines) {
+        allLines = allLines.filter((line, index, lines) => filterDoubleBlankLines(line, index, lines));
+    }
+
+    return allLines.join(lineBreak);
+}
+
+const nonWhitespaceRegExp = /[^ \t]/;
+
+function filterDoubleBlankLines(line: string, index: number, lines: string[]): boolean {
+    const previousLine = index > 0 ? lines[index - 1] : undefined;
+
+    return nonWhitespaceRegExp.test(line) || previousLine == null || nonWhitespaceRegExp.test(previousLine);
 }

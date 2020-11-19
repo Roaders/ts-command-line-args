@@ -75,6 +75,7 @@ Markers in the document describe where the content should be inserted, existing 
 | **configFile** | **f** | string | Optional config file to load config from. package.json can be used if jsonPath specified as well |
 | **jsonPath** | **p** | string | Used in conjunction with 'configFile'. The path within the config file to load the config from. For example: 'configs.writeMarkdown' |
 | **verifyMessage** | | string | Optional message that is printed when markdown verification fails. Use '{fileName}' to refer to the file being processed. |
+| **removeDoubleBlankLines** | | boolean | When replacing content removes any more than a single blank line |
 | **help** | **h** | boolean | Show this usage guide. |
 
 
@@ -83,16 +84,15 @@ Markers in the document describe where the content should be inserted, existing 
 replaceBelow defaults to:  
   
 \`\`\`  
-'[//]: ####ts-command-line-args_write-markdown_replaceBelow  '  
+'[//]: ####ts-command-line-args_write-markdown_replaceBelow'  
 \`\`\`  
   
 replaceAbove defaults to:  
   
 \`\`\`  
-'[//]: ####ts-command-line-args_write-markdown_replaceAbove  '  
+'[//]: ####ts-command-line-args_write-markdown_replaceAbove'  
 \`\`\`  
-  
-Note the double spaces at the end to signify to markdown that there should be a new line.
+
 
 
 ### String Formatting
