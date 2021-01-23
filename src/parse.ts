@@ -53,7 +53,7 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
 
         parsedArgs = mergeConfig<T>(
             parsedArgs,
-            { ...parsedArgsWithoutDefaults, ...booleanValues },
+            { ...parsedArgsWithoutDefaults },
             configFromFile,
             normalisedConfig,
             options.loadFromFileJsonPathArg as keyof T | undefined,
