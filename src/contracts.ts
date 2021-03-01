@@ -100,7 +100,7 @@ export interface UsageGuideOptions {
     optionsHeaderLevel?: HeaderLevel;
 
     /**
-     * The header level to use for sections. Can be overridden on indicividual section definitions
+     * The header level to use for sections. Can be overridden on individual section definitions
      * defaults to 1
      */
     defaultSectionHeaderLevel?: HeaderLevel;
@@ -209,6 +209,10 @@ export interface SectionHeader {
 export interface OptionContent extends SectionHeader {
     /** The group name or names. use '_none' for options without a group */
     group?: string | string[];
+    /** The names of one of more option definitions to hide from the option list.  */
+    hide?: string | string[];
+    /** If true, the option alias will be displayed after the name, i.e. --verbose, -v instead of -v, --verbose). */
+    reverseNameOrder?: boolean;
 }
 
 /** A Content section comprises a header and one or more lines of content. */
