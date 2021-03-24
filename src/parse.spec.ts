@@ -100,6 +100,8 @@ describe('parse', () => {
     const optionalHelpArg = ['--optionalHelpArg'];
     const optionalFileArg = ['--optionalFileArg=configFilePath'];
     const optionalPathArg = ['--optionalPathArg=configPath'];
+    const unknownStringValue = 'unknownStringValue';
+    const unknownString = ['--unknownOption', unknownStringValue];
 
     let jsonFromFile: Record<string, unknown>;
 
@@ -574,5 +576,50 @@ describe('parse', () => {
         });
         expect(mockProcess.withFunction('exit')).wasNotCalled();
         expect(mockConsole.withFunction('log')).wasCalledOnce();
+    });
+
+    it(`it should not print help messages and return unknown arguments when stopAtFirstUnknown is true`, () => {
+        const result = parse(getConfig(), {
+            logger: mockConsole.mock,
+            argv: [...requiredString, ...requiredArray, ...unknownString],
+            stopAtFirstUnknown: true,
+        });
+
+        expect(result).toEqual({
+            requiredString: requiredStringValue,
+            defaultedString: defaultFromOption,
+            requiredBoolean: false,
+            requiredArray: requiredArrayValue,
+            _unknown: [...unknownString],
+        });
+        expect(mockProcess.withFunction('exit')).wasNotCalled();
+        expect(mockConsole.withFunction('log')).wasNotCalled();
+    });
+
+    it(`it should not print help messages and return unknown arguments when stopAtFirstUnknown is true and using option groups`, () => {
+        interface GroupedArguments {
+            group1Arg: string;
+            group2Arg: string;
+        }
+
+        const result = parse<GroupedArguments>(
+            {
+                group1Arg: { type: String, group: 'Group1' },
+                group2Arg: { type: String, group: 'Group2' },
+            },
+            {
+                logger: mockConsole.mock,
+                argv: ['--group1Arg', 'group1', '--group2Arg', 'group2', ...unknownString],
+                stopAtFirstUnknown: true,
+            },
+        );
+
+        expect(result).toEqual({
+            group1Arg: 'group1',
+            group2Arg: 'group2',
+            _unknown: [...unknownString],
+        });
+        expect(mockProcess.withFunction('exit')).wasNotCalled();
+        expect(mockConsole.withFunction('log')).wasNotCalled();
     });
 });

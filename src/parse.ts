@@ -35,7 +35,11 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
     let parsedArgs = commandLineArgs(optionList, options) as any;
 
     if (parsedArgs['_all'] != null) {
+        const unknown = parsedArgs['_unknown'];
         parsedArgs = parsedArgs['_all'];
+        if (unknown) {
+            parsedArgs['_unknown'] = unknown;
+        }
     }
 
     const booleanValues = getBooleanValues(argsWithBooleanValues, normalisedConfig);
