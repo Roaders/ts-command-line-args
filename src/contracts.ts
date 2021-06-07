@@ -231,8 +231,8 @@ export interface Content extends SectionHeader {
 }
 
 export interface IReplaceOptions {
-    replaceBelow: string;
-    replaceAbove: string;
+    replaceBelow?: string;
+    replaceAbove?: string;
     removeDoubleBlankLines: boolean;
 }
 

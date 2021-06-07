@@ -3,6 +3,7 @@ import { ArgumentConfig, IWriteMarkDown, ParseOptions, UsageGuideConfig } from '
 export const replaceBelowDefault = `[//]: ####ts-command-line-args_write-markdown_replaceBelow`;
 export const replaceAboveDefault = `[//]: ####ts-command-line-args_write-markdown_replaceAbove`;
 export const configImportNameDefault = `usageGuideInfo`;
+export const footerReplaceBelowMarker = `[//]: ####ts-command-line-args_generated-by-footer`;
 
 export const argumentConfig: ArgumentConfig<IWriteMarkDown> = {
     markdownPath: {
@@ -15,23 +16,25 @@ export const argumentConfig: ArgumentConfig<IWriteMarkDown> = {
         type: String,
         defaultValue: replaceBelowDefault,
         description: `A marker in the file to replace text below.`,
+        optional: true,
     },
     replaceAbove: {
         type: String,
         defaultValue: replaceAboveDefault,
         description: `A marker in the file to replace text above.`,
+        optional: true,
     },
     jsFile: {
         type: String,
         alias: 'j',
-        description: `jsFile to 'require' that has an export with the 'ArgumentConfig' export. Multiple file can be specified.`,
+        description: `jsFile to 'require' that has an export with the 'UsageGuideConfig' export. Multiple file can be specified.`,
         multiple: true,
     },
     configImportName: {
         type: String,
         alias: 'c',
         defaultValue: [configImportNameDefault],
-        description: `Export name of the 'ArgumentConfig' object. Defaults to '${configImportNameDefault}'. Multiple exports can be specified.`,
+        description: `Export name of the 'UsageGuideConfig' object. Defaults to '${configImportNameDefault}'. Multiple exports can be specified.`,
         multiple: true,
     },
     verify: {

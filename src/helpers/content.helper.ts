@@ -1,14 +1,25 @@
 import { IReplaceOptions } from '../contracts';
 import { splitContent, findEscapeSequence } from './line-ending.helper';
 
+/**
+ * Adds or replaces content between 2 markers within a text string
+ * @param inputString
+ * @param content
+ * @param options
+ * @returns
+ */
 export function addContent(inputString: string, content: string | string[], options: IReplaceOptions): string {
+    const replaceBelow = options?.replaceBelow;
+    const replaceAbove = options?.replaceAbove;
     content = Array.isArray(content) ? content : [content];
 
     const lineBreak = findEscapeSequence(inputString);
     const lines = splitContent(inputString);
-    const replaceBelowLine: string | undefined = lines.filter((line) => line.indexOf(options.replaceBelow) === 0)[0];
+    const replaceBelowLine =
+        replaceBelow != null ? lines.filter((line) => line.indexOf(replaceBelow) === 0)[0] : undefined;
     const replaceBelowIndex = replaceBelowLine != null ? lines.indexOf(replaceBelowLine) : -1;
-    const replaceAboveLine: string | undefined = lines.filter((line) => line.indexOf(options.replaceAbove) === 0)[0];
+    const replaceAboveLine =
+        replaceAbove != null ? lines.filter((line) => line.indexOf(replaceAbove) === 0)[0] : undefined;
     const replaceAboveIndex = replaceAboveLine != null ? lines.indexOf(replaceAboveLine) : -1;
 
     if (replaceAboveIndex > -1 && replaceBelowIndex > -1 && replaceAboveIndex < replaceBelowIndex) {
