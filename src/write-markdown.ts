@@ -4,7 +4,7 @@ import { parse } from './parse';
 import { IWriteMarkDown } from './contracts';
 import { resolve, relative } from 'path';
 import { readFileSync, writeFileSync } from 'fs';
-import { addContent, generateUsageGuides } from './helpers';
+import { addCommandLineArgsFooter, addContent, generateUsageGuides } from './helpers';
 import { argumentConfig, parseOptions } from './write-markdown.constants';
 import format from 'string-format';
 import chalk from 'chalk';
@@ -18,7 +18,10 @@ function writeMarkdown() {
     const markdownFileContent = readFileSync(markdownPath).toString();
 
     const usageGuides = generateUsageGuides(args);
-    const modifiedFileContent = addContent(markdownFileContent, usageGuides, args);
+    let modifiedFileContent = addContent(markdownFileContent, usageGuides, args);
+    if (!args.skipFooter) {
+        modifiedFileContent = addCommandLineArgsFooter(modifiedFileContent);
+    }
 
     const action = args.verify === true ? `verify` : `write`;
     const contentMatch = markdownFileContent === modifiedFileContent ? `match` : `nonMatch`;

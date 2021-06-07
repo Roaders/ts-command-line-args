@@ -247,6 +247,7 @@ export interface IWriteMarkDown extends IReplaceOptions {
     configFile?: string;
     jsonPath?: string;
     verifyMessage?: string;
+    skipFooter: boolean;
 }
 
 export type UsageGuideConfig<T = any> = {
