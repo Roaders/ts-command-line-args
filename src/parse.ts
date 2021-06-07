@@ -1,7 +1,7 @@
 import {
     ArgumentConfig,
     ParseOptions,
-    UnkownProperties,
+    UnknownProperties,
     CommandLineOption,
     UsageGuideOptions,
     Content,
@@ -25,7 +25,7 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
     config: ArgumentConfig<T>,
     options: P = {} as any,
     exitProcess = true,
-): T & UnkownProperties<P> {
+): T & UnknownProperties<P> {
     options = options || {};
     const argsWithBooleanValues = options.argv || process.argv.slice(2);
     const logger = options.logger || console;
@@ -100,7 +100,7 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
     if (missingArgs.length > 0 && exitProcess) {
         process.exit();
     } else {
-        return parsedArgs as T & UnkownProperties<P>;
+        return parsedArgs as T & UnknownProperties<P>;
     }
 }
 

@@ -186,7 +186,7 @@ export interface StopParseOptions extends ArgsParseOptions<any> {
 
 type UnknownProps = { _unknown: string[] };
 
-export type UnkownProperties<T> = T extends PartialParseOptions
+export type UnknownProperties<T> = T extends PartialParseOptions
     ? UnknownProps
     : T extends StopParseOptions
     ? UnknownProps
