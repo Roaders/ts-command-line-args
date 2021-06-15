@@ -35,9 +35,12 @@ function writeMarkdown() {
         case 'verify_nonMatch':
             console.warn(
                 chalk.yellow(
-                    format(args.verifyMessage || `'{relativePath}' file out of date. Rerun write-markdown to update.`, {
-                        fileName: relativePath,
-                    }),
+                    format(
+                        args.verifyMessage || `'${relativePath}' file out of date. Rerun write-markdown to update.`,
+                        {
+                            fileName: relativePath,
+                        },
+                    ),
                 ),
             );
             return process.exit(1);
