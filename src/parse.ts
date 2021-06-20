@@ -73,11 +73,20 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
             return process.exit();
         }
     } else if (missingArgs.length > 0) {
-        printMissingArgErrors(missingArgs, logger, options.baseCommand);
-        printUsageGuideMessage(
-            { ...options, logger },
-            options.helpArg != null ? optionList.filter((option) => option.name === options.helpArg)[0] : undefined,
-        );
+        if (options.showHelpWhenArgsMissing) {
+            const missingArgsHeader =
+                typeof options.helpWhenArgMissingHeader === 'function'
+                    ? options.helpWhenArgMissingHeader(missingArgs)
+                    : options.helpWhenArgMissingHeader;
+            const additionalHeaderSections: Content[] = missingArgsHeader != null ? [missingArgsHeader] : [];
+            printHelpGuide(options, optionList, logger, additionalHeaderSections);
+        } else {
+            printMissingArgErrors(missingArgs, logger, options.baseCommand);
+            printUsageGuideMessage(
+                { ...options, logger },
+                options.helpArg != null ? optionList.filter((option) => option.name === options.helpArg)[0] : undefined,
+            );
+        }
     }
 
     if (missingArgs.length > 0 && exitProcess) {
@@ -87,8 +96,14 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
     }
 }
 
-function printHelpGuide<T>(options: ParseOptions<T>, optionList: CommandLineOption<T>[], logger: Console) {
+function printHelpGuide<T>(
+    options: ParseOptions<T>,
+    optionList: CommandLineOption<T>[],
+    logger: Console,
+    additionalHeaderSections: Content[] = [],
+) {
     const sections = [
+        ...additionalHeaderSections,
         ...(options.headerContentSections?.filter(filterCliSections) || []),
         ...getOptionSections(options).map((option) => ({ ...option, optionList })),
         ...(options.footerContentSections?.filter(filterCliSections) || []),
@@ -133,7 +148,7 @@ function printUsageGuideMessage(options: UsageGuideOptions & { logger: Console }
     }
 }
 
-function listMissingArgs<T>(commandLineConfig: CommandLineOption[], parsedArgs: commandLineArgs.CommandLineOptions) {
+function listMissingArgs(commandLineConfig: CommandLineOption[], parsedArgs: commandLineArgs.CommandLineOptions) {
     return commandLineConfig
         .filter((config) => config.optional == null && parsedArgs[config.name] == null)
         .filter((config) => {

@@ -167,6 +167,20 @@ export interface ArgsParseOptions<T extends { [name: string]: any }> extends Usa
      * }
      */
     loadFromFileJsonPathArg?: keyof PickType<T, string>;
+
+    /**
+     * By default when a required arg is missing an error will be thrown.
+     * If this set to true the usage guide will be printed out instead
+     */
+    showHelpWhenArgsMissing?: boolean;
+
+    /**
+     * If showHelpWhenArgsMissing is enabled this header section is displayed before the help content.
+     * A static section can be defined or a function that will return a section. This function is passed an array of required params that where not supplied.
+     */
+    helpWhenArgMissingHeader?:
+        | ((missingArgs: CommandLineOption[]) => Omit<Content, 'includeIn'>)
+        | Omit<Content, 'includeIn'>;
 }
 
 export interface PartialParseOptions extends ArgsParseOptions<any> {
