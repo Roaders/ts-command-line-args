@@ -167,6 +167,25 @@ export interface ArgsParseOptions<T extends { [name: string]: any }> extends Usa
      * }
      */
     loadFromFileJsonPathArg?: keyof PickType<T, string>;
+
+    /**
+     * When set to true the error message stating which arguments are missing are not printed
+     */
+    hideMissingArgMessages?: boolean;
+
+    /**
+     * By default when a required arg is missing an error will be thrown.
+     * If this set to true the usage guide will be printed out instead
+     */
+    showHelpWhenArgsMissing?: boolean;
+
+    /**
+     * If showHelpWhenArgsMissing is enabled this header section is displayed before the help content.
+     * A static section can be defined or a function that will return a section. This function is passed an array of required params that where not supplied.
+     */
+    helpWhenArgMissingHeader?:
+        | ((missingArgs: CommandLineOption[]) => Omit<Content, 'includeIn'>)
+        | Omit<Content, 'includeIn'>;
 }
 
 export interface PartialParseOptions extends ArgsParseOptions<any> {
@@ -183,6 +202,16 @@ export interface StopParseOptions extends ArgsParseOptions<any> {
      */
     stopAtFirstUnknown: true;
 }
+
+export type CommandLineResults<R extends boolean> = R extends false
+    ? // eslint-disable-next-line @typescript-eslint/ban-types
+      {}
+    : {
+          _commandLineResults: {
+              missingArgs: CommandLineOption[];
+              printHelp: () => void;
+          };
+      };
 
 type UnknownProps = { _unknown: string[] };
 

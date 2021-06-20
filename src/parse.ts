@@ -5,6 +5,7 @@ import {
     CommandLineOption,
     UsageGuideOptions,
     Content,
+    CommandLineResults,
 } from './contracts';
 import commandLineArgs from 'command-line-args';
 import commandLineUsage from 'command-line-usage';
@@ -21,11 +22,20 @@ import { removeAdditionalFormatting } from './helpers/string.helper';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
-export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
+/**
+ * parses command line arguments and returns an object with all the arguments in IF all required options passed
+ * @param config the argument config. Required, used to determine what arguments are expected
+ * @param options
+ * @param exitProcess defaults to true. The process will exit if any required arguments are omitted
+ * @param addCommandLineResults defaults to false. If passed an additional _commandLineResults object will be returned in the result
+ * @returns
+ */
+export function parse<T, P extends ParseOptions<T> = ParseOptions<T>, R extends boolean = false>(
     config: ArgumentConfig<T>,
     options: P = {} as any,
     exitProcess = true,
-): T & UnknownProperties<P> {
+    addCommandLineResults?: R,
+): T & UnknownProperties<P> & CommandLineResults<R> {
     options = options || {};
     const argsWithBooleanValues = options.argv || process.argv.slice(2);
     const logger = options.logger || console;
@@ -67,41 +77,69 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
     const missingArgs = listMissingArgs(optionList, parsedArgs);
 
     if (options.helpArg != null && (parsedArgs as any)[options.helpArg]) {
-        const sections = [
-            ...(options.headerContentSections?.filter(filterCliSections) || []),
-            ...getOptionSections(options).map((option) => ({ ...option, optionList })),
-            ...(options.footerContentSections?.filter(filterCliSections) || []),
-        ];
-
-        visit(sections, (value) => {
-            switch (typeof value) {
-                case 'string':
-                    return removeAdditionalFormatting(value);
-                default:
-                    return value;
-            }
-        });
-
-        const usageGuide = commandLineUsage(sections);
-
-        logger.log(usageGuide);
+        printHelpGuide(options, optionList, logger);
 
         if (exitProcess) {
             return process.exit();
         }
     } else if (missingArgs.length > 0) {
-        printMissingArgErrors(missingArgs, logger, options.baseCommand);
-        printUsageGuideMessage(
-            { ...options, logger },
-            options.helpArg != null ? optionList.filter((option) => option.name === options.helpArg)[0] : undefined,
-        );
+        if (options.showHelpWhenArgsMissing) {
+            const missingArgsHeader =
+                typeof options.helpWhenArgMissingHeader === 'function'
+                    ? options.helpWhenArgMissingHeader(missingArgs)
+                    : options.helpWhenArgMissingHeader;
+            const additionalHeaderSections: Content[] = missingArgsHeader != null ? [missingArgsHeader] : [];
+            printHelpGuide(options, optionList, logger, additionalHeaderSections);
+        } else if (options.hideMissingArgMessages !== true) {
+            printMissingArgErrors(missingArgs, logger, options.baseCommand);
+            printUsageGuideMessage(
+                { ...options, logger },
+                options.helpArg != null ? optionList.filter((option) => option.name === options.helpArg)[0] : undefined,
+            );
+        }
     }
+
+    const _commandLineResults = {
+        missingArgs: missingArgs,
+        printHelp: () => printHelpGuide(options, optionList, logger),
+    };
 
     if (missingArgs.length > 0 && exitProcess) {
         process.exit();
     } else {
-        return parsedArgs as T & UnknownProperties<P>;
+        if (addCommandLineResults) {
+            parsedArgs = { ...parsedArgs, _commandLineResults };
+        }
+
+        return parsedArgs as T & UnknownProperties<P> & CommandLineResults<R>;
     }
+}
+
+function printHelpGuide<T>(
+    options: ParseOptions<T>,
+    optionList: CommandLineOption<T>[],
+    logger: Console,
+    additionalHeaderSections: Content[] = [],
+) {
+    const sections = [
+        ...additionalHeaderSections,
+        ...(options.headerContentSections?.filter(filterCliSections) || []),
+        ...getOptionSections(options).map((option) => ({ ...option, optionList })),
+        ...(options.footerContentSections?.filter(filterCliSections) || []),
+    ];
+
+    visit(sections, (value) => {
+        switch (typeof value) {
+            case 'string':
+                return removeAdditionalFormatting(value);
+            default:
+                return value;
+        }
+    });
+
+    const usageGuide = commandLineUsage(sections);
+
+    logger.log(usageGuide);
 }
 
 function filterCliSections(section: Content): boolean {
@@ -129,7 +167,7 @@ function printUsageGuideMessage(options: UsageGuideOptions & { logger: Console }
     }
 }
 
-function listMissingArgs<T>(commandLineConfig: CommandLineOption[], parsedArgs: commandLineArgs.CommandLineOptions) {
+function listMissingArgs(commandLineConfig: CommandLineOption[], parsedArgs: commandLineArgs.CommandLineOptions) {
     return commandLineConfig
         .filter((config) => config.optional == null && parsedArgs[config.name] == null)
         .filter((config) => {
