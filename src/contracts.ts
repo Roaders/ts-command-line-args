@@ -203,12 +203,15 @@ export interface StopParseOptions extends ArgsParseOptions<any> {
     stopAtFirstUnknown: true;
 }
 
-export type CommandLineResults = {
-    _commandLineResults: {
-        missingArgs: CommandLineOption[];
-        printHelp: () => void;
-    };
-};
+export type CommandLineResults<R extends boolean> = R extends false
+    ? // eslint-disable-next-line @typescript-eslint/ban-types
+      {}
+    : {
+          _commandLineResults: {
+              missingArgs: CommandLineOption[];
+              printHelp: () => void;
+          };
+      };
 
 type UnknownProps = { _unknown: string[] };
 

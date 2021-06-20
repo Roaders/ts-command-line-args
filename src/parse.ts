@@ -22,11 +22,20 @@ import { removeAdditionalFormatting } from './helpers/string.helper';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
-export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
+/**
+ * parses command line arguments and returns an object with all the arguments in IF all required options passed
+ * @param config the argument config. Required, used to determine what arguments are expected
+ * @param options
+ * @param exitProcess defaults to true. The process will exit if any required arguments are omitted
+ * @param addCommandLineResults defaults to false. If passed an additional _commandLineResults object will be returned in the result
+ * @returns
+ */
+export function parse<T, P extends ParseOptions<T> = ParseOptions<T>, R extends boolean = false>(
     config: ArgumentConfig<T>,
     options: P = {} as any,
     exitProcess = true,
-): T & UnknownProperties<P> & CommandLineResults {
+    addCommandLineResults?: R,
+): T & UnknownProperties<P> & CommandLineResults<R> {
     options = options || {};
     const argsWithBooleanValues = options.argv || process.argv.slice(2);
     const logger = options.logger || console;
@@ -98,7 +107,11 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
     if (missingArgs.length > 0 && exitProcess) {
         process.exit();
     } else {
-        return { ...parsedArgs, _commandLineResults } as T & UnknownProperties<P> & CommandLineResults;
+        if (addCommandLineResults) {
+            parsedArgs = { ...parsedArgs, _commandLineResults };
+        }
+
+        return parsedArgs as T & UnknownProperties<P> & CommandLineResults<R>;
     }
 }
 
