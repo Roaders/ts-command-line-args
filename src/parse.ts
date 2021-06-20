@@ -67,24 +67,7 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
     const missingArgs = listMissingArgs(optionList, parsedArgs);
 
     if (options.helpArg != null && (parsedArgs as any)[options.helpArg]) {
-        const sections = [
-            ...(options.headerContentSections?.filter(filterCliSections) || []),
-            ...getOptionSections(options).map((option) => ({ ...option, optionList })),
-            ...(options.footerContentSections?.filter(filterCliSections) || []),
-        ];
-
-        visit(sections, (value) => {
-            switch (typeof value) {
-                case 'string':
-                    return removeAdditionalFormatting(value);
-                default:
-                    return value;
-            }
-        });
-
-        const usageGuide = commandLineUsage(sections);
-
-        logger.log(usageGuide);
+        printHelpGuide(options, optionList, logger);
 
         if (exitProcess) {
             return process.exit();
@@ -102,6 +85,27 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
     } else {
         return parsedArgs as T & UnknownProperties<P>;
     }
+}
+
+function printHelpGuide<T>(options: ParseOptions<T>, optionList: CommandLineOption<T>[], logger: Console) {
+    const sections = [
+        ...(options.headerContentSections?.filter(filterCliSections) || []),
+        ...getOptionSections(options).map((option) => ({ ...option, optionList })),
+        ...(options.footerContentSections?.filter(filterCliSections) || []),
+    ];
+
+    visit(sections, (value) => {
+        switch (typeof value) {
+            case 'string':
+                return removeAdditionalFormatting(value);
+            default:
+                return value;
+        }
+    });
+
+    const usageGuide = commandLineUsage(sections);
+
+    logger.log(usageGuide);
 }
 
 function filterCliSections(section: Content): boolean {
