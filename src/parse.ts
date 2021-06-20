@@ -5,6 +5,7 @@ import {
     CommandLineOption,
     UsageGuideOptions,
     Content,
+    CommandLineResults,
 } from './contracts';
 import commandLineArgs from 'command-line-args';
 import commandLineUsage from 'command-line-usage';
@@ -25,7 +26,7 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
     config: ArgumentConfig<T>,
     options: P = {} as any,
     exitProcess = true,
-): T & UnknownProperties<P> {
+): T & UnknownProperties<P> & CommandLineResults {
     options = options || {};
     const argsWithBooleanValues = options.argv || process.argv.slice(2);
     const logger = options.logger || console;
@@ -80,7 +81,7 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
                     : options.helpWhenArgMissingHeader;
             const additionalHeaderSections: Content[] = missingArgsHeader != null ? [missingArgsHeader] : [];
             printHelpGuide(options, optionList, logger, additionalHeaderSections);
-        } else {
+        } else if (options.hideMissingArgMessages !== true) {
             printMissingArgErrors(missingArgs, logger, options.baseCommand);
             printUsageGuideMessage(
                 { ...options, logger },
@@ -89,10 +90,15 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>>(
         }
     }
 
+    const _commandLineResults = {
+        missingArgs: missingArgs,
+        printHelp: () => printHelpGuide(options, optionList, logger),
+    };
+
     if (missingArgs.length > 0 && exitProcess) {
         process.exit();
     } else {
-        return parsedArgs as T & UnknownProperties<P>;
+        return { ...parsedArgs, _commandLineResults } as T & UnknownProperties<P> & CommandLineResults;
     }
 }
 

@@ -169,6 +169,11 @@ export interface ArgsParseOptions<T extends { [name: string]: any }> extends Usa
     loadFromFileJsonPathArg?: keyof PickType<T, string>;
 
     /**
+     * When set to true the error message stating which arguments are missing are not printed
+     */
+    hideMissingArgMessages?: boolean;
+
+    /**
      * By default when a required arg is missing an error will be thrown.
      * If this set to true the usage guide will be printed out instead
      */
@@ -197,6 +202,13 @@ export interface StopParseOptions extends ArgsParseOptions<any> {
      */
     stopAtFirstUnknown: true;
 }
+
+export type CommandLineResults = {
+    _commandLineResults: {
+        missingArgs: CommandLineOption[];
+        printHelp: () => void;
+    };
+};
 
 type UnknownProps = { _unknown: string[] };
 
