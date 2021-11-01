@@ -29,12 +29,12 @@
         "test": "jest --ci --coverage && tsc --noemit",
         "watch-test": "jest --watch",
         "prebuild-release": "npm run clean",
-        "build-release": "concurrently --kill-others-on-fail npm:test npm:lint npm:build && codecov && node dist/write-markdown -f package.json -p markdownConfig -v",
-        "prepack": "npm run build-release",
+        "build-release": "concurrently --kill-others-on-fail npm:test npm:lint npm:build npm:verify-markdown && codecov",
         "prewrite-markdown": "npm run build",
         "preverify-markdown": "npm run build",
         "write-markdown": "node dist/write-markdown -f package.json -p markdownConfig",
-        "verify-markdown": "node dist/write-markdown -f package.json -p markdownConfig -v"
+        "verify-markdown": "node dist/write-markdown -f package.json -p markdownConfig -v",
+        "prepublishOnly": "npm run build-release"
     },
     "repository": {
         "type": "git",
@@ -61,7 +61,7 @@
         "@types/string-format": "^2.0.0",
         "@typescript-eslint/eslint-plugin": "^3.10.1",
         "@typescript-eslint/parser": "^3.10.1",
-        "codecov": "^3.8.0",
+        "codecov": "^3.8.3",
         "concurrently": "^5.3.0",
         "eslint": "^7.7.0",
         "eslint-config-prettier": "^6.11.0",
