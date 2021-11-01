@@ -82,7 +82,7 @@ function mapOptionDescription<T>(definition: CommandLineOption<T>, options: Pars
     }
 
     if (definition.defaultValue != null) {
-        definition.description = `Defaults to '${String(definition.defaultValue)}'. ${definition.description}`;
+        definition.description = `Defaults to ${JSON.stringify(definition.defaultValue)}. ${definition.description}`;
     }
 
     return definition;
