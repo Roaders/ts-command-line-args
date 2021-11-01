@@ -31,6 +31,51 @@ describe('markdown-helper', () => {
 `);
     });
 
+    it('should generate a simple usage guide with typeLabel modifiers', () => {
+        const info: UsageGuideConfig<ICopyFilesArguments> = {
+            arguments: { ...exampleConfigGuideInfo.arguments, copyFiles: Boolean },
+            parseOptions: { displayOptionalAndDefault: true },
+        };
+
+        const usageGuide = createUsageGuide(info);
+
+        expect(usageGuide).toEqual(`
+## Options
+
+| Argument | Type |
+|-|-|
+| **sourcePath** | string (D) |
+| **targetPath** | string |
+| **copyFiles** | boolean |
+| **resetPermissions** | boolean |
+| **filter** | string (O) |
+| **excludePaths** | string[] (O) |
+`);
+    });
+
+    it('should generate a simple usage guide with typeLabel modifiers and footer', () => {
+        const info: UsageGuideConfig<ICopyFilesArguments> = {
+            arguments: { ...exampleConfigGuideInfo.arguments, copyFiles: Boolean },
+            parseOptions: { addOptionalDefaultExplanatoryFooter: true, displayOptionalAndDefault: true },
+        };
+
+        const usageGuide = createUsageGuide(info);
+
+        expect(usageGuide).toEqual(`
+## Options
+
+| Argument | Type |
+|-|-|
+| **sourcePath** | string (D) |
+| **targetPath** | string |
+| **copyFiles** | boolean |
+| **resetPermissions** | boolean |
+| **filter** | string (O) |
+| **excludePaths** | string[] (O) |
+(O) = optional, (D) = default option
+`);
+    });
+
     it('should generate a simple usage guide with no additional sections', () => {
         const usageGuide = createUsageGuide(exampleConfigGuideInfo);
 

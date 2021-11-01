@@ -17,7 +17,7 @@ export interface ICopyFilesArguments {
 }
 
 export const argumentConfig: ArgumentConfig<ICopyFilesArguments> = {
-    sourcePath: String,
+    sourcePath: { type: String, defaultOption: true },
     targetPath: String,
     copyFiles: {
         type: Boolean,

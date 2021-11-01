@@ -65,7 +65,9 @@ export type PropertyOptions<T> = {
 } & OptionalPropertyOptions<T> &
     MultiplePropertyOptions<T>;
 
-export type OptionalPropertyOptions<T> = undefined extends T ? { optional: true } : unknown;
+export type OptionalProperty = { optional: true };
+
+export type OptionalPropertyOptions<T> = undefined extends T ? OptionalProperty : unknown;
 
 export type MultiplePropertyOptions<T> = Array<any> extends T ? { multiple: true } | { lazyMultiple: true } : unknown;
 
@@ -186,6 +188,16 @@ export interface ArgsParseOptions<T extends { [name: string]: any }> extends Usa
     helpWhenArgMissingHeader?:
         | ((missingArgs: CommandLineOption[]) => Omit<Content, 'includeIn'>)
         | Omit<Content, 'includeIn'>;
+
+    /**
+     * adds a (O), (D) or both to typeLabel to indicate if a property is optional or the default option
+     */
+    displayOptionalAndDefault?: boolean;
+
+    /**
+     * if displayOptionalAndDefault is true and any params are optional or default adds a footer explaining what the (O), (D) means
+     */
+    addOptionalDefaultExplanatoryFooter?: boolean;
 }
 
 export interface PartialParseOptions extends ArgsParseOptions<any> {

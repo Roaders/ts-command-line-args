@@ -1,4 +1,5 @@
-import { ParseOptions, OptionContent } from '../contracts';
+import { Content, OptionList } from 'command-line-usage';
+import { ParseOptions, OptionContent, CommandLineOption, OptionalProperty, PropertyOptions } from '../contracts';
 
 export function getOptionSections(options: ParseOptions<any>): OptionContent[] {
     return (
@@ -6,4 +7,90 @@ export function getOptionSections(options: ParseOptions<any>): OptionContent[] {
             { header: options.optionsHeaderText || 'Options', headerLevel: options.optionsHeaderLevel || 2 },
         ]
     );
+}
+
+export function getOptionFooterSection<T>(optionList: CommandLineOption<T>[], options: ParseOptions<any>): Content[] {
+    const optionsFooter = generateTableFooter(optionList, options);
+
+    if (optionsFooter != null) {
+        console.log(`Adding footer: ${optionsFooter}`);
+        return [{ content: optionsFooter }];
+    }
+
+    return [];
+}
+
+export function generateTableFooter<T>(
+    optionList: CommandLineOption<T>[],
+    options: ParseOptions<any>,
+): string | undefined {
+    if (options.addOptionalDefaultExplanatoryFooter != true || options.displayOptionalAndDefault != true) {
+        return undefined;
+    }
+
+    const optionalProps = optionList.some((option) => ((option as unknown) as OptionalProperty).optional === true);
+    const defaultProps = optionList.some((option) => option.defaultOption === true);
+
+    if (optionalProps || defaultProps) {
+        const footerValues = [
+            optionalProps != null ? '(O) = optional' : undefined,
+            defaultProps != null ? '(D) = default option' : null,
+        ];
+        return footerValues.filter((v) => v != null).join(', ');
+    }
+
+    return undefined;
+}
+
+export function addOptions<T>(
+    content: OptionContent,
+    optionList: CommandLineOption<T>[],
+    options: ParseOptions<T>,
+): OptionList {
+    optionList = optionList.map((option) => mapOptionTypeLabel(option, options));
+
+    return { ...content, optionList };
+}
+
+/**
+ * adds default or optional modifiers to type label
+ * @param option
+ */
+export function mapOptionTypeLabel<T>(
+    definition: CommandLineOption<T>,
+    options: ParseOptions<T>,
+): CommandLineOption<T> {
+    if (options.displayOptionalAndDefault !== true) {
+        return definition;
+    }
+
+    definition.typeLabel = definition.typeLabel || getTypeLabel(definition);
+
+    if (isBoolean(definition)) {
+        return definition;
+    }
+
+    if (definition.defaultOption) {
+        definition.typeLabel = `${definition.typeLabel} (D)`;
+    }
+
+    if (((definition as unknown) as OptionalProperty).optional === true) {
+        definition.typeLabel = `${definition.typeLabel} (O)`;
+    }
+
+    return definition;
+}
+
+function getTypeLabel<T>(definition: CommandLineOption<T>) {
+    let typeLabel = definition.type ? definition.type.name.toLowerCase() : 'string';
+    const multiple = definition.multiple || definition.lazyMultiple ? '[]' : '';
+    if (typeLabel) {
+        typeLabel = typeLabel === 'boolean' ? '' : `{underline ${typeLabel}${multiple}}`;
+    }
+
+    return typeLabel;
+}
+
+export function isBoolean<T>(option: PropertyOptions<T>): boolean {
+    return option.type.name === 'Boolean';
 }

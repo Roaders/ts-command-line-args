@@ -18,7 +18,7 @@ module.exports = {
     },
     plugins: ['@typescript-eslint'],
     rules: {
-        indent: ['error', 4, { SwitchCase: 1 }],
+        indent: 'off',
         semi: ['error', 'always'],
         '@typescript-eslint/no-explicit-any': 'off',
         'prettier/prettier': ['error', { endOfLine: 'auto' }],

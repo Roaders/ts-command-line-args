@@ -12,7 +12,7 @@ import {
 } from '../contracts';
 import { join } from 'path';
 import { normaliseConfig, createCommandLineConfig } from './command-line.helper';
-import { getOptionSections } from './options.helper';
+import { generateTableFooter, getOptionSections, mapOptionTypeLabel } from './options.helper';
 import { convertChalkStringToMarkdown } from './string.helper';
 
 export function createUsageGuide<T = any>(config: UsageGuideConfig<T>): string {
@@ -74,20 +74,29 @@ export function createOptionsSections<T>(cliArguments: ArgumentConfig<T>, option
         return [];
     }
 
-    return getOptionSections(options).map((section) => createOptionsSection(optionList, section));
+    return getOptionSections(options).map((section) => createOptionsSection(optionList, section, options));
 }
 
-export function createOptionsSection<T>(optionList: CommandLineOption<any>[], content: OptionContent): string {
+export function createOptionsSection<T>(
+    optionList: CommandLineOption<any>[],
+    content: OptionContent,
+    options: ParseOptions<any>,
+): string {
     optionList = optionList.filter((option) => filterOptions(option, content.group));
     const anyAlias = optionList.some((option) => option.alias != null);
     const anyDescription = optionList.some((option) => option.description != null);
+
+    const footer = generateTableFooter(optionList, options);
 
     return `
 ${createHeading(content, 2)}
 | Argument |${anyAlias ? ' Alias |' : ''} Type |${anyDescription ? ' Description |' : ''}
 |-|${anyAlias ? '-|' : ''}-|${anyDescription ? '-|' : ''}
-${optionList.map((option) => createOptionRow(option, anyAlias, anyDescription)).join('\n')}
-`;
+${optionList
+    .map((option) => mapOptionTypeLabel(option, options))
+    .map((option) => createOptionRow(option, anyAlias, anyDescription))
+    .join('\n')}
+${footer != null ? footer + '\n' : ''}`;
 }
 
 function filterOptions(option: CommandLineOption, groups?: string | string[]): boolean {
@@ -125,6 +134,8 @@ export function getType(option: CommandLineOption): string {
     if (option.typeLabel) {
         return `${convertChalkStringToMarkdown(option.typeLabel)} `;
     }
+
+    //TODO: add modifiers
 
     const type = option.type ? option.type.name.toLowerCase() : 'string';
     const multiple = option.multiple || option.lazyMultiple ? '[]' : '';

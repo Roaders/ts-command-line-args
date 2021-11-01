@@ -1,4 +1,5 @@
 import { PropertyOptions, ArgumentConfig, ArgumentOptions, CommandLineOption } from '../contracts';
+import { isBoolean } from './options.helper';
 
 export function createCommandLineConfig<T>(config: ArgumentOptions<T>): CommandLineOption[] {
     return Object.keys(config).map((key) => {
@@ -99,7 +100,7 @@ const booleanValue = ['1', '0', 'true', 'false'];
 
 /**
  * commandLineArgs throws an error if we pass aa value for a boolean arg as follows:
- * myCommand -a=true --booleaanArg=false --otherArg true
+ * myCommand -a=true --booleanArg=false --otherArg true
  * this function removes these booleans so as to avoid errors from commandLineArgs
  * @param args
  * @param config
@@ -108,11 +109,13 @@ export function removeBooleanValues<T>(args: string[], config: ArgumentOptions<T
     function removeBooleanArgs(argsAndLastValue: ArgsAndLastOption, arg: string): ArgsAndLastOption {
         const { argOptions, argValue } = getParamConfig(arg, config);
 
-        if (isBoolean(argsAndLastValue.lastOption) && booleanValue.some((boolValue) => boolValue === arg)) {
+        const lastOption = argsAndLastValue.lastOption;
+
+        if (lastOption != null && isBoolean(lastOption) && booleanValue.some((boolValue) => boolValue === arg)) {
             const args = argsAndLastValue.args.concat();
             args.pop();
             return { args };
-        } else if (isBoolean(argOptions) && argValue != null) {
+        } else if (argOptions != null && isBoolean(argOptions) && argValue != null) {
             return { args: argsAndLastValue.args };
         } else {
             return { args: [...argsAndLastValue.args, arg], lastOption: argOptions };
@@ -123,7 +126,7 @@ export function removeBooleanValues<T>(args: string[], config: ArgumentOptions<T
 }
 
 /**
- * Gets the values of anyy boolean arguments that were specified on the commadn line with a value
+ * Gets the values of any boolean arguments that were specified on the command line with a value
  * These arguments were removed by removeBooleanValues
  * @param args
  * @param config
@@ -132,26 +135,22 @@ export function getBooleanValues<T>(args: string[], config: ArgumentOptions<T>):
     function getBooleanValues(argsAndLastOption: PartialAndLastOption<T>, arg: string): PartialAndLastOption<T> {
         const { argOptions, argName, argValue } = getParamConfig(arg, config);
 
-        if (isBoolean(argOptions) && argValue != null && argName != null) {
+        const lastOption = argsAndLastOption.lastOption;
+
+        if (argOptions != null && isBoolean(argOptions) && argValue != null && argName != null) {
             argsAndLastOption.partial[argName] = convertType(argValue, argOptions) as any;
         } else if (
             argsAndLastOption.lastName != null &&
-            isBoolean(argsAndLastOption.lastOption) &&
+            lastOption != null &&
+            isBoolean(lastOption) &&
             booleanValue.some((boolValue) => boolValue === arg)
         ) {
-            argsAndLastOption.partial[argsAndLastOption.lastName] = convertType(
-                arg,
-                argsAndLastOption.lastOption,
-            ) as any;
+            argsAndLastOption.partial[argsAndLastOption.lastName] = convertType(arg, lastOption) as any;
         }
         return { partial: argsAndLastOption.partial, lastName: argName, lastOption: argOptions };
     }
 
     return args.reduce<PartialAndLastOption<T>>(getBooleanValues, { partial: {} }).partial;
-}
-
-function isBoolean(option?: PropertyOptions<any>): option is PropertyOptions<any> {
-    return option != null && option.type.name === 'Boolean';
 }
 
 function getParamConfig<T>(

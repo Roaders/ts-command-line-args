@@ -17,7 +17,7 @@ import {
     removeBooleanValues,
     visit,
 } from './helpers';
-import { getOptionSections } from './helpers/options.helper';
+import { addOptions, getOptionFooterSection, getOptionSections } from './helpers/options.helper';
 import { removeAdditionalFormatting } from './helpers/string.helper';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
@@ -124,7 +124,8 @@ function printHelpGuide<T>(
     const sections = [
         ...additionalHeaderSections,
         ...(options.headerContentSections?.filter(filterCliSections) || []),
-        ...getOptionSections(options).map((option) => ({ ...option, optionList })),
+        ...getOptionSections(options).map((option) => addOptions(option, optionList, options)),
+        ...getOptionFooterSection(optionList, options),
         ...(options.footerContentSections?.filter(filterCliSections) || []),
     ];
 
