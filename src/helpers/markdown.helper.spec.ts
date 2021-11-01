@@ -196,7 +196,7 @@ Generates something *very* important.
 |-|-|-|-|
 | **help** | **h** | boolean | Display this usage guide. |
 | **src** | | file ... | Default Option. The input files to process |
-| **timeout** | **t** | ms | Defaults to '1000'. Timeout value in ms |
+| **timeout** | **t** | ms | Defaults to "1000". Timeout value in ms |
 
 
 ## Misc
