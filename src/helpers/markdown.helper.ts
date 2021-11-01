@@ -12,7 +12,7 @@ import {
 } from '../contracts';
 import { join } from 'path';
 import { normaliseConfig, createCommandLineConfig } from './command-line.helper';
-import { generateTableFooter, getOptionSections, mapOptionTypeLabel } from './options.helper';
+import { generateTableFooter, getOptionSections, mapDefinitionDetails } from './options.helper';
 import { convertChalkStringToMarkdown } from './string.helper';
 
 export function createUsageGuide<T = any>(config: UsageGuideConfig<T>): string {
@@ -93,7 +93,7 @@ ${createHeading(content, 2)}
 | Argument |${anyAlias ? ' Alias |' : ''} Type |${anyDescription ? ' Description |' : ''}
 |-|${anyAlias ? '-|' : ''}-|${anyDescription ? '-|' : ''}
 ${optionList
-    .map((option) => mapOptionTypeLabel(option, options))
+    .map((option) => mapDefinitionDetails(option, options))
     .map((option) => createOptionRow(option, anyAlias, anyDescription))
     .join('\n')}
 ${footer != null ? footer + '\n' : ''}`;

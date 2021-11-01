@@ -198,6 +198,11 @@ export interface ArgsParseOptions<T extends { [name: string]: any }> extends Usa
      * if displayOptionalAndDefault is true and any params are optional or default adds a footer explaining what the (O), (D) means
      */
     addOptionalDefaultExplanatoryFooter?: boolean;
+
+    /**
+     * prepends the supplied description with details about the param. These include default option, optional and the default value.
+     */
+    prependParamOptionsToDescription?: boolean;
 }
 
 export interface PartialParseOptions extends ArgsParseOptions<any> {

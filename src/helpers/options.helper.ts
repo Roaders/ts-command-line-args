@@ -47,28 +47,53 @@ export function addOptions<T>(
     optionList: CommandLineOption<T>[],
     options: ParseOptions<T>,
 ): OptionList {
-    optionList = optionList.map((option) => mapOptionTypeLabel(option, options));
+    optionList = optionList.map((option) => mapDefinitionDetails(option, options));
 
     return { ...content, optionList };
 }
 
 /**
- * adds default or optional modifiers to type label
+ * adds default or optional modifiers to type label or description
  * @param option
  */
-export function mapOptionTypeLabel<T>(
+export function mapDefinitionDetails<T>(
     definition: CommandLineOption<T>,
     options: ParseOptions<T>,
 ): CommandLineOption<T> {
-    if (options.displayOptionalAndDefault !== true) {
+    definition = mapOptionTypeLabel(definition, options);
+    definition = mapOptionDescription(definition, options);
+
+    return definition;
+}
+
+function mapOptionDescription<T>(definition: CommandLineOption<T>, options: ParseOptions<T>): CommandLineOption<T> {
+    if (options.prependParamOptionsToDescription !== true || isBoolean(definition)) {
+        return definition;
+    }
+
+    definition.description = definition.description || '';
+
+    if (definition.defaultOption) {
+        definition.description = `Default Option. ${definition.description}`;
+    }
+
+    if (((definition as unknown) as OptionalProperty).optional === true) {
+        definition.description = `Optional. ${definition.description}`;
+    }
+
+    if (definition.defaultValue != null) {
+        definition.description = `Defaults to '${String(definition.defaultValue)}'. ${definition.description}`;
+    }
+
+    return definition;
+}
+
+function mapOptionTypeLabel<T>(definition: CommandLineOption<T>, options: ParseOptions<T>): CommandLineOption<T> {
+    if (options.displayOptionalAndDefault !== true || isBoolean(definition)) {
         return definition;
     }
 
     definition.typeLabel = definition.typeLabel || getTypeLabel(definition);
-
-    if (isBoolean(definition)) {
-        return definition;
-    }
 
     if (definition.defaultOption) {
         definition.typeLabel = `${definition.typeLabel} (D)`;

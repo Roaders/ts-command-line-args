@@ -195,15 +195,15 @@ Generates something *very* important.
 | Argument | Alias | Type | Description |
 |-|-|-|-|
 | **help** | **h** | boolean | Display this usage guide. |
-| **src** | | file ... | The input files to process |
-| **timeout** | **t** | ms | Timeout value in ms |
+| **src** | | file ... | Default Option. The input files to process |
+| **timeout** | **t** | ms | Defaults to '1000'. Timeout value in ms |
 
 
 ## Misc
 
 | Argument | Type | Description |
 |-|-|-|
-| **plugin** | string | A plugin path |
+| **plugin** | string | Optional. A plugin path |
 `);
     });
 

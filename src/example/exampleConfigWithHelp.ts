@@ -15,7 +15,7 @@ interface ICopyFilesArguments {
 export const args = parse<ICopyFilesArguments>(
     {
         sourcePath: { type: String, defaultOption: true, optional: true, description: 'The path to copy files from' },
-        targetPath: String,
+        targetPath: { type: String, defaultValue: 'dist' },
         copyFiles: {
             type: Boolean,
             alias: 'c',
@@ -36,8 +36,7 @@ export const args = parse<ICopyFilesArguments>(
         footerContentSections: [{ header: 'Footer', content: `Copyright: Big Faceless Corp. inc.` }],
         loadFromFileArg: 'configFile',
         loadFromFileJsonPathArg: 'configPath',
-        addOptionalDefaultExplanatoryFooter: true,
-        displayOptionalAndDefault: true,
+        prependParamOptionsToDescription: true,
     },
 );
 

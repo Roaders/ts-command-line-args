@@ -38,7 +38,7 @@ export interface ITypicalAppWithGroups {
     help: boolean;
     src: string[];
     timeout: string;
-    plugin: string;
+    plugin?: string;
 }
 
 const typicalAppConfig: ArgumentConfig<ITypicalAppWithGroups> = {
@@ -62,10 +62,12 @@ const typicalAppConfig: ArgumentConfig<ITypicalAppWithGroups> = {
         typeLabel: '{underline ms}',
         group: 'main',
         type: String,
+        defaultValue: '1000',
     },
     plugin: {
         description: 'A plugin path',
         type: String,
+        optional: true,
     },
 };
 
@@ -89,6 +91,7 @@ export const typicalAppWithGroupsInfo: UsageGuideConfig<ITypicalAppWithGroups> =
                 group: '_none',
             },
         ],
+        prependParamOptionsToDescription: true,
     },
 };
 
