@@ -203,6 +203,11 @@ export interface ArgsParseOptions<T extends { [name: string]: any }> extends Usa
      * prepends the supplied description with details about the param. These include default option, optional and the default value.
      */
     prependParamOptionsToDescription?: boolean;
+
+    /**
+     * sets the exit code of the process. Defaults to 0.
+     */
+    processExitCode: number;
 }
 
 export interface PartialParseOptions extends ArgsParseOptions<any> {
