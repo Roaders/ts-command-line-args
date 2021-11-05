@@ -80,7 +80,7 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>, R extends 
         printHelpGuide(options, optionList, logger);
 
         if (exitProcess) {
-            return process.exit();
+            return process.exit(options.processExitCode ?? 0);
         }
     } else if (missingArgs.length > 0) {
         if (options.showHelpWhenArgsMissing) {
@@ -105,7 +105,7 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>, R extends 
     };
 
     if (missingArgs.length > 0 && exitProcess) {
-        process.exit();
+        process.exit(options.processExitCode ?? 0);
     } else {
         if (addCommandLineResults) {
             parsedArgs = { ...parsedArgs, _commandLineResults };
