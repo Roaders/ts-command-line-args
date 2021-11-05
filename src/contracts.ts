@@ -207,7 +207,7 @@ export interface ArgsParseOptions<T extends { [name: string]: any }> extends Usa
     /**
      * sets the exit code of the process. Defaults to 0.
      */
-    processExitCode: number;
+    processExitCode?: number;
 }
 
 export interface PartialParseOptions extends ArgsParseOptions<any> {
