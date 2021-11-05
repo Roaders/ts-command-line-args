@@ -6,6 +6,7 @@ import {
     UsageGuideOptions,
     Content,
     CommandLineResults,
+    ExitReason,
 } from './contracts';
 import commandLineArgs from 'command-line-args';
 import commandLineUsage from 'command-line-usage';
@@ -80,7 +81,7 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>, R extends 
         printHelpGuide(options, optionList, logger);
 
         if (exitProcess) {
-            return process.exit(options.processExitCode ?? 0);
+            return process.exit(resolveExitCode(options, 'usageGuide', parsedArgs, missingArgs));
         }
     } else if (missingArgs.length > 0) {
         if (options.showHelpWhenArgsMissing) {
@@ -105,13 +106,29 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>, R extends 
     };
 
     if (missingArgs.length > 0 && exitProcess) {
-        process.exit(options.processExitCode ?? 0);
+        process.exit(resolveExitCode(options, 'missingArgs', parsedArgs, missingArgs));
     } else {
         if (addCommandLineResults) {
             parsedArgs = { ...parsedArgs, _commandLineResults };
         }
 
         return parsedArgs as T & UnknownProperties<P> & CommandLineResults<R>;
+    }
+}
+
+function resolveExitCode<T>(
+    options: ParseOptions<T>,
+    reason: ExitReason,
+    passedArgs: Partial<T>,
+    missingArgs: CommandLineOption<T>[],
+): number {
+    switch (typeof options.processExitCode) {
+        case 'number':
+            return options.processExitCode;
+        case 'function':
+            return options.processExitCode(reason, passedArgs, missingArgs as any);
+        default:
+            return 0;
     }
 }
 

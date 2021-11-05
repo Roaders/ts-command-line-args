@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { ArgumentConfig } from './contracts';
+import { ArgumentConfig, ProcessExitCodeFunction } from './contracts';
 import {
     IMocked,
     Mock,
@@ -14,6 +14,7 @@ import { parse } from './parse';
 import * as fsImport from 'fs';
 import * as pathImport from 'path';
 import * as helpersImport from './helpers';
+import { ParseOptions } from '.';
 
 jest.mock('fs', () => require('@morgan-stanley/ts-mocking-bird').proxyJestModule(require.resolve('fs')));
 jest.mock('path', () => require('@morgan-stanley/ts-mocking-bird').proxyJestModule(require.resolve('path')));
@@ -392,10 +393,14 @@ describe('parse', () => {
     });
 
     it(`should print errors and exit process when required arguments are missing and help arg is present`, () => {
+        const mockExitFunction = Mock.create<{ processExitCode: ProcessExitCodeFunction<any> }>().setup(
+            setupFunction('processExitCode', () => 5),
+        );
         const result = parse(getHelpConfig(), {
             logger: mockConsole.mock,
             argv: [...defaultedString],
             helpArg: 'optionalHelpArg',
+            processExitCode: mockExitFunction.mock.processExitCode,
         });
 
         expect(
@@ -413,8 +418,19 @@ describe('parse', () => {
                 ),
         ).wasCalledOnce();
         expect(mockConsole.withFunction('log').withParameters(`To view the help guide pass '-h'`)).wasCalledOnce();
-
-        expect(mockProcess.withFunction('exit')).wasCalledOnce();
+        expect(
+            mockExitFunction
+                .withFunction('processExitCode')
+                .withParametersEqualTo(
+                    'missingArgs',
+                    { defaultedString: 'defaultedStringValue', requiredBoolean: false },
+                    [
+                        { name: 'requiredString', type: String },
+                        { name: 'requiredArray', type: String, alias: 'o', multiple: true },
+                    ] as any,
+                ),
+        ).wasCalledOnce();
+        expect(mockProcess.withFunction('exit').withParameters(5)).wasCalledOnce();
 
         expect(result).toBeUndefined();
     });
@@ -445,7 +461,7 @@ describe('parse', () => {
             mockConsole.withFunction('log').withParameters(`To view the help guide run 'runMyScript -h'`),
         ).wasCalledOnce();
 
-        expect(mockProcess.withFunction('exit')).wasCalledOnce();
+        expect(mockProcess.withFunction('exit').withParameters()).wasCalledOnce();
 
         expect(result).toBeUndefined();
     });
@@ -484,6 +500,9 @@ describe('parse', () => {
 
     describe(`should print help messages`, () => {
         it(`and exit when help arg is passed`, () => {
+            const mockExitFunction = Mock.create<{ processExitCode: ProcessExitCodeFunction<any> }>().setup(
+                setupFunction('processExitCode', () => 5),
+            );
             const result = parse(getAllOptionalHelpConfig(), {
                 logger: mockConsole.mock,
                 argv: [...optionalHelpArg],
@@ -500,6 +519,7 @@ describe('parse', () => {
                     { header: 'Footer cli', content: 'Footer Content cli', includeIn: 'cli' },
                     { header: 'Footer markdown', content: 'Footer markdown markdown', includeIn: 'markdown' },
                 ],
+                processExitCode: mockExitFunction.mock.processExitCode,
             });
 
             function verifyHelpContent(content: string): string | boolean {
@@ -550,7 +570,12 @@ describe('parse', () => {
             }
 
             expect(result).toBeUndefined();
-            expect(mockProcess.withFunction('exit')).wasCalledOnce();
+            expect(
+                mockExitFunction
+                    .withFunction('processExitCode')
+                    .withParametersEqualTo('usageGuide', { optionalHelpArg: true }, []),
+            ).wasCalledOnce();
+            expect(mockProcess.withFunction('exit').withParameters(5)).wasCalledOnce();
             expect(mockConsole.withFunction('error')).wasNotCalled();
             expect(mockConsole.withFunction('log').withParameters(verifyHelpContent)).wasCalledOnce();
         });

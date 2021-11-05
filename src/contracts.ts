@@ -205,10 +205,18 @@ export interface ArgsParseOptions<T extends { [name: string]: any }> extends Usa
     prependParamOptionsToDescription?: boolean;
 
     /**
-     * sets the exit code of the process. Defaults to 0.
+     * sets the exit code of the process when exiting early due to missing args or showing usage guide
+     * 0 will be used for an exit code if this is not specified.
      */
-    processExitCode?: number;
+    processExitCode?: number | ProcessExitCodeFunction<T>;
 }
+
+export type ProcessExitCodeFunction<T> = (
+    reason: ExitReason,
+    passedArgs: Partial<T>,
+    missingArgs: CommandLineOption<any>[],
+) => number;
+export type ExitReason = 'missingArgs' | 'usageGuide';
 
 export interface PartialParseOptions extends ArgsParseOptions<any> {
     /**
