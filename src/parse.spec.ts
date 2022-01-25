@@ -14,7 +14,6 @@ import { parse } from './parse';
 import * as fsImport from 'fs';
 import * as pathImport from 'path';
 import * as helpersImport from './helpers';
-import { ParseOptions } from '.';
 
 jest.mock('fs', () => require('@morgan-stanley/ts-mocking-bird').proxyJestModule(require.resolve('fs')));
 jest.mock('path', () => require('@morgan-stanley/ts-mocking-bird').proxyJestModule(require.resolve('path')));

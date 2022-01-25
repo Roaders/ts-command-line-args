@@ -1,5 +1,12 @@
-import { Content, OptionList } from 'command-line-usage';
-import { ParseOptions, OptionContent, CommandLineOption, OptionalProperty, PropertyOptions } from '../contracts';
+import {
+    ParseOptions,
+    OptionContent,
+    CommandLineOption,
+    OptionalProperty,
+    PropertyOptions,
+    Content,
+    OptionList,
+} from '../contracts';
 
 export function getOptionSections(options: ParseOptions<any>): OptionContent[] {
     return (
