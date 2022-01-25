@@ -313,3 +313,17 @@ export type UsageGuideConfig<T = any> = {
     arguments: ArgumentConfig<T>;
     parseOptions?: ParseOptions<T>;
 };
+
+export interface OptionList {
+    header?: string;
+    /** An array of option definition objects. */
+    optionList?: OptionDefinition[];
+    /** If specified, only options from this particular group will be printed.  */
+    group?: string | string[];
+    /** The names of one of more option definitions to hide from the option list.  */
+    hide?: string | string[];
+    /** If true, the option alias will be displayed after the name, i.e. --verbose, -v instead of -v, --verbose). */
+    reverseNameOrder?: boolean;
+    /** An options object suitable for passing into table-layout. */
+    tableOptions?: any;
+}
