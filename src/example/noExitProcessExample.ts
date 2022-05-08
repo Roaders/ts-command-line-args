@@ -1,5 +1,5 @@
 import { argumentConfig } from './configs';
-import { parse } from '../parse';
+import { parse } from '../';
 
 /**
  * will ignore missing errors and not exit

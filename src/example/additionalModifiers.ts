@@ -1,4 +1,4 @@
-import { parse } from '../parse';
+import { parse } from '../';
 import { additionalModifiers } from './configs';
 
 const args = parse(additionalModifiers.arguments, additionalModifiers.parseOptions);

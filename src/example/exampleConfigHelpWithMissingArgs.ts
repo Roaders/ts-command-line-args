@@ -1,5 +1,4 @@
-import { CommandLineOption } from '../contracts';
-import { parse } from '../parse';
+import { parse, CommandLineOption } from '../';
 import { argumentConfig } from './configs';
 
 const args = parse(argumentConfig, {

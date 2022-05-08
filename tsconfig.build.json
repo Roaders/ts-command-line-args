@@ -2,6 +2,7 @@
     "extends": "./tsconfig.json",
     "exclude": [
         "src/**/*.spec.ts",
-        "dist"
+        "dist",
+        "src/example/**/*"
     ]
 }

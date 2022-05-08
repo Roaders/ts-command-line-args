@@ -1,4 +1,4 @@
-import { parse } from '../parse';
+import { parse } from '../';
 import { argumentConfig } from './configs';
 
 /**
