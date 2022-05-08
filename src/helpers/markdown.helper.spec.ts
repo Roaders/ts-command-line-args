@@ -114,6 +114,10 @@ Markers in the document describe where the content should be inserted, existing 
 | **markdownPath** | **m** | string | The file to write to. Without replacement markers the whole file content will be replaced. Path can be absolute or relative. |
 | **replaceBelow** | | string | A marker in the file to replace text below. |
 | **replaceAbove** | | string | A marker in the file to replace text above. |
+| **insertCodeBelow** | | string | A marker in the file to insert code below. File path to insert must be added at the end of the line and optionally codeComment flag: 'insertToken file="path/toFile.md" codeComment="ts"' |
+| **insertCodeAbove** | | string | A marker in the file to insert code above. |
+| **copyCodeBelow** | | string | A marker in the file being inserted to say only copy code below this line |
+| **copyCodeAbove** | | string | A marker in the file being inserted to say only copy code above this line |
 | **jsFile** | **j** | string[] | jsFile to 'require' that has an export with the 'UsageGuideConfig' export. Multiple file can be specified. |
 | **configImportName** | **c** | string[] | Export name of the 'UsageGuideConfig' object. Defaults to 'usageGuideInfo'. Multiple exports can be specified. |
 | **verify** | **v** | boolean | Verify the markdown file. Does not update the file but returns a non zero exit code if the markdown file is not correct. Useful for a pre-publish script. |

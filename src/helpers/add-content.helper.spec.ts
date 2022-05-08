@@ -1,7 +1,7 @@
-import { addContent } from './content.helper';
+import { addContent } from './add-content.helper';
 import { IReplaceOptions } from '../contracts';
 
-describe('conent.helper', () => {
+describe('content.helper', () => {
     describe('addContent', () => {
         const newContent = `new content line one
 new content line two`;
