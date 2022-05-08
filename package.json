@@ -34,7 +34,7 @@
         "preverify-markdown": "npm run build",
         "write-markdown": "node dist/write-markdown -f package.json -p markdownConfig",
         "verify-markdown": "node dist/write-markdown -f package.json -p markdownConfig -v",
-        "prepublishOnly": "npm run build-release"
+        "prepublishOnly": "npm run build --if-present && npm run test --if-present && npm run lint --if-present"
     },
     "repository": {
         "type": "git",
