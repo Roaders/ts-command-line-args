@@ -1,4 +1,3 @@
-import chalk from 'chalk';
 import { IInsertCodeOptions } from '../contracts';
 import { filterDoubleBlankLines, findEscapeSequence, splitContent } from './line-ending.helper';
 import { isAbsolute, resolve } from 'path';
@@ -30,7 +29,10 @@ async function insertCodeImpl(lines: string[], options: IInsertCodeOptions, star
         return Promise.resolve(lines);
     }
 
-    const insertCodeBelowResult = findIndex(lines, (line) => line.indexOf(insertCodeBelow) === 0, startLine);
+    const insertCodeBelowResult =
+        insertCodeBelow != null
+            ? findIndex(lines, (line) => line.indexOf(insertCodeBelow) === 0, startLine)
+            : undefined;
 
     if (insertCodeBelowResult == null) {
         return Promise.resolve(lines);
@@ -58,16 +60,10 @@ async function loadLines(options: IInsertCodeOptions, result: FindLineResults): 
     const partialPathResult = fileRegExp.exec(result.line);
 
     if (partialPathResult == null) {
-        console.error(
-            `${chalk.red('ERROR: ')} insert code token (${
-                options.insertCodeBelow
-            }) found in file but file path not specified`,
+        throw new Error(
+            `insert code token (${options.insertCodeBelow}) found in file but file path not specified (file="relativePath/from/markdown/toFile.whatever")`,
         );
-        console.log(`Please specify filepath as follows:`);
-        console.log(`${options.insertCodeBelow} file="relativePath/from/markdown/toFile.whatever")`);
-        process.exit(1);
     }
-
     const codeCommentResult = codeCommentRegExp.exec(result.line);
 
     const filePath = isAbsolute(partialPathResult[1])
@@ -75,7 +71,6 @@ async function loadLines(options: IInsertCodeOptions, result: FindLineResults): 
         : resolve(options.dirname || process.cwd(), partialPathResult[1]);
 
     const fileBuffer = await asyncReadFile(filePath);
-
     let contentLines = splitContent(fileBuffer.toString());
 
     const copyBelowMarker = options.copyCodeBelow;
@@ -92,7 +87,7 @@ async function loadLines(options: IInsertCodeOptions, result: FindLineResults): 
         );
     }
 
-    contentLines = contentLines.slice(copyBelowIndex + 1, copyAboveIndex);
+    contentLines = contentLines.slice(copyBelowIndex + 1, copyAboveIndex > 0 ? copyAboveIndex : undefined);
 
     if (codeCommentResult != null) {
         contentLines = ['```' + (codeCommentResult[2] ?? ''), ...contentLines, '```'];
