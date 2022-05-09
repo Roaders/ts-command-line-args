@@ -1,5 +1,5 @@
 /* eslint-disable no-useless-escape */
-import { ArgumentConfig, UsageGuideConfig } from '../contracts';
+import { ArgumentConfig, UsageGuideConfig } from '../';
 
 /**
  * we do not have any side effects in this file as this file is required by write-markdown

@@ -2,6 +2,10 @@ import { ArgumentConfig, IWriteMarkDown, ParseOptions, UsageGuideConfig } from '
 
 export const replaceBelowDefault = `[//]: ####ts-command-line-args_write-markdown_replaceBelow`;
 export const replaceAboveDefault = `[//]: ####ts-command-line-args_write-markdown_replaceAbove`;
+export const insertCodeBelowDefault = `[//]: # (ts-command-line-args_write-markdown_insertCodeBelow`;
+export const insertCodeAboveDefault = `[//]: # (ts-command-line-args_write-markdown_insertCodeAbove)`;
+export const copyCodeBelowDefault = `// ts-command-line-args_write-markdown_copyCodeBelow`;
+export const copyCodeAboveDefault = `// ts-command-line-args_write-markdown_copyCodeAbove`;
 export const configImportNameDefault = `usageGuideInfo`;
 export const footerReplaceBelowMarker = `[//]: ####ts-command-line-args_generated-by-footer`;
 
@@ -22,6 +26,30 @@ export const argumentConfig: ArgumentConfig<IWriteMarkDown> = {
         type: String,
         defaultValue: replaceAboveDefault,
         description: `A marker in the file to replace text above.`,
+        optional: true,
+    },
+    insertCodeBelow: {
+        type: String,
+        defaultValue: insertCodeBelowDefault,
+        description: `A marker in the file to insert code below. File path to insert must be added at the end of the line and optionally codeComment flag: 'insertToken file="path/toFile.md" codeComment="ts"'`,
+        optional: true,
+    },
+    insertCodeAbove: {
+        type: String,
+        defaultValue: insertCodeAboveDefault,
+        description: `A marker in the file to insert code above.`,
+        optional: true,
+    },
+    copyCodeBelow: {
+        type: String,
+        defaultValue: copyCodeBelowDefault,
+        description: `A marker in the file being inserted to say only copy code below this line`,
+        optional: true,
+    },
+    copyCodeAbove: {
+        type: String,
+        defaultValue: copyCodeAboveDefault,
+        description: `A marker in the file being inserted to say only copy code above this line`,
         optional: true,
     },
     jsFile: {

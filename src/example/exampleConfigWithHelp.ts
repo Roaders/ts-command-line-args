@@ -1,4 +1,4 @@
-import { parse } from '../parse';
+import { parse } from '../';
 
 interface ICopyFilesArguments {
     sourcePath?: string;

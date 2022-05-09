@@ -53,3 +53,11 @@ export function splitContent(content: string): string[] {
     content = content.replace(singleCharRegExp, '\n');
     return content.split('\n');
 }
+
+const nonWhitespaceRegExp = /[^ \t]/;
+
+export function filterDoubleBlankLines(line: string, index: number, lines: string[]): boolean {
+    const previousLine = index > 0 ? lines[index - 1] : undefined;
+
+    return nonWhitespaceRegExp.test(line) || previousLine == null || nonWhitespaceRegExp.test(previousLine);
+}

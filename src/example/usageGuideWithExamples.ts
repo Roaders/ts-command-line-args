@@ -1,4 +1,4 @@
-import { parse } from '../parse';
+import { parse } from '../';
 import { exampleSections } from './configs';
 
 const args = parse(exampleSections.arguments, exampleSections.parseOptions);
