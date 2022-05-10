@@ -142,46 +142,31 @@ replaceAbove defaults to:
 \`\`\`  
 '[//]: ####ts-command-line-args_write-markdown_replaceAbove'  
 \`\`\`  
-
-
-
-### String Formatting
-
-The only chalk modifiers supported when converting to markdown are \`bold\` and \`italic\`.  
-For example:  
+  
+insertCodeBelow defaults to:  
   
 \`\`\`  
-{bold bold text} {italic italic text} {italic.bold bold italic text}  
+'[//]: # (ts-command-line-args_write-markdown_insertCodeBelow'  
 \`\`\`  
   
-will be converted to:  
+insertCodeAbove defaults to:  
   
 \`\`\`  
-**boldText** *italic text* ***bold italic text***  
+'[//]: # (ts-command-line-args_write-markdown_insertCodeAbove)'  
+\`\`\`  
+  
+copyCodeBelow defaults to:  
+  
+\`\`\`  
+'// ts-command-line-args_write-markdown_copyCodeBelow'  
+\`\`\`  
+  
+copyCodeAbove defaults to:  
+  
+\`\`\`  
+'// ts-command-line-args_write-markdown_copyCodeAbove'  
 \`\`\`  
 
-
-
-### Additional Modifiers
-
-Two additional style modifiers have been added that are supported when writing markdown. They are removed when printing to the console.  
-  
-\`\`\`  
-{highlight someText}  
-\`\`\`  
-  
-surrounds the text in backticks:  
-\`someText\`  
-and   
-  
-\`\`\`  
-{code.typescript function(message: string)\\\\{console.log(message);\\\\}}  
-\`\`\`  
-  
-Surrounds the text in triple back ticks (with an optional language specifer, in this case typescript):  
-\`\`\`typescript  
-function(message: string)\{console.log(message);\}  
-\`\`\`
 `);
     });
 

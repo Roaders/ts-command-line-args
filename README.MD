@@ -303,8 +303,59 @@ replaceAbove defaults to:
 ```  
 '[//]: ####ts-command-line-args_write-markdown_replaceAbove'  
 ```  
+  
+insertCodeBelow defaults to:  
+  
+```  
+'[//]: # (ts-command-line-args_write-markdown_insertCodeBelow'  
+```  
+  
+insertCodeAbove defaults to:  
+  
+```  
+'[//]: # (ts-command-line-args_write-markdown_insertCodeAbove)'  
+```  
+  
+copyCodeBelow defaults to:  
+  
+```  
+'// ts-command-line-args_write-markdown_copyCodeBelow'  
+```  
+  
+copyCodeAbove defaults to:  
+  
+```  
+'// ts-command-line-args_write-markdown_copyCodeAbove'  
+```  
 
-### String Formatting
+[//]: ####ts-command-line-args_write-markdown_replaceAbove  
+
+(the **Markdown Generation** section above was generated using `write-markdown` )
+
+### Insert Code
+
+Markdown generation can also insert some or all of a file into your markdown. This is useful for including example code. Rather than copying code that will likely get out of date you can directly include code that is checked by your compiler as part of your normal build.    
+To include code markers must be added to your markdown that indicates which file to copy from. The default marker (which can be changed if desired) is:  
+  
+```  
+[//]: # (ts-command-line-args_write-markdown_insertCodeBelow file="path/from/markdown/to/file.ts" )  
+CODE INSERTED HERE  
+[//]: # (ts-command-line-args_write-markdown_insertCodeBelow  
+```  
+  
+Whatever marker you use you must include the `file="path/from/markdown/to/file.ts"` in that format.    
+You can also surround the inserted code with a triple backticks by including `codeComment` or `codeComment="myLanguage"`. For example:  
+  
+```  
+[//]: # (ts-command-line-args_write-markdown_insertCodeBelow file="path/from/markdown/to/file.ts" codeComment="typescript" )  
+```  
+    
+Areas to to include from the file that is being inserted can be designated with more markers within the file. For example:  
+  
+[//]: # (ts-command-line-args_write-markdown_insertCodeBelow file="" codeComment=typescript )
+[//]: # (ts-command-line-args_write-markdown_insertCodeAbove  )
+  
+  ### String Formatting
 
 The only chalk modifiers supported when converting to markdown are `bold` and `italic`.  
 For example:  
@@ -339,10 +390,6 @@ Surrounds the text in triple back ticks (with an optional language specifer, in 
 ```typescript  
 function(message: string){console.log(message);}  
 ```
-
-[//]: ####ts-command-line-args_write-markdown_replaceAbove  
-
-(the **Markdown Generation** section above was generated using `write-markdown` )
 
 ### Javascript Exports
 

@@ -123,28 +123,15 @@ Markers in the document describe where the content should be inserted, existing 
             content: `replaceBelow defaults to:
 {code '${replaceBelowDefault}'}
 replaceAbove defaults to:
-{code '${replaceAboveDefault}'}`,
-        },
-        {
-            header: 'String Formatting',
-            content: `The only chalk modifiers supported when converting to markdown are {highlight bold} and {highlight italic}.
-For example:
-{code \\{bold bold text\\} \\{italic italic text\\} \\{italic.bold bold italic text\\}}
-will be converted to:
-{code **boldText** *italic text* ***bold italic text***}`,
-        },
-        {
-            header: 'Additional Modifiers',
-            content: `Two additional style modifiers have been added that are supported when writing markdown. They are removed when printing to the console.
-{code \\{highlight someText\\}}
-surrounds the text in backticks:
-\`someText\`
-and 
-{code \\{code.typescript function(message: string)\\\\\\{console.log(message);\\\\\\}\\}}
-Surrounds the text in triple back ticks (with an optional language specifer, in this case typescript):
-\`\`\`typescript
-function(message: string)\\{console.log(message);\\}
-\`\`\``,
+{code '${replaceAboveDefault}'}
+insertCodeBelow defaults to:
+{code '${insertCodeBelowDefault}'}
+insertCodeAbove defaults to:
+{code '${insertCodeAboveDefault}'}
+copyCodeBelow defaults to:
+{code '${copyCodeBelowDefault}'}
+copyCodeAbove defaults to:
+{code '${copyCodeAboveDefault}'}`,
         },
     ],
 };
