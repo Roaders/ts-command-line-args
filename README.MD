@@ -363,7 +363,7 @@ export function (){
 
 Insert code can also be performed in code:
 
-[//]: # (ts-command-line-args_readme-generation_insertCodeBelow file="src\example\insert-code.example.ts" codeComment="typescript" )
+[//]: # (ts-command-line-args_readme-generation_insertCodeBelow file="src/example/insert-code.example.ts" codeComment="typescript" )
 ```typescript
 async function insertSampleCode() {
     // this function is inserted into markdown from a ts file using insertCode

@@ -110,7 +110,7 @@ async function loadLines(
         );
     }
     const codeCommentResult = codeCommentRegExp.exec(result.line);
-    const partialPath = partialPathResult[1];
+    const partialPath = normalize(partialPathResult[1]);
 
     const filePath = normalize(
         isAbsolute(partialPath) ? partialPath : join(dirname(targetFilePath), partialPathResult[1]),
