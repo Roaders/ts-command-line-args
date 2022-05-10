@@ -47,40 +47,42 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
             insertCodeAbove: insertCodeAboveDefault,
             copyCodeBelow: copyCodeBelowDefault,
             copyCodeAbove: copyCodeAboveDefault,
-            dirname: sampleDirName,
             removeDoubleBlankLines: false,
             ...partialOptions,
         };
     }
 
     it(`should return original string when no insertBelow token provided`, async () => {
-        const originalContent = [beforeInsertionLine, afterInsertionLine].join('\n');
+        const fileContent = [beforeInsertionLine, afterInsertionLine].join('\n');
 
         const result = await insertCode(
-            originalContent,
+            { fileContent, filePath: `${sampleDirName}/'originalFilePath.ts` },
             createOptions({ insertCodeAbove: undefined, insertCodeBelow: undefined }),
         );
 
-        expect(result).toEqual(originalContent);
+        expect(result).toEqual(fileContent);
     });
 
     it(`should return original string when no insertBelow token found`, async () => {
-        const originalContent = [beforeInsertionLine, afterInsertionLine].join('\n');
+        const fileContent = [beforeInsertionLine, afterInsertionLine].join('\n');
 
-        const result = await insertCode(originalContent, createOptions());
+        const result = await insertCode(
+            { fileContent, filePath: `${sampleDirName}/'originalFilePath.ts` },
+            createOptions(),
+        );
 
-        expect(result).toEqual(originalContent);
+        expect(result).toEqual(fileContent);
     });
 
     it(`should insert all file content with default tokens`, async () => {
-        const originalContent = [
-            beforeInsertionLine,
-            insertBelowToken,
-            insertCodeAboveDefault,
-            afterInsertionLine,
-        ].join('\n');
+        const fileContent = [beforeInsertionLine, insertBelowToken, insertCodeAboveDefault, afterInsertionLine].join(
+            '\n',
+        );
 
-        const result = await insertCode(originalContent, createOptions());
+        const result = await insertCode(
+            { fileContent, filePath: `${sampleDirName}/'originalFilePath.ts` },
+            createOptions(),
+        );
 
         expect(
             mockedFs.withFunction('readFile').withParameters(resolve(sampleDirName, 'someFile.ts'), any()),
@@ -98,8 +100,42 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
         expect(result).toEqual(expectedContent);
     });
 
+    it(`should insert all file content when passed a file path`, async () => {
+        const fileContent = [beforeInsertionLine, insertBelowToken, insertCodeAboveDefault, afterInsertionLine].join(
+            '\n',
+        );
+
+        mockedFs.setupFunction('readFile', ((path: string, callback: (err: Error | null, data: Buffer) => void) => {
+            if (path.indexOf(`originalFilePath.ts`) > 0) {
+                callback(null, Buffer.from(fileContent));
+            } else {
+                callback(null, Buffer.from(`${insertLineOne}${EOL}${insertLineTwo}`));
+            }
+        }) as any);
+
+        const result = await insertCode(`${sampleDirName}/'originalFilePath.ts`, createOptions());
+
+        expect(
+            mockedFs.withFunction('readFile').withParameters(resolve(sampleDirName, 'someFile.ts'), any()),
+        ).wasCalledOnce();
+        expect(
+            mockedFs.withFunction('readFile').withParameters(resolve(`${sampleDirName}/'originalFilePath.ts`), any()),
+        ).wasCalledOnce();
+
+        const expectedContent = [
+            beforeInsertionLine,
+            insertBelowToken,
+            insertLineOne,
+            insertLineTwo,
+            insertCodeAboveDefault,
+            afterInsertionLine,
+        ].join('\n');
+
+        expect(result).toEqual(expectedContent);
+    });
+
     it(`should remove double blank lines if set to true`, async () => {
-        const originalContent = [
+        const fileContent = [
             beforeInsertionLine,
             insertBelowToken,
             '',
@@ -109,7 +145,10 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
             afterInsertionLine,
         ].join('\n');
 
-        const result = await insertCode(originalContent, createOptions({ removeDoubleBlankLines: true }));
+        const result = await insertCode(
+            { fileContent, filePath: `${sampleDirName}/'originalFilePath.ts` },
+            createOptions({ removeDoubleBlankLines: true }),
+        );
 
         expect(
             mockedFs.withFunction('readFile').withParameters(resolve(sampleDirName, 'someFile.ts'), any()),
@@ -128,7 +167,7 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
     });
 
     it(`should insert all file content with custom tokens`, async () => {
-        const originalContent = [
+        const fileContent = [
             beforeInsertionLine,
             `customInsertAfterToken file="somePath"`,
             `customInsertBeforeToken`,
@@ -136,7 +175,7 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
         ].join('\n');
 
         const result = await insertCode(
-            originalContent,
+            { fileContent, filePath: `${sampleDirName}/'originalFilePath.ts` },
             createOptions({ insertCodeBelow: `customInsertAfterToken`, insertCodeAbove: `customInsertBeforeToken` }),
         );
 
@@ -157,9 +196,12 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
     });
 
     it(`should remove end of file if no insertAbove token`, async () => {
-        const originalContent = [beforeInsertionLine, insertBelowToken, afterInsertionLine].join('\n');
+        const fileContent = [beforeInsertionLine, insertBelowToken, afterInsertionLine].join('\n');
 
-        const result = await insertCode(originalContent, createOptions());
+        const result = await insertCode(
+            { fileContent, filePath: `${sampleDirName}/'originalFilePath.ts` },
+            createOptions(),
+        );
 
         expect(
             mockedFs.withFunction('readFile').withParameters(resolve(sampleDirName, 'someFile.ts'), any()),
@@ -171,7 +213,7 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
     });
 
     it(`should throw error if insertBelow token provided with no file`, async () => {
-        const originalContent = [
+        const fileContent = [
             beforeInsertionLine,
             insertCodeBelowDefault,
             insertCodeAboveDefault,
@@ -181,7 +223,7 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
         let error: Error | undefined;
 
         try {
-            await insertCode(originalContent, createOptions());
+            await insertCode({ fileContent, filePath: `${sampleDirName}/'originalFilePath.ts` }, createOptions());
         } catch (e) {
             error = e;
         }
@@ -192,12 +234,9 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
     });
 
     it(`should should only insert file content between copyAbove and copyBelow tokens`, async () => {
-        const originalContent = [
-            beforeInsertionLine,
-            insertBelowToken,
-            insertCodeAboveDefault,
-            afterInsertionLine,
-        ].join('\n');
+        const fileContent = [beforeInsertionLine, insertBelowToken, insertCodeAboveDefault, afterInsertionLine].join(
+            '\n',
+        );
 
         const fileLines = ['randomFirstLine', copyCodeBelowDefault, insertLineOne, copyCodeAboveDefault, insertLineTwo];
 
@@ -205,7 +244,10 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
             callback(null, Buffer.from(fileLines.join(EOL)));
         }) as any);
 
-        const result = await insertCode(originalContent, createOptions());
+        const result = await insertCode(
+            { fileContent, filePath: `${sampleDirName}/'originalFilePath.ts` },
+            createOptions(),
+        );
 
         expect(
             mockedFs.withFunction('readFile').withParameters(resolve(sampleDirName, 'someFile.ts'), any()),
@@ -223,12 +265,9 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
     });
 
     it(`should should throw error if copyBelow and copyAbove are reversed`, async () => {
-        const originalContent = [
-            beforeInsertionLine,
-            insertBelowToken,
-            insertCodeAboveDefault,
-            afterInsertionLine,
-        ].join('\n');
+        const fileContent = [beforeInsertionLine, insertBelowToken, insertCodeAboveDefault, afterInsertionLine].join(
+            '\n',
+        );
 
         const fileLines = ['randomFirstLine', copyCodeAboveDefault, insertLineOne, copyCodeBelowDefault, insertLineTwo];
 
@@ -239,7 +278,7 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
         let error: Error | undefined;
 
         try {
-            await insertCode(originalContent, createOptions());
+            await insertCode({ fileContent, filePath: `${sampleDirName}/'originalFilePath.ts` }, createOptions());
         } catch (e) {
             error = e;
         }
@@ -250,12 +289,9 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
     });
 
     it(`should should only insert file content after copyBelow token`, async () => {
-        const originalContent = [
-            beforeInsertionLine,
-            insertBelowToken,
-            insertCodeAboveDefault,
-            afterInsertionLine,
-        ].join('\n');
+        const fileContent = [beforeInsertionLine, insertBelowToken, insertCodeAboveDefault, afterInsertionLine].join(
+            '\n',
+        );
 
         const fileLines = [insertLineOne, copyCodeBelowDefault, insertLineTwo];
 
@@ -263,7 +299,10 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
             callback(null, Buffer.from(fileLines.join(EOL)));
         }) as any);
 
-        const result = await insertCode(originalContent, createOptions());
+        const result = await insertCode(
+            { fileContent, filePath: `${sampleDirName}/'originalFilePath.ts` },
+            createOptions(),
+        );
 
         expect(
             mockedFs.withFunction('readFile').withParameters(resolve(sampleDirName, 'someFile.ts'), any()),
@@ -281,12 +320,9 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
     });
 
     it(`should should only insert file content above copyAbove token`, async () => {
-        const originalContent = [
-            beforeInsertionLine,
-            insertBelowToken,
-            insertCodeAboveDefault,
-            afterInsertionLine,
-        ].join('\n');
+        const fileContent = [beforeInsertionLine, insertBelowToken, insertCodeAboveDefault, afterInsertionLine].join(
+            '\n',
+        );
 
         const fileLines = [insertLineOne, copyCodeAboveDefault, insertLineTwo];
 
@@ -294,7 +330,10 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
             callback(null, Buffer.from(fileLines.join(EOL)));
         }) as any);
 
-        const result = await insertCode(originalContent, createOptions());
+        const result = await insertCode(
+            { fileContent, filePath: `${sampleDirName}/'originalFilePath.ts` },
+            createOptions(),
+        );
 
         expect(
             mockedFs.withFunction('readFile').withParameters(resolve(sampleDirName, 'someFile.ts'), any()),
@@ -312,14 +351,17 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
     });
 
     it(`should insert a code comment`, async () => {
-        const originalContent = [
+        const fileContent = [
             beforeInsertionLine,
             `${insertCodeBelowDefault} file="someFile.ts" codeComment )`,
             insertCodeAboveDefault,
             afterInsertionLine,
         ].join('\n');
 
-        const result = await insertCode(originalContent, createOptions());
+        const result = await insertCode(
+            { fileContent, filePath: `${sampleDirName}/'originalFilePath.ts` },
+            createOptions(),
+        );
 
         expect(
             mockedFs.withFunction('readFile').withParameters(resolve(sampleDirName, 'someFile.ts'), any()),
@@ -340,14 +382,17 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
     });
 
     it(`should insert a name code comment`, async () => {
-        const originalContent = [
+        const fileContent = [
             beforeInsertionLine,
             `${insertCodeBelowDefault} file="someFile.ts" codeComment="ts" )`,
             insertCodeAboveDefault,
             afterInsertionLine,
         ].join('\n');
 
-        const result = await insertCode(originalContent, createOptions());
+        const result = await insertCode(
+            { fileContent, filePath: `${sampleDirName}/'originalFilePath.ts` },
+            createOptions(),
+        );
 
         expect(
             mockedFs.withFunction('readFile').withParameters(resolve(sampleDirName, 'someFile.ts'), any()),
@@ -360,6 +405,59 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
             insertLineOne,
             insertLineTwo,
             '```',
+            insertCodeAboveDefault,
+            afterInsertionLine,
+        ].join('\n');
+
+        expect(result).toEqual(expectedContent);
+    });
+
+    it(`should insert content from 2 different files in 2 different locations`, async () => {
+        const inBetweenFilesLine = 'in  between files';
+        const fileContent = [
+            beforeInsertionLine,
+            `${insertCodeBelowDefault} file="insertFileOne.ts" )`,
+            insertCodeAboveDefault,
+            inBetweenFilesLine,
+            `${insertCodeBelowDefault} file="insertFileTwo.ts" )`,
+            insertCodeAboveDefault,
+            afterInsertionLine,
+        ].join('\n');
+
+        mockedFs.setupFunction('readFile', ((path: string, callback: (err: Error | null, data: Buffer) => void) => {
+            if (path.indexOf(`originalFilePath.ts`) > 0) {
+                callback(null, Buffer.from(fileContent));
+            } else if (path.indexOf(`insertFileOne.ts`) > 0) {
+                callback(null, Buffer.from(`fileOneLineOne${EOL}fileOneLineTwo`));
+            } else if (path.indexOf(`insertFileTwo.ts`) > 0) {
+                callback(null, Buffer.from(`fileTwoLineOne${EOL}fileTwoLineTwo`));
+            } else {
+                throw new Error(`unknown file path: ${path}`);
+            }
+        }) as any);
+
+        const result = await insertCode(`${sampleDirName}/'originalFilePath.ts`, createOptions());
+
+        expect(
+            mockedFs.withFunction('readFile').withParameters(resolve(sampleDirName, 'insertFileOne.ts'), any()),
+        ).wasCalledOnce();
+        expect(
+            mockedFs.withFunction('readFile').withParameters(resolve(sampleDirName, 'insertFileTwo.ts'), any()),
+        ).wasCalledOnce();
+        expect(
+            mockedFs.withFunction('readFile').withParameters(resolve(`${sampleDirName}/'originalFilePath.ts`), any()),
+        ).wasCalledOnce();
+
+        const expectedContent = [
+            beforeInsertionLine,
+            `${insertCodeBelowDefault} file="insertFileOne.ts" )`,
+            `fileOneLineOne`,
+            `fileOneLineTwo`,
+            insertCodeAboveDefault,
+            inBetweenFilesLine,
+            `${insertCodeBelowDefault} file="insertFileTwo.ts" )`,
+            `fileTwoLineOne`,
+            `fileTwoLineTwo`,
             insertCodeAboveDefault,
             afterInsertionLine,
         ].join('\n');

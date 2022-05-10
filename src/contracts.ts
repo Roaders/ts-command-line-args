@@ -289,19 +289,12 @@ export interface Content extends SectionHeader {
     includeIn?: 'markdown' | 'cli' | 'both';
 }
 
-export interface IInsertCodeTokens {
+export interface IInsertCodeOptions {
     insertCodeBelow?: string;
     insertCodeAbove?: string;
     copyCodeBelow?: string;
     copyCodeAbove?: string;
     removeDoubleBlankLines: boolean;
-}
-
-export interface IInsertCodeOptions extends IInsertCodeTokens {
-    // This is used as the base path to resolve relative paths from.
-    // This is not used for absolute paths
-    // if not provided process.cwd() is used for resolution
-    dirname?: string;
 }
 
 export interface IReplaceOptions {
@@ -312,7 +305,7 @@ export interface IReplaceOptions {
 
 export type JsImport = { jsFile: string; importName: string };
 
-export interface IWriteMarkDown extends IReplaceOptions, IInsertCodeTokens {
+export interface IWriteMarkDown extends IReplaceOptions, IInsertCodeOptions {
     markdownPath: string;
     jsFile: string[];
     configImportName: string[];

@@ -1,27 +1,61 @@
 import { IInsertCodeOptions } from '../contracts';
 import { filterDoubleBlankLines, findEscapeSequence, splitContent } from './line-ending.helper';
-import { isAbsolute, resolve } from 'path';
+import { isAbsolute, resolve, basename, dirname } from 'path';
 import { promisify } from 'util';
-import { readFile } from 'fs';
+import { readFile, writeFile } from 'fs';
+import chalk from 'chalk';
 
 const asyncReadFile = promisify(readFile);
+const asyncWriteFile = promisify(writeFile);
 
-export async function insertCode(inputString: string, partialOptions?: Partial<IInsertCodeOptions>): Promise<string> {
+export type FileDetails = {
+    filePath: string;
+    fileContent: string;
+};
+
+export async function insertCode(
+    input: FileDetails | string,
+    partialOptions?: Partial<IInsertCodeOptions>,
+): Promise<string> {
     const options: IInsertCodeOptions = { removeDoubleBlankLines: false, ...partialOptions };
 
-    const lineBreak = findEscapeSequence(inputString);
-    let lines = splitContent(inputString);
+    let fileDetails: FileDetails;
 
-    lines = await insertCodeImpl(lines, options, 0);
+    if (typeof input === 'string') {
+        const filePath = resolve(input);
+        console.log(`Loading existing file from '${chalk.blue(filePath)}'`);
+        fileDetails = { filePath, fileContent: (await asyncReadFile(filePath)).toString() };
+    } else {
+        fileDetails = input;
+    }
+
+    const content = fileDetails.fileContent;
+
+    const lineBreak = findEscapeSequence(content);
+    let lines = splitContent(content);
+
+    lines = await insertCodeImpl(fileDetails.filePath, lines, options, 0);
 
     if (options.removeDoubleBlankLines) {
         lines = lines.filter((line, index, lines) => filterDoubleBlankLines(line, index, lines));
     }
 
-    return Promise.resolve(lines.join(lineBreak));
+    const modifiedContent = lines.join(lineBreak);
+
+    if (typeof input === 'string') {
+        console.log(`Saving modified content to '${chalk.blue(fileDetails.filePath)}'`);
+        await asyncWriteFile(fileDetails.filePath, modifiedContent);
+    }
+
+    return modifiedContent;
 }
 
-async function insertCodeImpl(lines: string[], options: IInsertCodeOptions, startLine: number): Promise<string[]> {
+async function insertCodeImpl(
+    filePath: string,
+    lines: string[],
+    options: IInsertCodeOptions,
+    startLine: number,
+): Promise<string[]> {
     const insertCodeBelow = options?.insertCodeBelow;
     const insertCodeAbove = options?.insertCodeAbove;
 
@@ -43,20 +77,26 @@ async function insertCodeImpl(lines: string[], options: IInsertCodeOptions, star
             ? findIndex(lines, (line) => line.indexOf(insertCodeAbove) === 0, insertCodeBelowResult.lineIndex)
             : undefined;
 
-    const linesFromFile = await loadLines(options, insertCodeBelowResult);
+    const linesFromFile = await loadLines(filePath, options, insertCodeBelowResult);
 
     const linesBefore = lines.slice(0, insertCodeBelowResult.lineIndex + 1);
     const linesAfter = insertCodeAboveResult != null ? lines.slice(insertCodeAboveResult.lineIndex) : [];
 
     lines = [...linesBefore, ...linesFromFile, ...linesAfter];
 
-    return insertCodeAboveResult == null ? lines : insertCodeImpl(lines, options, insertCodeAboveResult.lineIndex);
+    return insertCodeAboveResult == null
+        ? lines
+        : insertCodeImpl(filePath, lines, options, insertCodeAboveResult.lineIndex);
 }
 
 const fileRegExp = /file="([^"]+)"/;
 const codeCommentRegExp = /codeComment(="([^"]+)")?/; //https://regex101.com/r/3MVdBO/1
 
-async function loadLines(options: IInsertCodeOptions, result: FindLineResults): Promise<string[]> {
+async function loadLines(
+    targetFilePath: string,
+    options: IInsertCodeOptions,
+    result: FindLineResults,
+): Promise<string[]> {
     const partialPathResult = fileRegExp.exec(result.line);
 
     if (partialPathResult == null) {
@@ -68,9 +108,14 @@ async function loadLines(options: IInsertCodeOptions, result: FindLineResults): 
 
     const filePath = isAbsolute(partialPathResult[1])
         ? partialPathResult[1]
-        : resolve(options.dirname || process.cwd(), partialPathResult[1]);
+        : resolve(dirname(targetFilePath) || process.cwd(), partialPathResult[1]);
 
     const fileBuffer = await asyncReadFile(filePath);
+
+    console.log(
+        `Inserting code from '${chalk.blue(basename(filePath))}' into '${chalk.blue(basename(targetFilePath))}'`,
+    );
+
     let contentLines = splitContent(fileBuffer.toString());
 
     const copyBelowMarker = options.copyCodeBelow;
