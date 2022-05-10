@@ -1,6 +1,6 @@
 import { IInsertCodeOptions } from '../contracts';
 import { filterDoubleBlankLines, findEscapeSequence, splitContent } from './line-ending.helper';
-import { isAbsolute, resolve, basename, dirname } from 'path';
+import { isAbsolute, resolve, basename, dirname, join } from 'path';
 import { promisify } from 'util';
 import { readFile, writeFile } from 'fs';
 import chalk from 'chalk';
@@ -113,7 +113,7 @@ async function loadLines(
 
     const filePath = isAbsolute(partialPathResult[1])
         ? partialPathResult[1]
-        : resolve(dirname(targetFilePath) || process.cwd(), partialPathResult[1]);
+        : resolve(join(dirname(targetFilePath), partialPathResult[1]));
 
     const fileBuffer = await asyncReadFile(filePath);
 
