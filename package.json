@@ -86,6 +86,8 @@
         "markdownPath": "README.MD",
         "jsFile": "dist/write-markdown.constants.js",
         "verifyMessage": "'{fileName}' is out of date. Please regenerate by running 'npm run write-markdown'",
-        "removeDoubleBlankLines": true
+        "removeDoubleBlankLines": true,
+        "insertCodeBelow": "[//]: # (ts-command-line-args_readme-generation_insertCodeBelow",
+        "insertCodeAbove": "[//]: # (ts-command-line-args_readme-generation_insertCodeAbove)"
     }
 }

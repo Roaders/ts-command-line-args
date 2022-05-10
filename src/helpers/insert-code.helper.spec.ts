@@ -32,6 +32,9 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
             setupFunction('readFile', ((_path: string, callback: (err: Error | null, data: Buffer) => void) => {
                 callback(null, Buffer.from(`${insertLineOne}${EOL}${insertLineTwo}`));
             }) as any),
+            setupFunction('writeFile', ((_path: string, _data: any, callback: () => void) => {
+                callback();
+            }) as any),
         );
 
         registerMock(originalFs, mockedFs.mock);
@@ -113,13 +116,18 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
             }
         }) as any);
 
-        const result = await insertCode(`${sampleDirName}/'originalFilePath.ts`, createOptions());
+        const result = await insertCode(`${sampleDirName}/originalFilePath.ts`, createOptions());
 
         expect(
             mockedFs.withFunction('readFile').withParameters(resolve(sampleDirName, 'someFile.ts'), any()),
         ).wasCalledOnce();
         expect(
-            mockedFs.withFunction('readFile').withParameters(resolve(`${sampleDirName}/'originalFilePath.ts`), any()),
+            mockedFs.withFunction('readFile').withParameters(resolve(`${sampleDirName}/originalFilePath.ts`), any()),
+        ).wasCalledOnce();
+        expect(
+            mockedFs
+                .withFunction('writeFile')
+                .withParameters(resolve(`${sampleDirName}/originalFilePath.ts`), any(), any()),
         ).wasCalledOnce();
 
         const expectedContent = [

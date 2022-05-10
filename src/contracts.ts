@@ -307,7 +307,7 @@ export type JsImport = { jsFile: string; importName: string };
 
 export interface IWriteMarkDown extends IReplaceOptions, IInsertCodeOptions {
     markdownPath: string;
-    jsFile: string[];
+    jsFile?: string[];
     configImportName: string[];
     help: boolean;
     verify: boolean;

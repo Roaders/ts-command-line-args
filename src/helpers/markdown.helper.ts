@@ -143,7 +143,14 @@ export function getType(option: CommandLineOption): string {
     return `${type}${multiple} `;
 }
 
-export function generateUsageGuides(args: IWriteMarkDown): string[] {
+export function generateUsageGuides(args: IWriteMarkDown): string[] | undefined {
+    if (args.jsFile == null) {
+        console.log(
+            `No jsFile defined for usage guide generation. See 'write-markdown -h' for details on generating usage guides.`,
+        );
+        return undefined;
+    }
+
     function mapJsImports(imports: JsImport[], jsFile: string) {
         return [...imports, ...args.configImportName.map((importName) => ({ jsFile, importName }))];
     }

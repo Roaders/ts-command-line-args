@@ -13,6 +13,7 @@ export const argumentConfig: ArgumentConfig<IWriteMarkDown> = {
     markdownPath: {
         type: String,
         alias: 'm',
+        defaultOption: true,
         description:
             'The file to write to. Without replacement markers the whole file content will be replaced. Path can be absolute or relative.',
     },
@@ -54,8 +55,9 @@ export const argumentConfig: ArgumentConfig<IWriteMarkDown> = {
     },
     jsFile: {
         type: String,
+        optional: true,
         alias: 'j',
-        description: `jsFile to 'require' that has an export with the 'UsageGuideConfig' export. Multiple file can be specified.`,
+        description: `jsFile to 'require' that has an export with the 'UsageGuideConfig' export. Multiple files can be specified.`,
         multiple: true,
     },
     configImportName: {

@@ -4,24 +4,31 @@ import { parse } from './parse';
 import { IWriteMarkDown } from './contracts';
 import { resolve, relative } from 'path';
 import { readFileSync, writeFileSync } from 'fs';
-import { addCommandLineArgsFooter, addContent, generateUsageGuides } from './helpers';
+import { addCommandLineArgsFooter, addContent, generateUsageGuides, insertCode } from './helpers';
 import { argumentConfig, parseOptions } from './write-markdown.constants';
 import format from 'string-format';
 import chalk from 'chalk';
 
-function writeMarkdown() {
+async function writeMarkdown() {
     const args = parse<IWriteMarkDown>(argumentConfig, parseOptions);
 
     const markdownPath = resolve(args.markdownPath);
 
-    console.log(`Loading existing file from '${markdownPath}'`);
+    console.log(`Loading existing file from '${chalk.blue(markdownPath)}'`);
     const markdownFileContent = readFileSync(markdownPath).toString();
 
     const usageGuides = generateUsageGuides(args);
-    let modifiedFileContent = addContent(markdownFileContent, usageGuides, args);
-    if (!args.skipFooter) {
-        modifiedFileContent = addCommandLineArgsFooter(modifiedFileContent);
+
+    let modifiedFileContent = markdownFileContent;
+
+    if (usageGuides != null) {
+        modifiedFileContent = addContent(markdownFileContent, usageGuides, args);
+        if (!args.skipFooter) {
+            modifiedFileContent = addCommandLineArgsFooter(modifiedFileContent);
+        }
     }
+
+    modifiedFileContent = await insertCode({ fileContent: modifiedFileContent, filePath: markdownPath }, args);
 
     const action = args.verify === true ? `verify` : `write`;
     const contentMatch = markdownFileContent === modifiedFileContent ? `match` : `nonMatch`;
@@ -48,7 +55,7 @@ function writeMarkdown() {
             console.log(chalk.blue(`'${relativePath}' content not modified, not writing to file.`));
             break;
         case 'write_nonMatch':
-            console.log(chalk.green(`Writing file to '${relativePath}'`));
+            console.log(`Writing modified file to '${chalk.blue(relativePath)}'`);
             writeFileSync(relativePath, modifiedFileContent);
             break;
     }

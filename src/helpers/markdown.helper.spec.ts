@@ -118,7 +118,7 @@ Markers in the document describe where the content should be inserted, existing 
 | **insertCodeAbove** | | string | A marker in the file to insert code above. |
 | **copyCodeBelow** | | string | A marker in the file being inserted to say only copy code below this line |
 | **copyCodeAbove** | | string | A marker in the file being inserted to say only copy code above this line |
-| **jsFile** | **j** | string[] | jsFile to 'require' that has an export with the 'UsageGuideConfig' export. Multiple file can be specified. |
+| **jsFile** | **j** | string[] | jsFile to 'require' that has an export with the 'UsageGuideConfig' export. Multiple files can be specified. |
 | **configImportName** | **c** | string[] | Export name of the 'UsageGuideConfig' object. Defaults to 'usageGuideInfo'. Multiple exports can be specified. |
 | **verify** | **v** | boolean | Verify the markdown file. Does not update the file but returns a non zero exit code if the markdown file is not correct. Useful for a pre-publish script. |
 | **configFile** | **f** | string | Optional config file to load config from. package.json can be used if jsonPath specified as well |
