@@ -9,7 +9,7 @@ import { insertCode } from './insert-code.helper';
 import * as originalFs from 'fs';
 import { any, IMocked, Mock, registerMock, reset, setupFunction } from '@morgan-stanley/ts-mocking-bird';
 import { EOL } from 'os';
-import { resolve } from 'path';
+import { resolve, join } from 'path';
 
 const beforeInsertionLine = `beforeInsertion`;
 const afterInsertionLine = `afterInsertion`;
@@ -88,7 +88,7 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
         );
 
         expect(
-            mockedFs.withFunction('readFile').withParameters(resolve(sampleDirName, 'someFile.ts'), any()),
+            mockedFs.withFunction('readFile').withParameters(join(sampleDirName, 'someFile.ts'), any()),
         ).wasCalledOnce();
 
         const expectedContent = [
@@ -159,7 +159,7 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
         );
 
         expect(
-            mockedFs.withFunction('readFile').withParameters(resolve(sampleDirName, 'someFile.ts'), any()),
+            mockedFs.withFunction('readFile').withParameters(join(sampleDirName, 'someFile.ts'), any()),
         ).wasCalledOnce();
 
         const expectedContent = [
@@ -188,7 +188,7 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
         );
 
         expect(
-            mockedFs.withFunction('readFile').withParameters(resolve(sampleDirName, 'somePath'), any()),
+            mockedFs.withFunction('readFile').withParameters(join(sampleDirName, 'somePath'), any()),
         ).wasCalledOnce();
 
         const expectedContent = [
@@ -212,7 +212,7 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
         );
 
         expect(
-            mockedFs.withFunction('readFile').withParameters(resolve(sampleDirName, 'someFile.ts'), any()),
+            mockedFs.withFunction('readFile').withParameters(join(sampleDirName, 'someFile.ts'), any()),
         ).wasCalledOnce();
 
         const expectedContent = [beforeInsertionLine, insertBelowToken, insertLineOne, insertLineTwo].join('\n');
@@ -258,7 +258,7 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
         );
 
         expect(
-            mockedFs.withFunction('readFile').withParameters(resolve(sampleDirName, 'someFile.ts'), any()),
+            mockedFs.withFunction('readFile').withParameters(join(sampleDirName, 'someFile.ts'), any()),
         ).wasCalledOnce();
 
         const expectedContent = [
@@ -313,7 +313,7 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
         );
 
         expect(
-            mockedFs.withFunction('readFile').withParameters(resolve(sampleDirName, 'someFile.ts'), any()),
+            mockedFs.withFunction('readFile').withParameters(join(sampleDirName, 'someFile.ts'), any()),
         ).wasCalledOnce();
 
         const expectedContent = [
@@ -344,7 +344,7 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
         );
 
         expect(
-            mockedFs.withFunction('readFile').withParameters(resolve(sampleDirName, 'someFile.ts'), any()),
+            mockedFs.withFunction('readFile').withParameters(join(sampleDirName, 'someFile.ts'), any()),
         ).wasCalledOnce();
 
         const expectedContent = [
@@ -372,7 +372,7 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
         );
 
         expect(
-            mockedFs.withFunction('readFile').withParameters(resolve(sampleDirName, 'someFile.ts'), any()),
+            mockedFs.withFunction('readFile').withParameters(join(sampleDirName, 'someFile.ts'), any()),
         ).wasCalledOnce();
 
         const expectedContent = [
@@ -403,7 +403,7 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
         );
 
         expect(
-            mockedFs.withFunction('readFile').withParameters(resolve(sampleDirName, 'someFile.ts'), any()),
+            mockedFs.withFunction('readFile').withParameters(join(sampleDirName, 'someFile.ts'), any()),
         ).wasCalledOnce();
 
         const expectedContent = [
