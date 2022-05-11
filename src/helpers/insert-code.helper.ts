@@ -1,6 +1,6 @@
 import { IInsertCodeOptions } from '../contracts';
 import { filterDoubleBlankLines, findEscapeSequence, splitContent } from './line-ending.helper';
-import { isAbsolute, resolve, dirname, join, normalize } from 'path';
+import { isAbsolute, resolve, dirname, join } from 'path';
 import { promisify } from 'util';
 import { readFile, writeFile } from 'fs';
 import chalk from 'chalk';
@@ -110,12 +110,9 @@ async function loadLines(
         );
     }
     const codeCommentResult = codeCommentRegExp.exec(result.line);
-    const partialPath = normalize(partialPathResult[1]);
+    const partialPath = partialPathResult[1];
 
-    const filePath = normalize(
-        isAbsolute(partialPath) ? partialPath : join(dirname(targetFilePath), partialPathResult[1]),
-    );
-
+    const filePath = isAbsolute(partialPath) ? partialPath : join(dirname(targetFilePath), partialPathResult[1]);
     console.log(`Inserting code from '${chalk.blue(filePath)}' into '${chalk.blue(targetFilePath)}'`);
 
     const fileBuffer = await asyncReadFile(filePath);
