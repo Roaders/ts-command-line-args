@@ -56,7 +56,6 @@
     },
     "devDependencies": {
         "@morgan-stanley/ts-mocking-bird": "^0.2.3",
-        "@types/chalk": "^2.2.0",
         "@types/command-line-args": "^5.0.0",
         "@types/command-line-usage": "^5.0.1",
         "@types/jest": "^26.0.10",
