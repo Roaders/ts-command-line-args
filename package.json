@@ -31,7 +31,7 @@
         "test": "jest --ci --coverage && tsc --noemit",
         "watch-test": "jest --watch",
         "prebuild-release": "npm run clean",
-        "build-release": "concurrently --kill-others-on-fail npm:test npm:lint npm:build npm:build:example npm:verify-markdown && codecov",
+        "build-release": "concurrently --kill-others-on-fail npm:test npm:lint npm:build npm:build:example npm:verify-markdown",
         "prewrite-markdown": "npm run build",
         "preverify-markdown": "npm run build",
         "write-markdown": "node dist/write-markdown -f package.json -p markdownConfig",
