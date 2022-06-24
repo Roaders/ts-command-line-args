@@ -35,7 +35,7 @@ export function generateTableFooter<T>(
         return undefined;
     }
 
-    const optionalProps = optionList.some((option) => ((option as unknown) as OptionalProperty).optional === true);
+    const optionalProps = optionList.some((option) => (option as unknown as OptionalProperty).optional === true);
     const defaultProps = optionList.some((option) => option.defaultOption === true);
 
     if (optionalProps || defaultProps) {
@@ -84,7 +84,7 @@ function mapOptionDescription<T>(definition: CommandLineOption<T>, options: Pars
         definition.description = `Default Option. ${definition.description}`;
     }
 
-    if (((definition as unknown) as OptionalProperty).optional === true) {
+    if ((definition as unknown as OptionalProperty).optional === true) {
         definition.description = `Optional. ${definition.description}`;
     }
 
@@ -106,7 +106,7 @@ function mapOptionTypeLabel<T>(definition: CommandLineOption<T>, options: ParseO
         definition.typeLabel = `${definition.typeLabel} (D)`;
     }
 
-    if (((definition as unknown) as OptionalProperty).optional === true) {
+    if ((definition as unknown as OptionalProperty).optional === true) {
         definition.typeLabel = `${definition.typeLabel} (O)`;
     }
 

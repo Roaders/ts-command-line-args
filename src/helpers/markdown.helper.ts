@@ -77,7 +77,7 @@ export function createOptionsSections<T>(cliArguments: ArgumentConfig<T>, option
     return getOptionSections(options).map((section) => createOptionsSection(optionList, section, options));
 }
 
-export function createOptionsSection<T>(
+export function createOptionsSection(
     optionList: CommandLineOption<any>[],
     content: OptionContent,
     options: ParseOptions<any>,
