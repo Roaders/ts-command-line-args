@@ -313,30 +313,6 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
         expect(result).toEqual(expectedContent);
     });
 
-    it(`should should throw error if copyBelow and copyAbove are reversed`, async () => {
-        const fileContent = [beforeInsertionLine, insertBelowToken, insertCodeAboveDefault, afterInsertionLine].join(
-            '\n',
-        );
-
-        const fileLines = ['randomFirstLine', copyCodeAboveDefault, insertLineOne, copyCodeBelowDefault, insertLineTwo];
-
-        mockedFs.setupFunction('readFile', ((_path: string, callback: (err: Error | null, data: Buffer) => void) => {
-            callback(null, Buffer.from(fileLines.join(EOL)));
-        }) as any);
-
-        let error: Error | undefined;
-
-        try {
-            await insertCode({ fileContent, filePath: `${sampleDirName}/'originalFilePath.ts` }, createOptions());
-        } catch (e) {
-            error = e;
-        }
-
-        expect(error?.message).toEqual(
-            `The copyCodeAbove marker '// ts-command-line-args_write-markdown_copyCodeAbove' was found before the copyCodeBelow marker '// ts-command-line-args_write-markdown_copyCodeBelow'. The copyCodeBelow marked must be before the copyCodeAbove.`,
-        );
-    });
-
     it(`should should only insert file content after copyBelow token`, async () => {
         const fileContent = [beforeInsertionLine, insertBelowToken, insertCodeAboveDefault, afterInsertionLine].join(
             '\n',

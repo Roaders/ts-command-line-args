@@ -127,13 +127,9 @@ async function loadLines(
     const copyBelowIndex =
         copyBelowMarker != null ? contentLines.findIndex(findLine(copyBelowMarker, snippetResult?.[1])) : -1;
     const copyAboveIndex =
-        copyAboveMarker != null ? contentLines.findIndex((line) => line.indexOf(copyAboveMarker) === 0) : -1;
-
-    if (copyAboveIndex > -1 && copyBelowIndex > -1 && copyAboveIndex < copyBelowIndex) {
-        throw new Error(
-            `The copyCodeAbove marker '${options.copyCodeAbove}' was found before the copyCodeBelow marker '${options.copyCodeBelow}'. The copyCodeBelow marked must be before the copyCodeAbove.`,
-        );
-    }
+        copyAboveMarker != null
+            ? contentLines.findIndex((line, index) => line.indexOf(copyAboveMarker) === 0 && index > copyBelowIndex)
+            : -1;
 
     if (snippetResult != null && copyBelowIndex < 0) {
         throw new Error(
