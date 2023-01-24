@@ -354,11 +354,11 @@ Areas to include from the file that is being inserted can be designated with mor
   
 ```ts
 export const someExport = "not copied";
-// ts-command-line-args_write-markdown_copyCodeBelow;
+// ts-command-line-args_write-markdown_copyCodeBelow
 export function (){
     //this function will be copied
 }
-// ts-command-line-args_write-markdown_copyCodeAbove;
+// ts-command-line-args_write-markdown_copyCodeAbove
 ```
 
 Insert code can also be performed in code:
@@ -377,6 +377,23 @@ async function insertSampleCode() {
 ```
 [//]: # (ts-command-line-args_readme-generation_insertCodeAbove)
   
+#### Snippets
+
+If you have a file that you want to copy multiple chunks of code from `snippetName` can be used to specify which section of code you want to copy:
+
+```  
+[//]: # (ts-command-line-args_write-markdown_insertCodeBelow file="path/from/markdown/to/file.ts" snippetName="mySnippet" )  
+```  
+
+```ts
+export const someExport = "not copied";
+// ts-command-line-args_write-markdown_copyCodeBelow mySnippet
+export function (){
+    //this function will be copied
+}
+// ts-command-line-args_write-markdown_copyCodeAbove
+```
+
 ### String Formatting
 
 The only chalk modifiers supported when converting to markdown are `bold` and `italic`.  

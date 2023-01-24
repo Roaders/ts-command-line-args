@@ -17,7 +17,7 @@ const afterInsertionLine = `afterInsertion`;
 const insertLineOne = `insertLineOne`;
 const insertLineTwo = `insertLineTwo`;
 
-const insertBelowToken = `${insertCodeBelowDefault} file="someFile.ts" )`;
+let insertBelowToken = `${insertCodeBelowDefault} file="someFile.ts" )`;
 
 const sampleDirName = `sample/dirname`;
 
@@ -26,11 +26,15 @@ jest.mock('fs', () => require('@morgan-stanley/ts-mocking-bird').proxyJestModule
 
 describe(`(${insertCode.name}) insert-code.helper`, () => {
     let mockedFs: IMocked<typeof originalFs>;
+    let insertCodeFromContent: string;
 
     beforeEach(() => {
+        insertBelowToken = `${insertCodeBelowDefault} file="someFile.ts" )`;
+        insertCodeFromContent = `${insertLineOne}${EOL}${insertLineTwo}`;
+
         mockedFs = Mock.create<typeof originalFs>().setup(
             setupFunction('readFile', ((_path: string, callback: (err: Error | null, data: Buffer) => void) => {
-                callback(null, Buffer.from(`${insertLineOne}${EOL}${insertLineTwo}`));
+                callback(null, Buffer.from(insertCodeFromContent));
             }) as any),
             setupFunction('writeFile', ((_path: string, _data: any, callback: () => void) => {
                 callback();
@@ -242,15 +246,52 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
     });
 
     it(`should should only insert file content between copyAbove and copyBelow tokens`, async () => {
+        insertCodeFromContent = [
+            'randomFirstLine',
+            copyCodeBelowDefault,
+            insertLineOne,
+            copyCodeAboveDefault,
+            insertLineTwo,
+        ].join('\n');
         const fileContent = [beforeInsertionLine, insertBelowToken, insertCodeAboveDefault, afterInsertionLine].join(
             '\n',
         );
 
-        const fileLines = ['randomFirstLine', copyCodeBelowDefault, insertLineOne, copyCodeAboveDefault, insertLineTwo];
+        const result = await insertCode(
+            { fileContent, filePath: `${sampleDirName}/'originalFilePath.ts` },
+            createOptions(),
+        );
 
-        mockedFs.setupFunction('readFile', ((_path: string, callback: (err: Error | null, data: Buffer) => void) => {
-            callback(null, Buffer.from(fileLines.join(EOL)));
-        }) as any);
+        expect(
+            mockedFs.withFunction('readFile').withParameters(join(sampleDirName, 'someFile.ts'), any()),
+        ).wasCalledOnce();
+
+        const expectedContent = [
+            beforeInsertionLine,
+            insertBelowToken,
+            insertLineOne,
+            insertCodeAboveDefault,
+            afterInsertionLine,
+        ].join('\n');
+
+        expect(result).toEqual(expectedContent);
+    });
+
+    it(`should insert selected snippet when snippet defined`, async () => {
+        insertCodeFromContent = [
+            'randomFirstLine',
+            `// ts-command-line-args_write-markdown_copyCodeBelow expectedSnippet`,
+            insertLineOne,
+            copyCodeAboveDefault,
+            copyCodeBelowDefault,
+            insertLineTwo,
+            copyCodeAboveDefault,
+        ].join('\n');
+        insertBelowToken = `${insertCodeBelowDefault} file="someFile.ts" snippetName="expectedSnippet" )`;
+
+        const fileContent = [beforeInsertionLine, insertBelowToken, insertCodeAboveDefault, afterInsertionLine].join(
+            '\n',
+        );
 
         const result = await insertCode(
             { fileContent, filePath: `${sampleDirName}/'originalFilePath.ts` },

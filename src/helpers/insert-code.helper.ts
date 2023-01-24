@@ -96,6 +96,7 @@ async function insertCodeImpl(
 
 const fileRegExp = /file="([^"]+)"/;
 const codeCommentRegExp = /codeComment(="([^"]+)")?/; //https://regex101.com/r/3MVdBO/1
+const snippetRegExp = /snippetName="([^"]+)"/;
 
 async function loadLines(
     targetFilePath: string,
@@ -110,6 +111,7 @@ async function loadLines(
         );
     }
     const codeCommentResult = codeCommentRegExp.exec(result.line);
+    const snippetResult = snippetRegExp.exec(result.line);
     const partialPath = partialPathResult[1];
 
     const filePath = isAbsolute(partialPath) ? partialPath : join(dirname(targetFilePath), partialPathResult[1]);
@@ -123,13 +125,23 @@ async function loadLines(
     const copyAboveMarker = options.copyCodeAbove;
 
     const copyBelowIndex =
-        copyBelowMarker != null ? contentLines.findIndex((line) => line.indexOf(copyBelowMarker) === 0) : -1;
+        copyBelowMarker != null ? contentLines.findIndex(findLine(copyBelowMarker, snippetResult?.[1])) : -1;
     const copyAboveIndex =
         copyAboveMarker != null ? contentLines.findIndex((line) => line.indexOf(copyAboveMarker) === 0) : -1;
 
     if (copyAboveIndex > -1 && copyBelowIndex > -1 && copyAboveIndex < copyBelowIndex) {
         throw new Error(
             `The copyCodeAbove marker '${options.copyCodeAbove}' was found before the copyCodeBelow marker '${options.copyCodeBelow}'. The copyCodeBelow marked must be before the copyCodeAbove.`,
+        );
+    }
+
+    if (snippetResult != null && copyBelowIndex < 0) {
+        console.log(`snippetResult: `, snippetResult);
+        console.log(`snippetResult[1]: `, snippetResult[1]);
+        console.log(`line: `, result.line);
+
+        throw new Error(
+            `The copyCodeBelow marker '${options.copyCodeBelow}' was not found with the requested snippet ${snippetResult[1]}`,
         );
     }
 
@@ -140,6 +152,12 @@ async function loadLines(
     }
 
     return contentLines;
+}
+
+function findLine(copyBelowMarker: string, snippetName?: string): (line: string) => boolean {
+    return (line: string): boolean => {
+        return line.indexOf(copyBelowMarker) === 0 && (snippetName == null || line.indexOf(snippetName) > 0);
+    };
 }
 
 type FindLineResults = { line: string; lineIndex: number };
