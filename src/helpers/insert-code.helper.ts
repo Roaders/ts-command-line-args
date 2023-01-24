@@ -136,12 +136,8 @@ async function loadLines(
     }
 
     if (snippetResult != null && copyBelowIndex < 0) {
-        console.log(`snippetResult: `, snippetResult);
-        console.log(`snippetResult[1]: `, snippetResult[1]);
-        console.log(`line: `, result.line);
-
         throw new Error(
-            `The copyCodeBelow marker '${options.copyCodeBelow}' was not found with the requested snippet ${snippetResult[1]}`,
+            `The copyCodeBelow marker '${options.copyCodeBelow}' was not found with the requested snippet: '${snippetResult[1]}'`,
         );
     }
 
