@@ -1,6 +1,6 @@
 {
     "name": "ts-command-line-args",
-    "version": "2.4.0",
+    "version": "2.4.1",
     "description": "A Typescript wrapper around command-line-args with additional support for markdown usage guide generation",
     "bin": {
         "write-markdown": "dist/write-markdown.js"
