@@ -236,7 +236,7 @@ describe(`(${insertCode.name}) insert-code.helper`, () => {
 
         try {
             await insertCode({ fileContent, filePath: `${sampleDirName}/'originalFilePath.ts` }, createOptions());
-        } catch (e) {
+        } catch (e: any) {
             error = e;
         }
 

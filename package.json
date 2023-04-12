@@ -1,6 +1,6 @@
 {
     "name": "ts-command-line-args",
-    "version": "2.4.2",
+    "version": "2.5.0",
     "description": "A Typescript wrapper around command-line-args with additional support for markdown usage guide generation",
     "bin": {
         "write-markdown": "dist/write-markdown.js"
@@ -60,6 +60,7 @@
         "@types/command-line-args": "^5.0.0",
         "@types/command-line-usage": "^5.0.1",
         "@types/jest": "^27.5.1",
+        "@types/node": "^16.18.23",
         "@types/string-format": "^2.0.0",
         "@typescript-eslint/eslint-plugin": "^5.29.0",
         "@typescript-eslint/parser": "^5.29.0",

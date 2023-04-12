@@ -1,8 +1,8 @@
-export type ArgumentConfig<T extends { [name: string]: any }> = {
+export type ArgumentConfig<T> = {
     [P in keyof T]-?: PropertyConfig<T[P]>;
 };
 
-export type ArgumentOptions<T extends { [name: string]: any }> = {
+export type ArgumentOptions<T> = {
     [P in keyof T]-?: PropertyOptions<T[P]>;
 };
 
@@ -119,7 +119,7 @@ export interface UsageGuideOptions {
     optionSections?: OptionContent[];
 }
 
-export interface ArgsParseOptions<T extends { [name: string]: any }> extends UsageGuideOptions {
+export interface ArgsParseOptions<T> extends UsageGuideOptions {
     /**
      * An array of strings which if present will be parsed instead of `process.argv`.
      */
