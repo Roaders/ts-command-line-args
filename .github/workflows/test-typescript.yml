@@ -1,4 +1,4 @@
-name: Build
+name: Compatible Typescript Versions
 
 on:
   push:
@@ -14,13 +14,14 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [ 14.x, 16.x 18.x]
+        typescript-version: [4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8, 4.9 ]
 
     steps:
     - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Use Node.js 16.x
       uses: actions/setup-node@v1
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: 16.x
     - run: npm ci
+    - run: npm install typescript@${{ matrix.typescript-version }} 
     - run: npm run build-release
