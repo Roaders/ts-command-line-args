@@ -56,7 +56,7 @@
         "string-format": "^2.0.0"
     },
     "devDependencies": {
-        "@morgan-stanley/ts-mocking-bird": "^0.6.2",
+        "@morgan-stanley/ts-mocking-bird": "^0.7.0",
         "@types/command-line-args": "^5.0.0",
         "@types/command-line-usage": "^5.0.1",
         "@types/jest": "^27.5.1",
