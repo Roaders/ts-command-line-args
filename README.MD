@@ -626,7 +626,7 @@ defines `optionalArg` as optional. This must be reflected in the config passed t
 ```typescript
 parse<IMyInterface>({
     requiredArg: String, 
-    requiredArg: { type: String, optional: true },
+    optionalArg: { type: String, optional: true },
     });
 ```
 
