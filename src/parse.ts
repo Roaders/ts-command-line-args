@@ -17,9 +17,9 @@ import {
     normaliseConfig,
     removeBooleanValues,
     visit,
-} from './helpers';
-import { addOptions, getOptionFooterSection, getOptionSections } from './helpers/options.helper';
-import { removeAdditionalFormatting } from './helpers/string.helper';
+} from './helpers/index.js';
+import { addOptions, getOptionFooterSection, getOptionSections } from './helpers/options.helper.js';
+import { removeAdditionalFormatting } from './helpers/string.helper.js';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 

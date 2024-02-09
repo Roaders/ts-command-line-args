@@ -1,5 +1,5 @@
 import { PropertyOptions, ArgumentConfig, ArgumentOptions, CommandLineOption } from '../contracts';
-import { isBoolean } from './options.helper';
+import { isBoolean } from './options.helper.js';
 
 export function createCommandLineConfig<T>(config: ArgumentOptions<T>): CommandLineOption[] {
     return Object.keys(config).map((key) => {

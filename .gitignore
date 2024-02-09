@@ -1,5 +1,6 @@
 node_modules/
 dist/
+dist-original/
 *.tgz
 sampleMarkdown.md
 coverage/

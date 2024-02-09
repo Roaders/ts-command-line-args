@@ -11,9 +11,9 @@ import {
     SectionHeader,
 } from '../contracts';
 import { join } from 'path';
-import { normaliseConfig, createCommandLineConfig } from './command-line.helper';
-import { generateTableFooter, getOptionSections, mapDefinitionDetails } from './options.helper';
-import { convertChalkStringToMarkdown } from './string.helper';
+import { normaliseConfig, createCommandLineConfig } from './command-line.helper.js';
+import { generateTableFooter, getOptionSections, mapDefinitionDetails } from './options.helper.js';
+import { convertChalkStringToMarkdown } from './string.helper.js';
 
 export function createUsageGuide<T = any>(config: UsageGuideConfig<T>): string {
     const options = config.parseOptions || {};
@@ -143,7 +143,7 @@ export function getType(option: CommandLineOption): string {
     return `${type}${multiple} `;
 }
 
-export function generateUsageGuides(args: IWriteMarkDown): string[] | undefined {
+export async function generateUsageGuides(args: IWriteMarkDown): Promise<string[] | undefined> {
     if (args.jsFile == null) {
         console.log(
             `No jsFile defined for usage guide generation. See 'write-markdown -h' for details on generating usage guides.`,
@@ -155,17 +155,19 @@ export function generateUsageGuides(args: IWriteMarkDown): string[] | undefined 
         return [...imports, ...args.configImportName.map((importName) => ({ jsFile, importName }))];
     }
 
-    return args.jsFile
+    const importPromises = args.jsFile
         .reduce(mapJsImports, new Array<JsImport>())
-        .map(({ jsFile, importName }) => loadArgConfig(jsFile, importName))
-        .filter(isDefined)
-        .map(createUsageGuide);
+        .map(({ jsFile, importName }) => loadArgConfig(jsFile, importName));
+
+    const resolvedImports = await Promise.all(importPromises);
+
+    return resolvedImports.filter(isDefined).map(createUsageGuide);
 }
 
-export function loadArgConfig(jsFile: string, importName: string): UsageGuideConfig | undefined {
+export async function loadArgConfig(jsFile: string, importName: string): Promise<UsageGuideConfig | undefined> {
     const jsPath = join(process.cwd(), jsFile);
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const jsExports = require(jsPath);
+    const jsExports = await import(jsPath);
 
     const argConfig: UsageGuideConfig = jsExports[importName];
 

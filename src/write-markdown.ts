@@ -1,23 +1,24 @@
 #!/usr/bin/env node
 
-import { parse } from './parse';
+import { parse } from './parse.js';
 import { IWriteMarkDown } from './contracts';
 import { resolve, relative } from 'path';
 import { readFileSync, writeFileSync } from 'fs';
-import { addCommandLineArgsFooter, addContent, generateUsageGuides, insertCode } from './helpers';
-import { argumentConfig, parseOptions } from './write-markdown.constants';
+import { addCommandLineArgsFooter, addContent, generateUsageGuides, insertCode } from './helpers/index.js';
+import { argumentConfig, parseOptions } from './write-markdown.constants.js';
 import format from 'string-format';
 import chalk from 'chalk';
+import { pathToFileURL } from "url"
 
 async function writeMarkdown() {
     const args = parse<IWriteMarkDown>(argumentConfig, parseOptions);
 
-    const markdownPath = resolve(args.markdownPath);
+    const markdownPath = pathToFileURL(resolve(args.markdownPath)).href;
 
     console.log(`Loading existing file from '${chalk.blue(markdownPath)}'`);
     const markdownFileContent = readFileSync(markdownPath).toString();
 
-    const usageGuides = generateUsageGuides(args);
+    const usageGuides = await generateUsageGuides(args);
 
     let modifiedFileContent = markdownFileContent;
 

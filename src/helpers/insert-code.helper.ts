@@ -1,5 +1,5 @@
 import { IInsertCodeOptions } from '../contracts';
-import { filterDoubleBlankLines, findEscapeSequence, splitContent } from './line-ending.helper';
+import { filterDoubleBlankLines, findEscapeSequence, splitContent } from './line-ending.helper.js';
 import { isAbsolute, resolve, dirname, join } from 'path';
 import { promisify } from 'util';
 import { readFile, writeFile } from 'fs';
