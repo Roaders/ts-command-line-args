@@ -8,12 +8,11 @@ import { addCommandLineArgsFooter, addContent, generateUsageGuides, insertCode }
 import { argumentConfig, parseOptions } from './write-markdown.constants.js';
 import format from 'string-format';
 import chalk from 'chalk';
-import { pathToFileURL } from "url"
 
 async function writeMarkdown() {
     const args = parse<IWriteMarkDown>(argumentConfig, parseOptions);
 
-    const markdownPath = pathToFileURL(resolve(args.markdownPath)).href;
+    const markdownPath = resolve(args.markdownPath);
 
     console.log(`Loading existing file from '${chalk.blue(markdownPath)}'`);
     const markdownFileContent = readFileSync(markdownPath).toString();

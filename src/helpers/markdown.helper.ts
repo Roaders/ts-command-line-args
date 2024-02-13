@@ -14,6 +14,7 @@ import { join } from 'path';
 import { normaliseConfig, createCommandLineConfig } from './command-line.helper.js';
 import { generateTableFooter, getOptionSections, mapDefinitionDetails } from './options.helper.js';
 import { convertChalkStringToMarkdown } from './string.helper.js';
+import { pathToFileURL } from 'url';
 
 export function createUsageGuide<T = any>(config: UsageGuideConfig<T>): string {
     const options = config.parseOptions || {};
@@ -167,7 +168,7 @@ export async function generateUsageGuides(args: IWriteMarkDown): Promise<string[
 export async function loadArgConfig(jsFile: string, importName: string): Promise<UsageGuideConfig | undefined> {
     const jsPath = join(process.cwd(), jsFile);
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const jsExports = await import(jsPath);
+    const jsExports = await import(pathToFileURL(jsPath).href);
 
     const argConfig: UsageGuideConfig = jsExports[importName];
 
