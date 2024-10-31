@@ -550,7 +550,7 @@ In this case errors will still be logged to the console but the process will not
 
 ### Option Definitions
 
-Option definitions must be passed to `parse`. For the most part option definitions are the same as [`OptionDefinition`](https://github.com/75lb/command-line-args/blob/master/doc/option-definition.md) from `command-line-args` except that `name` is not required. Name is not required as we pass an object:
+Option definitions must be passed to `parse`. For the most part option definitions are the same as [`OptionDefinition`](https://github.com/75lb/command-line-args/blob/master/doc/option-definition.md) from `command-line-args`, with the addition of the ability to associate an [Environment Variable](#environment-variables) with the option. Also, `name` is not required, as we pass an object:
 
 ```typescript
 {
@@ -662,6 +662,20 @@ $ node myApp.js users Jeoff Frank Dave
 ```
 
 For further Option Definition documentation refer to [these docs](https://github.com/75lb/command-line-args/blob/master/doc/option-definition.md).
+
+**Environment Variables**
+
+The option can be associated with an `env` variable:
+
+```typescript
+parse<IMyInterface>({
+    stringArg: { type: String, env: 'STRING_ARG' }, 
+    });
+```
+
+for which a corresponding value in `process.env` overrides any default value defined for the option,
+or a value coming from a config file. An explicit command line argument, however, takes precedence over
+the environment variable.
 
 ### Options
 

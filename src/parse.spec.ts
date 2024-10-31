@@ -48,7 +48,7 @@ describe('parse', () => {
     function getConfig(): ArgumentConfig<ComplexProperties> {
         return {
             requiredString: String,
-            defaultedString: { type: String, defaultValue: defaultFromOption },
+            defaultedString: { type: String, defaultValue: defaultFromOption, env: 'DEFAULTED_STRING' },
             optionalString: { type: String, optional: true },
             requiredBoolean: { type: Boolean, alias: 'b' },
             optionalBoolean: { type: Boolean, optional: true },
@@ -88,6 +88,7 @@ describe('parse', () => {
     const requiredString = ['--requiredString', requiredStringValue];
     const defaultedStringValue = 'defaultedStringValue';
     const defaultFromOption = 'defaultFromOption';
+    const defaultFromEnv = 'defaultFromEnv';
     const defaultedString = ['--defaultedString', defaultedStringValue];
     const optionalStringValue = 'optionalStringValue';
     const optionalString = ['--optionalString', optionalStringValue];
@@ -118,13 +119,17 @@ describe('parse', () => {
         mockProcess = Mock.create<typeof process>().setup(setupFunction('exit'));
         mockFs = Mock.create<typeof fsImport>().setup(setupFunction('readFileSync', () => configFromFile as any));
         mockPath = Mock.create<typeof pathImport>().setup(setupFunction('resolve', (path) => `${path}_resolved`));
-        mockHelper = Mock.create<typeof helpersImport>().setup(setupFunction('mergeConfig'));
+        mockHelper = Mock.create<typeof helpersImport>().setup(setupFunction('parseConfigFromFile'));
 
         registerMock(fsImport, mockFs.mock);
         registerMock(pathImport, mockPath.mock);
         registerMock(helpersImport, mockHelper.mock);
 
         return [{ package: process, mocks: mockProcess.mock }];
+    });
+
+    beforeEach(() => {
+        delete process.env['DEFAULTED_STRING'];
     });
 
     afterEach(() => {
@@ -135,6 +140,9 @@ describe('parse', () => {
 
     describe('should create the expected argument value object', () => {
         it('when all options are populated', () => {
+            // Should be overridden by explicit argv.
+            process.env['DEFAULTED_STRING'] = defaultFromEnv;
+
             const result = parse(getConfig(), {
                 logger: mockConsole.mock,
                 argv: [
@@ -177,6 +185,26 @@ describe('parse', () => {
             expect(mockConsole.withFunction('error')).wasNotCalled();
         });
 
+        it('when values are specified in env variables', () => {
+            process.env['DEFAULTED_STRING'] = defaultFromEnv;
+
+            const result = parse(getHelpConfig(), {
+                logger: mockConsole.mock,
+                argv: [...requiredString, ...requiredArray],
+                helpArg: 'optionalHelpArg',
+            });
+
+            expect(result).toEqual({
+                requiredString: requiredStringValue,
+                defaultedString: defaultFromEnv,
+                requiredArray: requiredArrayValue,
+                requiredBoolean: false,
+            });
+
+            expect(mockConsole.withFunction('log')).wasNotCalled();
+            expect(mockConsole.withFunction('error')).wasNotCalled();
+        });
+
         it('should not load config from file when not specified', () => {
             const result = parse(getFileConfig(), {
                 logger: mockConsole.mock,
@@ -196,13 +224,7 @@ describe('parse', () => {
         });
 
         it('should load config from file when specified', () => {
-            const mergedConfig = {
-                requiredString: 'requiredStringFromFile',
-                defaultedString: 'defaultedStringFromFile',
-                requiredArray: requiredArrayValue,
-                requiredBoolean: false,
-            };
-            mockHelper.setupFunction('mergeConfig', () => mergedConfig as any);
+            mockHelper.setupFunction('parseConfigFromFile', () => jsonFromFile as any);
 
             const argv = [...requiredString, ...requiredArray, ...optionalFileArg, ...optionalPathArg];
 
@@ -213,35 +235,49 @@ describe('parse', () => {
                 loadFromFileJsonPathArg: 'optionalPathArg',
             });
 
-            expect(result).toEqual(mergedConfig);
-
-            const expectedParsedArgs = {
-                defaultedString: 'defaultFromOption',
+            expect(result).toEqual({
                 requiredString: 'requiredStringValue',
+                defaultedString: 'defaultedStringFromFile',
                 requiredArray: ['requiredArray'],
+                requiredBoolean: false,
                 optionalFileArg: 'configFilePath',
                 optionalPathArg: 'configPath',
-            };
-
-            const expectedParsedArgsWithoutDefaults = {
-                requiredString: 'requiredStringValue',
-                requiredArray: ['requiredArray'],
-                optionalFileArg: 'configFilePath',
-                optionalPathArg: 'configPath',
-            };
+            });
 
             expect(mockPath.withFunction('resolve').withParameters('configFilePath')).wasCalledOnce();
             expect(mockFs.withFunction('readFileSync').withParameters('configFilePath_resolved')).wasCalledOnce();
             expect(
-                mockHelper
-                    .withFunction('mergeConfig')
-                    .withParametersEqualTo(
-                        expectedParsedArgs,
-                        expectedParsedArgsWithoutDefaults,
-                        jsonFromFile,
-                        any(),
-                        'optionalPathArg' as any,
-                    ),
+                mockHelper.withFunction('parseConfigFromFile').withParametersEqualTo('configPath', jsonFromFile, any()),
+            ).wasCalledOnce();
+        });
+
+        it('should load config from file when specified but allow env overrides', () => {
+            process.env['DEFAULTED_STRING'] = defaultFromEnv;
+
+            mockHelper.setupFunction('parseConfigFromFile', () => jsonFromFile as any);
+
+            const argv = [...requiredString, ...requiredArray, ...optionalFileArg, ...optionalPathArg];
+
+            const result = parse(getFileConfig(), {
+                logger: mockConsole.mock,
+                argv,
+                loadFromFileArg: 'optionalFileArg',
+                loadFromFileJsonPathArg: 'optionalPathArg',
+            });
+
+            expect(result).toEqual({
+                requiredString: 'requiredStringValue',
+                defaultedString: 'defaultFromEnv', // ENV overrides config file.
+                requiredArray: ['requiredArray'],
+                requiredBoolean: false,
+                optionalFileArg: 'configFilePath',
+                optionalPathArg: 'configPath',
+            });
+
+            expect(mockPath.withFunction('resolve').withParameters('configFilePath')).wasCalledOnce();
+            expect(mockFs.withFunction('readFileSync').withParameters('configFilePath_resolved')).wasCalledOnce();
+            expect(
+                mockHelper.withFunction('parseConfigFromFile').withParametersEqualTo('configPath', jsonFromFile, any()),
             ).wasCalledOnce();
         });
 
@@ -249,6 +285,7 @@ describe('parse', () => {
             args: string[];
             configFromFile: Partial<PropertiesWithFileConfig>;
             expected: Partial<PropertiesWithFileConfig>;
+            configPathArg?: string;
         };
 
         const overrideBooleanTests: OveriddeBooleanTest[] = [
@@ -261,6 +298,7 @@ describe('parse', () => {
                 args: ['--requiredBoolean', '--optionalPathArg=optionalPath'],
                 configFromFile: { requiredBoolean: false },
                 expected: { requiredBoolean: true, optionalPathArg: 'optionalPath' },
+                configPathArg: 'optionalPath',
             },
             {
                 args: ['--requiredBoolean=false'],
@@ -293,44 +331,28 @@ describe('parse', () => {
             it(`should correctly override boolean value in config file when ${test.args.join()} passed on command line`, () => {
                 jsonFromFile = test.configFromFile;
 
-                const mergedConfig = {
+                const configFromFile = {
                     requiredString: 'requiredStringFromFile',
                     defaultedString: 'defaultedStringFromFile',
                     requiredArray: requiredArrayValue,
                     ...test.expected,
                 };
-                mockHelper.setupFunction('mergeConfig', () => mergedConfig as any);
+                mockHelper.setupFunction('parseConfigFromFile', () => configFromFile as any);
 
                 const argv = [...optionalFileArg, ...test.args];
 
-                parse(getFileConfig(), {
+                const result = parse(getFileConfig(), {
                     logger: mockConsole.mock,
                     argv,
                     loadFromFileArg: 'optionalFileArg',
                     loadFromFileJsonPathArg: 'optionalPathArg',
                 });
-
-                const expectedParsedArgs = {
-                    defaultedString: 'defaultFromOption',
-                    optionalFileArg: 'configFilePath',
-                    ...test.expected,
-                };
-
-                const expectedParsedArgsWithoutDefaults = {
-                    optionalFileArg: 'configFilePath',
-                    ...test.expected,
-                };
+                expect(result).toMatchObject(test.expected);
 
                 expect(
                     mockHelper
-                        .withFunction('mergeConfig')
-                        .withParametersEqualTo(
-                            expectedParsedArgs,
-                            expectedParsedArgsWithoutDefaults,
-                            jsonFromFile,
-                            any(),
-                            'optionalPathArg' as any,
-                        ),
+                        .withFunction('parseConfigFromFile')
+                        .withParametersEqualTo(test.configPathArg, jsonFromFile, any()),
                 ).wasCalledOnce();
             });
         });

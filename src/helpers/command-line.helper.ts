@@ -4,10 +4,31 @@ import { isBoolean } from './options.helper.js';
 export function createCommandLineConfig<T>(config: ArgumentOptions<T>): CommandLineOption[] {
     return Object.keys(config).map((key) => {
         const argConfig: any = config[key as keyof T];
-        const definition: PropertyOptions<any> = typeof argConfig === 'object' ? argConfig : { type: argConfig };
+        const definitionWithEnv: PropertyOptions<any> = typeof argConfig === 'object' ? argConfig : { type: argConfig };
 
+        // Append "... (env: FOO_BAR)" to the description.
+        const { env, ...definition } = definitionWithEnv;
+        if (env) {
+            const { description: desc } = definition;
+            definition.description = `${desc ? desc + ' ' : ''}(env: ${env})`;
+        }
         return { name: key, ...definition };
     });
+}
+
+/** Creates a synthetic command-line argv from process.env vars. */
+export function createEnvArgv<T>(config: ArgumentOptions<T>): string[] {
+    const argv = [];
+    for (const key of Object.keys(config)) {
+        const argConfig = config[key as keyof T];
+        if (argConfig.env) {
+            const envValue = process.env[argConfig.env];
+            if (envValue !== undefined) {
+                argv.push(`--${key}`, envValue);
+            }
+        }
+    }
+    return argv;
 }
 
 export function normaliseConfig<T>(config: ArgumentConfig<T>): ArgumentOptions<T> {
@@ -19,19 +40,16 @@ export function normaliseConfig<T>(config: ArgumentConfig<T>): ArgumentOptions<T
     return config as ArgumentOptions<T>;
 }
 
-export function mergeConfig<T>(
-    parsedConfig: Partial<T>,
-    parsedConfigWithoutDefaults: Partial<T>,
+export function parseConfigFromFile<T>(
+    configPath: string | undefined,
     fileContent: Record<string, unknown>,
     options: ArgumentOptions<T>,
-    jsonPath: keyof T | undefined,
 ): Partial<T> {
-    const configPath: string | undefined = jsonPath ? (parsedConfig[jsonPath] as any) : undefined;
     const configFromFile = resolveConfigFromFile(fileContent, configPath);
     if (configFromFile == null) {
         throw new Error(`Could not resolve config object from specified file and path`);
     }
-    return { ...parsedConfig, ...applyTypeConversion(configFromFile, options), ...parsedConfigWithoutDefaults };
+    return applyTypeConversion(configFromFile, options);
 }
 
 function resolveConfigFromFile<T>(configfromFile: any, configPath?: string): Partial<Record<keyof T, any>> {

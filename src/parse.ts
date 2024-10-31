@@ -12,8 +12,9 @@ import commandLineArgs from 'command-line-args';
 import commandLineUsage from 'command-line-usage';
 import {
     createCommandLineConfig,
+    createEnvArgv,
     getBooleanValues,
-    mergeConfig,
+    parseConfigFromFile,
     normaliseConfig,
     removeBooleanValues,
     visit,
@@ -22,6 +23,27 @@ import { addOptions, getOptionFooterSection, getOptionSections } from './helpers
 import { removeAdditionalFormatting } from './helpers/string.helper.js';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
+
+function parseCommandLineArgs(
+    optionList: commandLineArgs.OptionDefinition[],
+    options: commandLineArgs.ParseOptions,
+    defaults: 'include-defaults' | 'exclude-defaults' = 'include-defaults',
+) {
+    if (defaults === 'exclude-defaults') {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        optionList = optionList.map(({ defaultValue, ...option }) => option);
+    }
+    let parsedArgs = commandLineArgs(optionList, options) as any;
+
+    if (parsedArgs['_all'] != null) {
+        const unknown = parsedArgs['_unknown'];
+        parsedArgs = parsedArgs['_all'];
+        if (unknown) {
+            parsedArgs['_unknown'] = unknown;
+        }
+    }
+    return parsedArgs;
+}
 
 /**
  * parses command line arguments and returns an object with all the arguments in IF all required options passed
@@ -43,37 +65,30 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>, R extends 
     const normalisedConfig = normaliseConfig(config);
     options.argv = removeBooleanValues(argsWithBooleanValues, normalisedConfig);
     const optionList = createCommandLineConfig(normalisedConfig);
-    let parsedArgs = commandLineArgs(optionList, options) as any;
-
-    if (parsedArgs['_all'] != null) {
-        const unknown = parsedArgs['_unknown'];
-        parsedArgs = parsedArgs['_all'];
-        if (unknown) {
-            parsedArgs['_unknown'] = unknown;
-        }
-    }
-
+    const parsedArgsWithDefaults = parseCommandLineArgs(optionList, options);
+    const parsedArgsFromConfig =
+        options.loadFromFileArg != null && parsedArgsWithDefaults[options.loadFromFileArg] != null
+            ? parseConfigFromFile<T>(
+                  parsedArgsWithDefaults[options.loadFromFileJsonPathArg],
+                  JSON.parse(readFileSync(resolve(parsedArgsWithDefaults[options.loadFromFileArg])).toString()),
+                  normalisedConfig,
+              )
+            : {};
+    const parsedArgsFromEnv = parseCommandLineArgs(
+        optionList,
+        { ...options, argv: createEnvArgv(normalisedConfig) },
+        'exclude-defaults',
+    );
+    const parsedArgsWithoutDefaults = parseCommandLineArgs(optionList, options, 'exclude-defaults');
     const booleanValues = getBooleanValues(argsWithBooleanValues, normalisedConfig);
-    parsedArgs = { ...parsedArgs, ...booleanValues };
 
-    if (options.loadFromFileArg != null && parsedArgs[options.loadFromFileArg] != null) {
-        const configFromFile: Partial<Record<keyof T, any>> = JSON.parse(
-            readFileSync(resolve(parsedArgs[options.loadFromFileArg])).toString(),
-        );
-        const parsedArgsWithoutDefaults = commandLineArgs(
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            optionList.map(({ defaultValue, ...option }) => ({ ...option })),
-            options,
-        ) as any;
-
-        parsedArgs = mergeConfig<T>(
-            parsedArgs,
-            { ...parsedArgsWithoutDefaults, ...booleanValues },
-            configFromFile,
-            normalisedConfig,
-            options.loadFromFileJsonPathArg as keyof T | undefined,
-        );
-    }
+    const parsedArgs = {
+        ...parsedArgsWithDefaults,
+        ...parsedArgsFromConfig,
+        ...parsedArgsFromEnv,
+        ...parsedArgsWithoutDefaults,
+        ...booleanValues,
+    };
 
     const missingArgs = listMissingArgs(optionList, parsedArgs);
 
@@ -108,11 +123,9 @@ export function parse<T, P extends ParseOptions<T> = ParseOptions<T>, R extends 
     if (missingArgs.length > 0 && exitProcess) {
         process.exit(resolveExitCode(options, 'missingArgs', parsedArgs, missingArgs));
     } else {
-        if (addCommandLineResults) {
-            parsedArgs = { ...parsedArgs, _commandLineResults };
-        }
-
-        return parsedArgs as T & UnknownProperties<P> & CommandLineResults<R>;
+        return (addCommandLineResults ? { ...parsedArgs, _commandLineResults } : parsedArgs) as T &
+            UnknownProperties<P> &
+            CommandLineResults<R>;
     }
 }
 
